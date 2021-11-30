@@ -4,7 +4,7 @@ import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'dart:async';
 
 
-import 'package:lab_6/screens/ProfilePage.dart';
+import 'package:bizzvest/my_profile/screens/ProfilePage.dart';
 
 
 import 'package:flutter/material.dart';

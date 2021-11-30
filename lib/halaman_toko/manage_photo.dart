@@ -8,9 +8,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:lab_7/configurations.dart';
-import "package:lab_7/halaman_toko.dart";
-import 'package:lab_7/shared.dart';
+import 'package:bizzvest/halaman_toko/configurations.dart';
+import "package:bizzvest/halaman_toko/halaman_toko.dart";
+import 'package:bizzvest/halaman_toko/shared.dart';
 
 
 void main() {

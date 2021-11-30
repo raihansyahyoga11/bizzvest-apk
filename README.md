@@ -34,12 +34,13 @@ Pandemi Covid-19 sudah berlangsung cukup lama dan perekonomian Indonesia telah t
 1. Login, logout, sign up dan navbar & footer (Raissa Tito Safaraz)
 
 
-## Persona:
-1. Pelaku usaha (Pemilik UMKM dan petani)
-1. Investor
-1. Guest user
+## Cerita Modul:
 
+### 1) Modul Frequently Ask Question (Nandhita Zefania Maharani)
+Modul Frequently Ask Question akan memberikan jawaban dari pertanyaan-pertanyaan terkait BizzVest. Modul ini akan diimplementasikan menjadi mobile app dari website yang telah dibuat dengan menggunakan framework Django. Pada website BizzVest yang telah di deploy di Heroku sebelumnya, modul faq ini terdiri dari 3 bagian, yaitu faq utama berupa pertanyaan umum yang resmi dari BizzVest, dilanjutkan dengan faq dari pengguna berupa pertanyaan yang dikirimkan melalui form, dan yang terakhir adalah form untuk mengirimkan pertanyaan. Pada implementasi mobile app menggunakan flutter, modul faq ini juga akan menerapkan ketiga bagian tersebut. 
 
+Modul ini akan menerapkan widget untuk layout, seperti menggunakan widget Container, Align, Center, Padding, dan lain sebagainya agar posisi dari widget terorganisir dengan baik. Modul ini akan menerapkan widget untuk input dengan memanfaatkan widget Form dan FormField untuk menerima input dari user ketika ingin memasukkan nama dan pertanyaan mereka. Untuk menerapkan Event handling, modul ini akan menggunakan widget OnChanged yang akan merespon ketika user memasukkan field tertentu berupa warning, serta OnPressed pada button “Kirimkan pertanyaan” untuk mengirimkan pertanyaan pada form tersebut dan menampilkannya pada bagian faq dari pengguna.
 
+Untuk pemanggilan Asynchronous ke Web Service Django, tampilan faq dari pengguna akan memanggil JSON dari Web Service Django berdasarkan pertanyaan dan nama penanya yang telah dimasukkan pada database Django sebelumnya ketika Proyek Tengah Semester melalui Heroku. Kemudian, data JSON yang telah didapatkan tersebut nantinya akan diolah dan ditampilkan pertanyaannya dan nama penanya tersebut pada tampilan mobile app dalam kumpulan card dengan widget ListView. 
 
 

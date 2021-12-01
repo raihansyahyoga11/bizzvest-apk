@@ -1,9 +1,11 @@
 import 'package:basic_utils/basic_utils.dart';
+import 'package:bizzvest/halaman_toko/shared.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:lab_7/shared.dart';
-import 'package:lab_7/user_account.dart';
+import 'package:bizzvest/halaman_toko/user_account.dart';
+
+
 
 
 void main() {

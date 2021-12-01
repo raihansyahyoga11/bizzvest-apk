@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import "package:lab_7/halaman_toko.dart";
+import "package:bizzvest/halaman_toko/halaman_toko.dart";
 
 
 void main() {

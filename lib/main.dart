@@ -1,9 +1,11 @@
+import 'package:bizzvest/daftar_toko/main.dart';
+import 'package:bizzvest/halaman_toko/add_toko.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   // runApp(const MyApp());
-  runApp(const HalamanTokoMaterial());
+  runApp(const AddTokoMaterial());
 }
 
 class MyApp extends StatelessWidget {

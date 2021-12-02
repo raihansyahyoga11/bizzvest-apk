@@ -39,10 +39,10 @@ build:
     expire_in: 9 days
     paths:
     - build/app/outputs/
-    - flutter/
+    - ./flutter/
 
 
-deployRelease:
+deploy_release:
   image: python:3.5.2
   stage: deploy
   script:
@@ -52,7 +52,7 @@ deployRelease:
     --release.dir=build/app/outputs/flutter-apk/
     --app.name=BizzVest
     --dropbox.token=$DROPBOX_TOKEN
-    --dropbox.folder=release
+    --dropbox.folder=bizzvest_apk
 #    --changelog.file=CHANGELOG
 #    --template.file=TEMPLATE
 #    --zapier.hook=$ZAPIER_EMAIL_HOOK

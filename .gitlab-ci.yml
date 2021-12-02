@@ -8,22 +8,25 @@ variables:
   LC_ALL: "en_US.UTF-8"
   LANG: "en_US.UTF-8"
 
-before_script:
-  - apt-get --quiet update --yes
-  - apt-get --quiet --yes install locales
-  - sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen && locale-gen
-  - apt-get install libglu1-mesa
-  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
-  - git clone https://github.com/flutter/flutter.git -b beta --depth 1
-  - ./flutter/bin/flutter channel beta
-  - ./flutter/bin/flutter doctor
-  - ls $ANDROID_HOME
+
+.before_script_template:
+    before_script:
+      - apt-get --quiet update --yes
+      - apt-get --quiet --yes install locales
+      - sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen && locale-gen
+      - apt-get install libglu1-mesa
+      - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+      - git clone https://github.com/flutter/flutter.git -b beta --depth 1
+      - ./flutter/bin/flutter channel beta
+      - ./flutter/bin/flutter doctor
+      - ls $ANDROID_HOME
 
 stages:
   - build
   - deploy
 
 build:
+  extends: .before_script_template
   stage: build
   only:
     - main

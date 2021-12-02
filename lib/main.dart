@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 void main() {
   // runApp(const MyApp());
-  runApp(const AddTokoMaterial());
+  runApp(const HalamanTokoMaterial());
 }
 
 class MyApp extends StatelessWidget {

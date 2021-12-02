@@ -1,59 +1,62 @@
-# A functional, but probably terrible, example of GitLab CI for Flutter
 image: jangrewe/gitlab-ci-android
 
-variables:
-  ANDROID_COMPILE_SDK: "27"
-  ANDROID_BUILD_TOOLS: "28.0.3"
-  ANDROID_SDK_TOOLS: "26.1.1"
-  LC_ALL: "en_US.UTF-8"
-  LANG: "en_US.UTF-8"
-
 before_script:
-  - apt-get --quiet update --yes
-  - apt-get --quiet --yes install locales
-  - sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen && locale-gen
-  - apt-get install libglu1-mesa
-  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
-  - git clone https://github.com/flutter/flutter.git -b beta --depth 1
-  - ./flutter/bin/flutter channel beta
-  - ./flutter/bin/flutter doctor
-  - ls $ANDROID_HOME
+- export GRADLE_USER_HOME=$(pwd)/.gradle
+- chmod +x ./gradlew
+
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+  - .gradle/
 
 stages:
-  - build
-  - package
+- build
+- test
+- release
+- deploy
 
-
-build:
+lintDebug:
   stage: build
-  only:
-    - main
-    - develop
-    - merge_requests
   script:
-    - ./flutter/bin/flutter build apk
+  - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
+
+assembleDebug:
+  stage: build
+  script:
+  - ./gradlew assembleDebug
+
+testDebug:
+  stage: test
+  script:
+  - ./gradlew -Pci --console=plain :app:testDebug
+
+assembleRelease:
+  stage: release
+  script:
+  - echo $KEYSTORE_FILE | base64 -d > my.keystore
+  - ./gradlew assembleRelease
+#    -Pandroid.injected.signing.store.file=$(pwd)/my.keystore
+#    -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD
+#    -Pandroid.injected.signing.key.alias=$KEY_ALIAS
+#    -Pandroid.injected.signing.key.password=$KEY_PASSWORD
   artifacts:
     paths:
-    - build/app/outputs/
+    - app/build/outputs/apk/release
+    - CHANGELOG
 
-
-.package_template: &package
-  before_script:
-    - mkdir -p exported
-
-package:
-  <<: *package
-  stage: package
-  only:
-    - main
-    - develop
-    - merge_requests
+deployRelease:
+  image: python:3.5.2
+  stage: deploy
   script:
-    - mv build/app/outputs/apk/* ./exported/
-  dependencies:
-    - build
-  artifacts:
-    expire_in: 7 days
-    paths:
-      - exported
-
+  - pip install requests
+  - git clone https://github.com/mega-arbuz/apk-release-deploy.git
+  - python apk-release-deploy/deploy.py
+    --release.dir=app/build/outputs/apk/release
+    --app.name=BizzVest
+    --dropbox.token=$DROPBOX_TOKEN
+    --dropbox.folder=release
+#    --changelog.file=CHANGELOG
+#    --template.file=TEMPLATE
+#    --zapier.hook=$ZAPIER_EMAIL_HOOK
+#    --email.to=$EMAIL_TARGET
+  cache: {}

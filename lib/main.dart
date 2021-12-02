@@ -1,7 +1,9 @@
+import 'package:bizzvest/halaman_toko/halaman_toko.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  // runApp(const MyApp());
+  runApp(const HalamanTokoMaterial());
 }
 
 class MyApp extends StatelessWidget {

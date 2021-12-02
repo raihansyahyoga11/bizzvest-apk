@@ -39,7 +39,7 @@ build:
     expire_in: 9 days
     paths:
     - build/app/outputs/
-    - ./flutter/
+    # - flutter/
 
 
 deploy_release:

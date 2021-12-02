@@ -39,7 +39,7 @@ build:
     expire_in: 9 days
     paths:
     - build/app/outputs/
-    - flutter
+    - flutter/
 
 
 deployRelease:
@@ -49,7 +49,7 @@ deployRelease:
   - pip install requests
   - git clone https://gitlab.com/immanuel01/bizzvest-apk-deploy-helper.git
   - python bizzvest-apk-deploy-helper/deploy.py
-    --release.dir=app/build/outputs/apk/release
+    --release.dir=build/app/outputs/flutter-apk/
     --app.name=BizzVest
     --dropbox.token=$DROPBOX_TOKEN
     --dropbox.folder=release

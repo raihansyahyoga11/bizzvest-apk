@@ -13,6 +13,7 @@ void main() {
 }
 
 class HalamanTokoMaterial extends StatelessWidget{
+
   const HalamanTokoMaterial({Key? key}) : super(key: key);
 
   @override
@@ -38,7 +39,6 @@ class HalamanTokoMaterial extends StatelessWidget{
           child: HalamanTokoBody(HalamanTokoProperties(
             nama_merek: "Bizzvest",
             nama_perusahaan: "PT. Bizzvest Indonesia",
-            image: "src/img/img1.jpg",
             images: [
               Image.asset("src/img/img1.jpg"),
               Image.asset("src/img/img3.jpg"),
@@ -76,7 +76,6 @@ class HalamanTokoProperties{
   final String nama_merek;
   final String nama_perusahaan;
   final List<Image> images;
-  final String image;
 
   final String status_verifikasi;
   final String tanggal_berakhir;
@@ -103,7 +102,6 @@ class HalamanTokoProperties{
   HalamanTokoProperties({
     required this.nama_merek,
     required this.nama_perusahaan,
-    required this.image,
     required this.images,
     required this.status_verifikasi,
     required this.tanggal_berakhir,
@@ -135,7 +133,6 @@ class HalamanTokoProperties{
         && deskripsi == o.deskripsi
         && alamat == o.alamat
         && nama_perusahaan == o.nama_perusahaan
-        && image == o.image
         && images == o.images
         && status_verifikasi == o.status_verifikasi
         && tanggal_berakhir == o.tanggal_berakhir
@@ -155,7 +152,6 @@ class HalamanTokoProperties{
       ^ nama_perusahaan.hashCode
       ^ alamat.hashCode
       ^ deskripsi.hashCode
-      ^ image.hashCode
       ^ images.hashCode
       ^ status_verifikasi.hashCode
       ^ tanggal_berakhir.hashCode

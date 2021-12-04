@@ -18,7 +18,7 @@
 
 
 ## Link APK:
-https://drive.google.com/file/d/18IonA63vp8LGft-46GSiugigBe-S-hO8/view?usp=sharing
+[https://www.dropbox.com/s/qkxsavm3hhdrfao/bizzvest.apk?dl=1](https://www.dropbox.com/s/qkxsavm3hhdrfao/bizzvest.apk?dl=1)
 
 
 ## Latar Belakang BizzVest:

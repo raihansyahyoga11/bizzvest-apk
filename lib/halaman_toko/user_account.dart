@@ -33,7 +33,6 @@ class UserAccount{
       photo_profile.hashCode
       ^ full_name.hashCode
       ^ username.hashCode
-
   ;
 
 }

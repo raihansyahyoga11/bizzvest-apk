@@ -33,6 +33,7 @@ build:
       - flutter/
       - vendor/apt
       - vendor/ruby
+      - /sdk/
 
   stage: build
   only:

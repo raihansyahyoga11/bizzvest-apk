@@ -19,6 +19,7 @@ variables:
       - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
       - if [ ! -d "./flutter" ]; then git clone https://github.com/flutter/flutter.git -b beta --depth 1; ./flutter/bin/flutter channel beta; ./flutter/bin/flutter doctor; else echo "sudah ada"; fi
       - ls $ANDROID_HOME
+      - echo "posisi: $ANDROID_HOME"
 
 stages:
   - build
@@ -41,7 +42,7 @@ build:
   script:
     - ./flutter/bin/flutter build apk
   artifacts:
-    expire_in: 9 days
+    expire_in: 1 days
     paths:
     - build/app/outputs/
     # - flutter/

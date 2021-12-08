@@ -2,6 +2,7 @@ import 'package:basic_utils/basic_utils.dart';
 import 'package:bizzvest/halaman_toko/shared.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bizzvest/halaman_toko/user_account.dart';
 
@@ -29,11 +30,6 @@ class HalamanTokoMaterial extends StatelessWidget{
       ),
 
       home: SafeArea(child: Scaffold(
-        /*appBar: AppBar(
-        title: Text("Halaman Toko"),
-        centerTitle: true,
-      ),*/
-
         body:SingleChildScrollView(
           padding: const EdgeInsets.only(bottom: 10),
           child: HalamanTokoBody(HalamanTokoProperties(
@@ -41,10 +37,11 @@ class HalamanTokoMaterial extends StatelessWidget{
             nama_perusahaan: "PT. Bizzvest Indonesia",
             images: [
               Image.asset("src/img/img1.jpg"),
+              Image.asset("src/img/kecil.png"),
               Image.asset("src/img/img3.jpg"),
               Image.asset("src/img/profile.jpg"),
             ],
-            status_verifikasi: "terverifikasi",
+            status_verifikasi: "belum mengajukan tes tes tes",
             tanggal_berakhir: "01 Jan 2024",
 
             kode_saham: "RAZE",
@@ -205,6 +202,7 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
   final HalamanTokoProperties properties;
   _HalamanTokoBodyState({required this.properties});
 
+
   @override
   Widget build(BuildContext context) {
     String jumlah_lembar_saham = thousand_separator(properties.jumlah_lembar_saham);
@@ -266,20 +264,19 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
             label: Text("Download Proposal"),
             margin: BorderedContainer.get_margin_static(),
           ),
-          BorderedContainer(
-              HalamanTokoTabularData(
-                  lines: [
-                    "Status", properties.status_verifikasi,
-                    "Berakhir pada", properties.tanggal_berakhir,
-                    "Jumlah saham", "$jumlah_lembar_saham lembar",
-                    "Harga saham", "Rp$nilai_lembar_saham,00",
-                  ])
+
+          HalamanTokoStatusContainer(
+            status_verifikasi: HalamanTokoStatusContainer.get_widget_for_value(
+                properties.status_verifikasi
+            ),
+            tanggal_berakhir: properties.tanggal_berakhir,
+            jumlah_lembar_saham: jumlah_lembar_saham,
+            nilai_lembar_saham: nilai_lembar_saham,
           ),
+
           BorderedContainer(
               HalamanTokoKondisiSaham()
           ),
-
-
           BorderedContainer(
               HalamanTokoAlamatDeskripsi()
           )
@@ -460,6 +457,83 @@ class HalamanTokoKodeSisaPeriode extends StatelessWidget{
   }
 }
 
+class HalamanTokoStatusContainer extends StatelessWidget{
+  final Widget status_verifikasi;
+  final String tanggal_berakhir;
+  final String jumlah_lembar_saham;
+  final String nilai_lembar_saham;
+
+  HalamanTokoStatusContainer({
+    required this.status_verifikasi,
+    required this.tanggal_berakhir,
+    required this.jumlah_lembar_saham,
+    required this.nilai_lembar_saham
+  });
+
+  static Widget get_widget_for_label(String str){
+    return Container(
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child:
+        SelectableText(str,
+          style: const TextStyle(
+            fontFamily: 'arial',
+          ),
+          textScaleFactor: 0.85,
+          textAlign: TextAlign.left,
+        ),
+      ),
+      margin: EdgeInsets.only(right: 7,),
+    );
+  }
+
+  static Widget get_widget_for_value(String str){
+    return Container(
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child:
+        SelectableText(str,
+          style: const TextStyle(
+            fontFamily: 'arial',
+          ),
+          textScaleFactor: 0.85,
+          textAlign: TextAlign.left,
+        ),
+      ),
+      margin: EdgeInsets.symmetric(vertical: 6),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BorderedContainer(
+      LayoutGrid(
+        columnSizes: [auto, 1.fr],
+        rowSizes: const [
+          auto, auto, auto, auto,
+        ],
+
+        children: [
+          get_widget_for_label("Status"),         status_verifikasi,
+          get_widget_for_label("Berakhir pada"),  get_widget_for_value(tanggal_berakhir),
+          get_widget_for_label("Jumlah saham"),   get_widget_for_value("$jumlah_lembar_saham lembar"),
+          get_widget_for_label("Harga saham"),    get_widget_for_value("Rp$nilai_lembar_saham,00"),
+        ],
+
+      ),
+
+      /*HalamanTokoTabularData(
+                  lines: [
+                    "Status", properties.status_verifikasi,
+                    "Berakhir pada", properties.tanggal_berakhir,
+                    "Jumlah saham", "$jumlah_lembar_saham lembar",
+                    "Harga saham", "Rp$nilai_lembar_saham,00",
+                  ])*/
+    );
+  }
+}
+
+
 class HalamanToko_KodeSisaPeriodeCell{
   static List<Widget> juduls(List<String> judul) {
     return [
@@ -515,6 +589,11 @@ String add_char_from_right(String string, String character, int position, {bool 
 }
 
 class HalamanTokoKondisiSaham extends StatelessWidget {
+  /*String length_controller(int nilai){
+    // jika nilainya terlalu besar, maka akan diubah jadi kata-kata
+    return "";
+  }*/
+
   @override
   Widget build(BuildContext context) {
     HalamanTokoProperties prop = HalamanTokoInheritedWidget.of(context).properties;
@@ -543,7 +622,7 @@ class HalamanTokoKondisiSaham extends StatelessWidget {
             lines: [
                "$persen_tersisa %", "$persen_terjual %",
               "$lembar_tersisa lembar", "$lembar_terjual lembar",
-              "Rp$nilai_tersisa,00", "Rp$nilai_terjual,00",
+              "Rp$nilai_tersisa", "Rp$nilai_terjual",
             ]),
 
         Container(

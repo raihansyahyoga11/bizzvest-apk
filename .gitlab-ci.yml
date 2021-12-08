@@ -28,6 +28,9 @@ stages:
 
 build:
   extends: .before_script_template
+  cache:
+    paths:
+      - flutter/
   stage: build
   only:
     - main

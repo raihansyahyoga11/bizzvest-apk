@@ -26,11 +26,15 @@ stages:
   - build
   - deploy
 
+
 build:
   extends: .before_script_template
   cache:
     paths:
       - flutter/
+      - vendor/apt
+      - vendor/ruby
+
   stage: build
   only:
     - main

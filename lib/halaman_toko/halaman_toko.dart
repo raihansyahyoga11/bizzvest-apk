@@ -485,7 +485,7 @@ class ColouredHeaderText extends StatelessWidget{
 
 
 class HalamanTokoOwnerContainer extends StatelessWidget{
-  final Widget foto_profile;
+  final Image foto_profile;
   final String nama_lengkap;
   final String username;
 
@@ -497,17 +497,20 @@ class HalamanTokoOwnerContainer extends StatelessWidget{
     return BorderedContainer(
       Row(
         children: [
-          ClipOval(
-            child: Container(
-              width: 100,
-              color: Colors.deepOrange,
-              padding: const EdgeInsets.all(4),
-              margin: const EdgeInsets.all(1),
+          Container(
+            width: 100,
+            padding: const EdgeInsets.all(4),
+            margin: const EdgeInsets.all(1),
+            child: ClipOval(
               child: AspectRatio(
                 aspectRatio: 1,
                 child: Container(
-                  color: Colors.greenAccent,
-                  child: foto_profile,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: foto_profile.image,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
             ),

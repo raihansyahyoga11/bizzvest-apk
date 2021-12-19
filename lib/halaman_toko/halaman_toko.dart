@@ -1,26 +1,173 @@
+// ignore_for_file: non_constant_identifier_names
+
+import 'dart:convert';
+
 import 'package:basic_utils/basic_utils.dart';
+import 'package:bizzvest/halaman_toko/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bizzvest/halaman_toko/user_account.dart';
-
-
+import 'package:http/http.dart';
 
 
 void main() {
-  runApp(const HalamanTokoMaterial());
+  runApp(const HalamanToko(id:7));
 }
 
-class HalamanTokoMaterial extends StatelessWidget{
 
-  const HalamanTokoMaterial({Key? key}) : super(key: key);
+class HalamanToko extends StatefulWidget{
+  final int id;
+  const HalamanToko({this.id=1, Key? key}) : super(key: key);
+
+  @override
+  State<HalamanToko> createState() => _HalamanTokoState();
+}
+
+class _HalamanTokoState extends State<HalamanToko> {
+  @override
+  Widget build(BuildContext context){
+    return FutureBuilder(
+      future: () async {
+        var authentication = await get_authentication();
+        print(authentication.is_logged_in);
+
+        Response? ret = await authentication.get(
+            uri: CONSTANTS.get_server_URI(
+                CONSTANTS.halaman_toko_get_toko_json_path,
+                {'id': widget.id.toString()}
+            ));;
+        print("runn 3");
+        return ret;
+      }(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done){
+          if (snapshot.hasError) {
+            Future.error(
+              snapshot.error!,
+              snapshot.stackTrace);
+          }
+
+          Response? response_temp = snapshot.data;
+
+          if (response_temp == null
+              || is_bad_response(response_temp)){
+            return Container(
+              child: const Center(
+                child: Text(
+                    "An error has occurred. " ,
+                    textDirection: TextDirection.ltr,
+                ),
+              ),
+            );
+          }else{
+            Response response = response_temp;
+            Map<String, dynamic> resulting_json = json.decode(response.body);
+            List<dynamic> images_str = resulting_json['images'];
+            List<Image> images = [];
+
+            images_str.forEach((dynamic element_dynamic) {
+              String element = element_dynamic;
+              images.add(Image.network(
+                  CONSTANTS.protocol + CONSTANTS.server + element));
+            });
+
+            return HalamanTokoWrapper(
+                child: HalamanTokoBody(
+                    HalamanTokoProperties(
+                      nama_merek: resulting_json['nama_merek'],
+                      nama_perusahaan: resulting_json['nama_perusahaan'],
+                      images: images,
+                      status_verifikasi: resulting_json['status_verifikasi'].toString(),
+                      tanggal_berakhir: resulting_json['tanggal_berakhir'],
+
+                      kode_saham: resulting_json['kode_saham'],
+                      sisa_waktu: resulting_json['sisa_waktu'],
+                      periode_dividen: resulting_json['periode_dividen'].toString(),
+                      alamat: resulting_json['alamat'],
+                      deskripsi: resulting_json['deskripsi'],
+                      owner: UserAccount(
+                        full_name: resulting_json['owner']['full_name'],
+                        username: resulting_json['owner']['username'],
+                        photo_profile: Image.network(
+                            CONSTANTS.protocol + CONSTANTS.server
+                                + resulting_json['owner']['photo_profile']
+                        ),
+                      ),
+
+                      nilai_lembar_saham: resulting_json['nilai_lembar_saham'],
+                      jumlah_lembar_saham: resulting_json['jumlah_lembar_saham'],
+                      jumlah_lembar_saham_tersisa: resulting_json['jumlah_lembar_saham_tersisa'],
+                    )
+                )
+            );
+          }
+        }else{
+          return Container(
+            child: Center(
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Center(
+                        child: CircularProgressIndicator()
+                    ),
+                    SizedBox(width:0, height:20),
+                    Center(
+                        child: Text(
+                          "Fetching company information",
+                          textDirection: TextDirection.ltr,)
+                    ),
+                  ]
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+}
+
+
+class HalamanTokoWrapper extends StatelessWidget{
+  final Widget? child;
+  const HalamanTokoWrapper({this.child, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    Widget? temp_child = child;
 
+    temp_child ??= HalamanTokoBody(HalamanTokoProperties(
+      nama_merek: "Bizzvest",
+      nama_perusahaan: "PT. Bizzvest Indonesia",
+      images: [
+        Image.asset("src/img/img1.jpg"),
+        Image.asset("src/img/kecil.png"),
+        Image.asset("src/img/img3.jpg"),
+        Image.asset("src/img/profile.jpg"),
+      ],
+      status_verifikasi: "belum mengajukan tes tes tes",
+      tanggal_berakhir: "01 Jan 2024",
+
+      kode_saham: "RAZE",
+      sisa_waktu: "2 tahun",
+      periode_dividen: "12 bulan",
+      alamat: "jalan pepaya",
+      deskripsi: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel leo nunc. Etiam vitae ligula vitae arcu maximus tincidunt vitae et velit. Mauris velit quam, venenatis quis viverra ultrices, viverra sit amet purus. Curabitur nec tempus velit. Integer vehicula elit vel augue fringilla, vitae dignissim dui viverra",
+      owner: UserAccount(
+        full_name: 'Kugel Blitz',
+        username: 'hzz',
+        photo_profile: Image.asset("src/img/profile.jpg"),
+      ),
+
+      nilai_lembar_saham: 400 * 1000,
+      jumlah_lembar_saham: 400 * 1000,
+      jumlah_lembar_saham_tersisa: 100 * 1000,
+    ));
+
+    return MaterialApp(
       theme: ThemeData(
         textTheme: Theme.of(context).textTheme.apply(
           fontSizeFactor: 1.3,
@@ -30,35 +177,9 @@ class HalamanTokoMaterial extends StatelessWidget{
       ),
 
       home: SafeArea(child: Scaffold(
-        body:SingleChildScrollView(
+        body: SingleChildScrollView(
           padding: const EdgeInsets.only(bottom: 10),
-          child: HalamanTokoBody(HalamanTokoProperties(
-            nama_merek: "Bizzvest",
-            nama_perusahaan: "PT. Bizzvest Indonesia",
-            images: [
-              Image.asset("src/img/img1.jpg"),
-              Image.asset("src/img/kecil.png"),
-              Image.asset("src/img/img3.jpg"),
-              Image.asset("src/img/profile.jpg"),
-            ],
-            status_verifikasi: "belum mengajukan tes tes tes",
-            tanggal_berakhir: "01 Jan 2024",
-
-            kode_saham: "RAZE",
-            sisa_waktu: "2 tahun",
-            periode_dividen: "12 bulan",
-            alamat: "jalan pepaya",
-            deskripsi: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel leo nunc. Etiam vitae ligula vitae arcu maximus tincidunt vitae et velit. Mauris velit quam, venenatis quis viverra ultrices, viverra sit amet purus. Curabitur nec tempus velit. Integer vehicula elit vel augue fringilla, vitae dignissim dui viverra",
-            owner: UserAccount(
-              full_name: 'Kugel Blitz',
-              username: 'hzz',
-              photo_profile: Image.asset("src/img/profile.jpg"),
-            ),
-
-            nilai_lembar_saham: 400 * 1000,
-            jumlah_lembar_saham: 400 * 1000,
-            jumlah_lembar_saham_tersisa: 100 * 1000,
-          )),
+          child: temp_child,
         ),
         backgroundColor: (Colors.lightBlue[200])!,
 
@@ -167,7 +288,7 @@ class HalamanTokoInheritedWidget extends InheritedWidget{
   final HalamanTokoProperties properties;
   final Function(Function() func)? setState;
 
-  HalamanTokoInheritedWidget({
+  const HalamanTokoInheritedWidget({
     required this.properties,
     required Widget child,
     required this.setState,
@@ -220,14 +341,14 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
             AspectRatio(
                 aspectRatio: 1 / 1,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(7)),
+                  borderRadius: const BorderRadius.all(Radius.circular(7)),
                   child: CarouselSlider.builder(
                     itemCount: properties.images.length,
                     options: CarouselOptions(
                       aspectRatio: 1/1,
                       viewportFraction: 1,
                       autoPlay: (properties.images.length > 1),
-                      autoPlayInterval: Duration(seconds: 4),
+                      autoPlayInterval: const Duration(seconds: 4),
                     ),
 
 
@@ -260,8 +381,8 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
           HalamanTokoKodeSisaPeriode(),
           BorderedButtonIcon(
             onPressed: (){},
-            icon: FaIcon(FontAwesomeIcons.book),
-            label: Text("Download Proposal"),
+            icon: const FaIcon(FontAwesomeIcons.book),
+            label: const Text("Download Proposal"),
             margin: BorderedContainer.get_margin_static(),
           ),
 
@@ -290,7 +411,7 @@ class HalamanTokoHeaderTitle extends StatelessWidget{
   final String nama_merek;
   final String nama_perusahaan;
 
-  HalamanTokoHeaderTitle(this.nama_merek, this.nama_perusahaan);
+  const HalamanTokoHeaderTitle(this.nama_merek, this.nama_perusahaan);
 
   @override
   Widget build(BuildContext context) {
@@ -376,15 +497,16 @@ class HalamanTokoOwnerContainer extends StatelessWidget{
     return BorderedContainer(
       Row(
         children: [
-          Container(
-            width: 100,
-            padding: EdgeInsets.all(4),
-            margin: EdgeInsets.all(1),
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                // constraints: BoxConstraints(minWidth: 100, maxWidth: 200),
-                child: ClipOval(
+          ClipOval(
+            child: Container(
+              width: 100,
+              color: Colors.deepOrange,
+              padding: const EdgeInsets.all(4),
+              margin: const EdgeInsets.all(1),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Container(
+                  color: Colors.greenAccent,
                   child: foto_profile,
                 ),
               ),
@@ -397,24 +519,20 @@ class HalamanTokoOwnerContainer extends StatelessWidget{
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    child: SelectableText(
-                      nama_lengkap,
-                      textScaleFactor: 1.35,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 14, 99, 223),
-                      ),
+                  SelectableText(
+                    nama_lengkap,
+                    textScaleFactor: 1.35,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 14, 99, 223),
                     ),
                   ),
-                  Container(
-                    child: SelectableText(
-                      "@" + username,
-                      textScaleFactor: 1.1,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.normal,
-                        color: Color.fromARGB(255, 108, 117, 125),
-                      ),
+                  SelectableText(
+                    "@" + username,
+                    textScaleFactor: 1.1,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.normal,
+                      color: Color.fromARGB(255, 108, 117, 125),
                     ),
                   ),
                 ],
@@ -429,6 +547,8 @@ class HalamanTokoOwnerContainer extends StatelessWidget{
 
 
 class HalamanTokoKodeSisaPeriode extends StatelessWidget{
+  const HalamanTokoKodeSisaPeriode({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -436,9 +556,9 @@ class HalamanTokoKodeSisaPeriode extends StatelessWidget{
 
     return BorderedContainer(
         Container(
-            padding: EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.symmetric(vertical: 5),
             child: GridView.count(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 3,
               mainAxisSpacing: 0,
               childAspectRatio: 2.8/1,
@@ -463,7 +583,7 @@ class HalamanTokoStatusContainer extends StatelessWidget{
   final String jumlah_lembar_saham;
   final String nilai_lembar_saham;
 
-  HalamanTokoStatusContainer({
+  const HalamanTokoStatusContainer({
     required this.status_verifikasi,
     required this.tanggal_berakhir,
     required this.jumlah_lembar_saham,

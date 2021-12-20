@@ -5,7 +5,9 @@ import 'package:http/http.dart' as http;
 
 
 class CONSTANTS{
-  static final String server = "10.0.2.2:8000";
+  // static final String server = "10.0.2.2:8000";
+  static final String server = "192.168.43.117:8000";
+  // static final String server = "127.0.0.1:8000";
   static final String protocol = "http://";
 
   static final String login_path = "/start-web/login";
@@ -47,7 +49,7 @@ class Session{
   Future<http.Response> get({
           Uri? uri,
           String? url,
-          Duration timeout = const Duration(seconds: 5),
+          Duration timeout = const Duration(seconds: 9),
         }) async{
     assert (uri == null && url != null || url == null && uri != null);
 

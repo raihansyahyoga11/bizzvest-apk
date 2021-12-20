@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:basic_utils/basic_utils.dart';
@@ -28,43 +29,59 @@ class HalamanToko extends StatefulWidget{
 }
 
 class _HalamanTokoState extends State<HalamanToko> {
+  static const int TIMEOUT_RETRY_LIMIT = 5;
+  int timeout_retry_number = 0;
+
+
   @override
   Widget build(BuildContext context){
     return FutureBuilder(
       future: () async {
         var authentication = await get_authentication();
-        print(authentication.is_logged_in);
-
         Response? ret = await authentication.get(
             uri: CONSTANTS.get_server_URI(
                 CONSTANTS.halaman_toko_get_toko_json_path,
                 {'id': widget.id.toString()}
             ));;
-        print("runn 3");
         return ret;
       }(),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.connectionState == ConnectionState.done){
           if (snapshot.hasError) {
+            if (snapshot.error is TimeoutException){
+              if (timeout_retry_number < TIMEOUT_RETRY_LIMIT)
+                Future.delayed(Duration(seconds: 2+timeout_retry_number))
+                    .then((value) => setState(() {timeout_retry_number += 1;}));
+
+              return Container(
+                child: const Center(
+                  child: Text(
+                    "Request timed out",
+                    textDirection: TextDirection.ltr,
+                  ),
+                ),
+              );
+            }
+
             Future.error(
               snapshot.error!,
               snapshot.stackTrace);
           }
 
-          Response? response_temp = snapshot.data;
+          if (snapshot.hasError
+              || snapshot.data == null
+              || is_bad_response(snapshot.data!)){
 
-          if (response_temp == null
-              || is_bad_response(response_temp)){
             return Container(
               child: const Center(
                 child: Text(
-                    "An error has occurred. " ,
+                    "An error has occurred. ",
                     textDirection: TextDirection.ltr,
                 ),
               ),
             );
           }else{
-            Response response = response_temp;
+            Response response = snapshot.data!;
             Map<String, dynamic> resulting_json = json.decode(response.body);
             List<dynamic> images_str = resulting_json['images'];
             List<Image> images = [];
@@ -86,9 +103,10 @@ class _HalamanTokoState extends State<HalamanToko> {
 
                       kode_saham: resulting_json['kode_saham'],
                       sisa_waktu: resulting_json['sisa_waktu'],
-                      periode_dividen: resulting_json['periode_dividen'].toString(),
+                      periode_dividen: resulting_json['periode_dividen'].toString() + " bulan",
                       alamat: resulting_json['alamat'],
                       deskripsi: resulting_json['deskripsi'],
+                      alamat_proposal: resulting_json['alamat_proposal'],
                       owner: UserAccount(
                         full_name: resulting_json['owner']['full_name'],
                         username: resulting_json['owner']['username'],
@@ -156,6 +174,7 @@ class HalamanTokoWrapper extends StatelessWidget{
       periode_dividen: "12 bulan",
       alamat: "jalan pepaya",
       deskripsi: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel leo nunc. Etiam vitae ligula vitae arcu maximus tincidunt vitae et velit. Mauris velit quam, venenatis quis viverra ultrices, viverra sit amet purus. Curabitur nec tempus velit. Integer vehicula elit vel augue fringilla, vitae dignissim dui viverra",
+      alamat_proposal: "",
       owner: UserAccount(
         full_name: 'Kugel Blitz',
         username: 'hzz',
@@ -202,6 +221,7 @@ class HalamanTokoProperties{
   final String periode_dividen;
   final String alamat;
   final String deskripsi;
+  final String? alamat_proposal;
 
   final UserAccount owner;
 
@@ -225,6 +245,7 @@ class HalamanTokoProperties{
     required this.tanggal_berakhir,
     required this.alamat,
     required this.deskripsi,
+    required this.alamat_proposal,
     required this.owner,
 
     required this.kode_saham,
@@ -249,6 +270,7 @@ class HalamanTokoProperties{
     HalamanTokoProperties o = other;
     return nama_merek == o.nama_merek
         && deskripsi == o.deskripsi
+        && alamat_proposal == o.alamat_proposal
         && alamat == o.alamat
         && nama_perusahaan == o.nama_perusahaan
         && images == o.images
@@ -270,6 +292,7 @@ class HalamanTokoProperties{
       ^ nama_perusahaan.hashCode
       ^ alamat.hashCode
       ^ deskripsi.hashCode
+      ^ alamat_proposal.hashCode
       ^ images.hashCode
       ^ status_verifikasi.hashCode
       ^ tanggal_berakhir.hashCode
@@ -328,6 +351,7 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
   Widget build(BuildContext context) {
     String jumlah_lembar_saham = thousand_separator(properties.jumlah_lembar_saham);
     String nilai_lembar_saham = thousand_separator(properties.nilai_lembar_saham);
+    bool is_download_proposal_enabled = true;
 
     return
       HalamanTokoInheritedWidget(properties: properties, setState: setState,
@@ -379,12 +403,24 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
               properties.owner.username
           ),
           HalamanTokoKodeSisaPeriode(),
-          BorderedButtonIcon(
-            onPressed: (){},
-            icon: const FaIcon(FontAwesomeIcons.book),
-            label: const Text("Download Proposal"),
-            margin: BorderedContainer.get_margin_static(),
-          ),
+          (properties.alamat_proposal == null
+           || properties.alamat_proposal == "")?
+              const SizedBox(width:0, height:0) : StatefulBuilder(
+                  builder: (context, setState) =>
+                      BorderedButtonIcon(
+                        on_pressed: (){
+                          setState((){
+                            is_download_proposal_enabled = false;
+
+
+                          });
+                        },
+                        is_disabled: !is_download_proposal_enabled,
+                        icon: const FaIcon(FontAwesomeIcons.book),
+                        label: const Text("Download Proposal"),
+                        margin: BorderedContainer.get_margin_static(),
+                      )
+              ),
 
           HalamanTokoStatusContainer(
             status_verifikasi: HalamanTokoStatusContainer.get_widget_for_value(
@@ -728,6 +764,7 @@ class HalamanTokoKondisiSaham extends StatelessWidget {
     String nilai_terjual  = thousand_separator(prop.total_nilai_saham_terjual);
     String nilai_tersisa  = thousand_separator(prop.total_nilai_saham_tersisa);
 
+
     return Column(
       children: [
         HalamanTokoTabularData(
@@ -750,13 +787,13 @@ class HalamanTokoKondisiSaham extends StatelessWidget {
 
         Container(
           margin: EdgeInsets.only(top: 14, bottom: 7),
-          child: const ClipRRect(
+          child: ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(4)),
             child: LinearProgressIndicator(
               minHeight: 10,
               backgroundColor: Color.fromARGB(255, 212, 212, 212),
               color: Color.fromARGB(255, 13, 202, 240),
-              value: 0.59,
+              value: double.parse(persen_terjual)/100,
             ),
           ),
         ),
@@ -876,30 +913,31 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
 
 class BorderedButtonIcon extends StatelessWidget{
   final Function()? on_pressed;
+  final bool is_disabled;
   final Text label;
   final Widget icon;
   final EdgeInsets margin;
   final EdgeInsets padding;
   // final Border border;
 
-  const BorderedButtonIcon({Key? key,
-    @required Function()? onPressed,
-    Widget icon = const FaIcon(FontAwesomeIcons.book),
-    Text label = const Text("Download Proposal", textScaleFactor: 1.2),
+  BorderedButtonIcon({Key? key,
+    required this.on_pressed,
+    this.icon = const FaIcon(FontAwesomeIcons.book),
+    this.label = const Text("Download Proposal", textScaleFactor: 1.2),
     this.margin = const EdgeInsets.symmetric(vertical: 8.0, horizontal: 25.0),
     this.padding = const EdgeInsets.all(10.0),
-  }) : on_pressed = onPressed, icon=icon, label=label, super(key: key);
+    this.is_disabled = false,
+  }) : super(key: key);
 
 
   @override
   Widget build(BuildContext context) {
     return Container(
           child: ElevatedButton.icon(
-            onPressed: on_pressed,
+            onPressed: this.is_disabled? null:this.on_pressed,
             label: label,
             style: const ButtonStyle(
               alignment: Alignment.centerLeft,
-              /* TODO: bikin rounded corner kalau sempet */
             ),
             icon: Padding(
               child: icon,

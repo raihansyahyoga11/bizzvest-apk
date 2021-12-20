@@ -1,6 +1,5 @@
 import 'package:bizzvest/faq/api/api_faq.dart';
 import 'package:flutter/material.dart';
-
 import 'models/question.dart';
 
 late Future<List<Question>?> futureQuestion = fetchQuestion();
@@ -9,7 +8,6 @@ late Future<List<Question>?> futureQuestion = fetchQuestion();
 class FaqUtamaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    print(futureQuestion);
     return Scaffold(
       appBar: AppBar(title: Text('Frequently Ask Question')),
         body: SafeArea(

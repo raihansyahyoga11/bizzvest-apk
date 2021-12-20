@@ -17,11 +17,11 @@ Future<List<Question>?> fetchQuestion() async {
 }
 
 List<Question>? parseItem(String responseBody) {
-  final List<Question> items = [];
+  final List<Question> questions = [];
   final parsed = jsonDecode(responseBody) as List<dynamic>;
   for (var e in parsed) {
-    items.add(Question.fromJson(e));
+    questions.add(Question.fromJson(e));
   }
 
-  return items;
+  return questions;
 }

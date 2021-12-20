@@ -2,22 +2,36 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:basic_utils/basic_utils.dart';
 import 'package:bizzvest/halaman_toko/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared.dart';
+import 'package:bizzvest/halaman_toko/dependencies_related.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bizzvest/halaman_toko/user_account.dart';
 import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-
-void main() {
+void main() async {
+  await initialize();
   runApp(const HalamanToko(id:7));
 }
+
+
+
+
+Future<void> initialize() async {
+  await ensure_flutter_downloader_is_initialized();
+}
+
 
 
 class HalamanToko extends StatefulWidget{
@@ -49,9 +63,10 @@ class _HalamanTokoState extends State<HalamanToko> {
         if (snapshot.connectionState == ConnectionState.done){
           if (snapshot.hasError) {
             if (snapshot.error is TimeoutException){
-              if (timeout_retry_number < TIMEOUT_RETRY_LIMIT)
+              if (timeout_retry_number < TIMEOUT_RETRY_LIMIT) {
                 Future.delayed(Duration(seconds: 2+timeout_retry_number))
                     .then((value) => setState(() {timeout_retry_number += 1;}));
+              }
 
               return Container(
                 child: const Center(
@@ -408,12 +423,37 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
               const SizedBox(width:0, height:0) : StatefulBuilder(
                   builder: (context, setState) =>
                       BorderedButtonIcon(
-                        on_pressed: (){
-                          setState((){
-                            is_download_proposal_enabled = false;
+                        on_pressed: () async {
+
+                          // is_download_proposal_enabled = false;
+                          // setState((){});
+
+                          final download_url = CONSTANTS.protocol + CONSTANTS.server + properties.alamat_proposal!;
+                          Directory? extDir;
+
+                          final status = await Permission.storage.request();
+                          if (status.isGranted){
+
+                              extDir = (await getExternalStorageDirectory());
+                              if (extDir != null){
+                                String download_path = extDir.path;
+
+                                await FlutterDownloader.enqueue(
+                                  url: "https://png.pngtree.com/thumb_back/fw800/back_pic/03/91/36/7257dfa8e8e7297.jpg",
+                                  savedDir: download_path,
+                                  showNotification: true,
+                                  openFileFromNotification: true,
+                                );
 
 
-                          });
+                              }
+                            ;
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content:
+                                Text("Sorry, we couldn't download the requested file because we have no permission to read-write storage")
+                                ));
+                          }
                         },
                         is_disabled: !is_download_proposal_enabled,
                         icon: const FaIcon(FontAwesomeIcons.book),

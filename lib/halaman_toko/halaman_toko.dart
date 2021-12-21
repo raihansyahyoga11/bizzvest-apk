@@ -9,6 +9,8 @@ import 'package:basic_utils/basic_utils.dart';
 import 'package:bizzvest/halaman_toko/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared.dart';
 import 'package:bizzvest/halaman_toko/dependencies_related.dart';
+import 'package:bizzvest/halaman_toko/shared.dart';
+import 'package:bizzvest/halaman_toko/shared.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
@@ -167,42 +169,12 @@ class _HalamanTokoState extends State<HalamanToko> {
 
 
 class HalamanTokoWrapper extends StatelessWidget{
-  final Widget? child;
-  const HalamanTokoWrapper({this.child, Key? key}) : super(key: key);
+  final Widget child;
+  const HalamanTokoWrapper({required this.child, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Widget? temp_child = child;
-
-    temp_child ??= HalamanTokoBody(HalamanTokoProperties(
-      id: 1,
-      nama_merek: "Bizzvest",
-      nama_perusahaan: "PT. Bizzvest Indonesia",
-      images: [
-        Image.asset("src/img/img1.jpg"),
-        Image.asset("src/img/kecil.png"),
-        Image.asset("src/img/img3.jpg"),
-        Image.asset("src/img/profile.jpg"),
-      ],
-      status_verifikasi: "belum mengajukan tes tes tes",
-      tanggal_berakhir: "01 Jan 2024",
-
-      kode_saham: "RAZE",
-      sisa_waktu: "2 tahun",
-      periode_dividen: "12 bulan",
-      alamat: "jalan pepaya",
-      deskripsi: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel leo nunc. Etiam vitae ligula vitae arcu maximus tincidunt vitae et velit. Mauris velit quam, venenatis quis viverra ultrices, viverra sit amet purus. Curabitur nec tempus velit. Integer vehicula elit vel augue fringilla, vitae dignissim dui viverra",
-      alamat_proposal: "",
-      owner: UserAccount(
-        full_name: 'Kugel Blitz',
-        username: 'hzz',
-        photo_profile: Image.asset("src/img/profile.jpg"),
-      ),
-
-      nilai_lembar_saham: 400 * 1000,
-      jumlah_lembar_saham: 400 * 1000,
-      jumlah_lembar_saham_tersisa: 100 * 1000,
-    ));
+    Widget temp_child = child;
 
     return MaterialApp(
       theme: ThemeData(

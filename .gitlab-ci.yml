@@ -19,7 +19,7 @@ variables:
       - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
       - if [ ! -d "./flutter" ]; then git clone https://github.com/flutter/flutter.git -b beta --depth 1; ./flutter/bin/flutter channel beta; ./flutter/bin/flutter doctor; else echo "sudah ada"; fi
       - ./flutter/bin/flutter --no-color pub get
-      - ./flowder_fix.sh
+      - bash ./flowder_fix.sh
       - ls $ANDROID_HOME
       - echo $ANDROID_HOME
 

@@ -39,6 +39,7 @@ build:
 
   stage: build
   only:
+    - hlmn_toko
     - main
     - develop
     - merge_requests

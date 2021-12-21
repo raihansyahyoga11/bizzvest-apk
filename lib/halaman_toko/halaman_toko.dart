@@ -8,9 +8,6 @@ import 'dart:ui';
 import 'package:basic_utils/basic_utils.dart';
 import 'package:bizzvest/halaman_toko/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared.dart';
-import 'package:bizzvest/halaman_toko/dependencies_related.dart';
-import 'package:bizzvest/halaman_toko/shared.dart';
-import 'package:bizzvest/halaman_toko/shared.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,7 +23,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   await initialize();
-  runApp(const HalamanToko(id:7));
+  runApp(const HalamanToko(id:8));
 }
 
 
@@ -59,7 +56,7 @@ class _HalamanTokoState extends State<HalamanToko> {
             uri: CONSTANTS.get_server_URI(
                 CONSTANTS.halaman_toko_get_toko_json_path,
                 {'id': widget.id.toString()}
-            ));;
+            ));
         return ret;
       }(),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -110,14 +107,17 @@ class _HalamanTokoState extends State<HalamanToko> {
                   CONSTANTS.protocol + CONSTANTS.server + element));
             });
 
+            assert (resulting_json['is_curr_client_the_owner'] is int);
+
             return HalamanTokoWrapper(
                 child: HalamanTokoBody(
                     HalamanTokoProperties(
                       id: widget.id,
+                      show_edit_option: resulting_json['is_curr_client_the_owner'] == 1,
                       nama_merek: resulting_json['nama_merek'],
                       nama_perusahaan: resulting_json['nama_perusahaan'],
                       images: images,
-                      status_verifikasi: resulting_json['status_verifikasi'].toString(),
+                      status_verifikasi: resulting_json['status_verifikasi'],
                       tanggal_berakhir: resulting_json['tanggal_berakhir'],
 
                       kode_saham: resulting_json['kode_saham'],
@@ -201,11 +201,12 @@ class HalamanTokoWrapper extends StatelessWidget{
 
 class HalamanTokoProperties{
   final int id;
+  final bool show_edit_option;
   final String nama_merek;
   final String nama_perusahaan;
   final List<Image> images;
 
-  final String status_verifikasi;
+  final int status_verifikasi;
   final String tanggal_berakhir;
   final String kode_saham;
   final String sisa_waktu;
@@ -230,6 +231,7 @@ class HalamanTokoProperties{
 
   HalamanTokoProperties({
     required this.id,
+    required this.show_edit_option,
     required this.nama_merek,
     required this.nama_perusahaan,
     required this.images,
@@ -261,6 +263,7 @@ class HalamanTokoProperties{
     }
     HalamanTokoProperties o = other;
     return nama_merek == o.nama_merek
+        && id == o.id
         && deskripsi == o.deskripsi
         && alamat_proposal == o.alamat_proposal
         && alamat == o.alamat
@@ -281,6 +284,7 @@ class HalamanTokoProperties{
   @override
   int get hashCode =>
       nama_merek.hashCode
+      ^ id.hashCode
       ^ nama_perusahaan.hashCode
       ^ alamat.hashCode
       ^ deskripsi.hashCode
@@ -407,7 +411,6 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
 
                           final download_url = CONSTANTS.protocol + CONSTANTS.server + properties.alamat_proposal!;
                           Directory? extDir;
-                          String download_dir;
 
                           final status = await Permission.storage.request();
                           if (status.isGranted){
@@ -439,9 +442,7 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
                                   deleteOnCancel: true,
                                 );
 
-
-                                final download_state =
-                                    await Flowder.download(download_url, configuration);
+                                await Flowder.download(download_url, configuration);
                               }
                             ;
                           }else{
@@ -459,7 +460,7 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
               ),
 
           HalamanTokoStatusContainer(
-            status_verifikasi: HalamanTokoStatusContainer.get_widget_for_value(
+            status_verifikasi: HalamanTokoStatusContainer.get_widget_according_to_status(
                 properties.status_verifikasi
             ),
             tanggal_berakhir: properties.tanggal_berakhir,
@@ -664,6 +665,22 @@ class HalamanTokoStatusContainer extends StatelessWidget{
     required this.jumlah_lembar_saham,
     required this.nilai_lembar_saham
   });
+
+  static Widget get_widget_according_to_status(int status){
+    switch (status){
+      case 0:
+        return get_widget_for_value("belum mengajukan verifikasi");
+      case 1:
+        return get_widget_for_value("menunggu verifikasi");
+      case 2:
+        return get_widget_for_value("verifikasi ditolak");
+      case 3:
+        return get_widget_for_value("terverifikasi");
+      default:
+        assert (false);
+        return get_widget_for_value("unknown error");
+    }
+  }
 
   static Widget get_widget_for_label(String str){
     return Container(

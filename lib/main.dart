@@ -1,4 +1,4 @@
-import 'package:bizzvest/daftar_toko/main.dart';
+import 'package:bizzvest/daftar_toko/daftar_toko.dart';
 import 'package:bizzvest/halaman_toko/add_toko.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko.dart';
 import 'package:device_preview/device_preview.dart';

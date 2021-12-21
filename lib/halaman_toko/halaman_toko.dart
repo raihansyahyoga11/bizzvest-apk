@@ -3,20 +3,22 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:basic_utils/basic_utils.dart';
 import 'package:bizzvest/halaman_toko/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared.dart';
 import 'package:bizzvest/halaman_toko/dependencies_related.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bizzvest/halaman_toko/user_account.dart';
 import 'package:http/http.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -29,7 +31,6 @@ void main() async {
 
 
 Future<void> initialize() async {
-  await ensure_flutter_downloader_is_initialized();
 }
 
 
@@ -110,6 +111,7 @@ class _HalamanTokoState extends State<HalamanToko> {
             return HalamanTokoWrapper(
                 child: HalamanTokoBody(
                     HalamanTokoProperties(
+                      id: widget.id,
                       nama_merek: resulting_json['nama_merek'],
                       nama_perusahaan: resulting_json['nama_perusahaan'],
                       images: images,
@@ -173,6 +175,7 @@ class HalamanTokoWrapper extends StatelessWidget{
     Widget? temp_child = child;
 
     temp_child ??= HalamanTokoBody(HalamanTokoProperties(
+      id: 1,
       nama_merek: "Bizzvest",
       nama_perusahaan: "PT. Bizzvest Indonesia",
       images: [
@@ -225,6 +228,7 @@ class HalamanTokoWrapper extends StatelessWidget{
 }
 
 class HalamanTokoProperties{
+  final int id;
   final String nama_merek;
   final String nama_perusahaan;
   final List<Image> images;
@@ -253,6 +257,7 @@ class HalamanTokoProperties{
 
 
   HalamanTokoProperties({
+    required this.id,
     required this.nama_merek,
     required this.nama_perusahaan,
     required this.images,
@@ -424,28 +429,47 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
                   builder: (context, setState) =>
                       BorderedButtonIcon(
                         on_pressed: () async {
-
-                          // is_download_proposal_enabled = false;
-                          // setState((){});
+                          setState((){
+                            is_download_proposal_enabled = false;
+                          });
 
                           final download_url = CONSTANTS.protocol + CONSTANTS.server + properties.alamat_proposal!;
                           Directory? extDir;
+                          String download_dir;
 
                           final status = await Permission.storage.request();
                           if (status.isGranted){
+                              extDir = await getExternalStorageDirectory();
 
-                              extDir = (await getExternalStorageDirectory());
                               if (extDir != null){
-                                String download_path = extDir.path;
+                                String download_path = '${extDir.path}/proposal ${properties.id} ${properties.nama_merek}.pdf';
 
-                                await FlutterDownloader.enqueue(
-                                  url: "https://png.pngtree.com/thumb_back/fw800/back_pic/03/91/36/7257dfa8e8e7297.jpg",
-                                  savedDir: download_path,
-                                  showNotification: true,
-                                  openFileFromNotification: true,
+                                final configuration = DownloaderUtils(
+                                  progressCallback: (current, total) {
+                                    if (kDebugMode) {
+                                      final progress = (current / total) * 100;
+                                      print('Downloading: $progress');
+                                    }
+                                  },
+                                  file: File(download_path),
+                                  progress: ProgressImplementation(),
+                                  onDone: () {
+                                    OpenFile.open(download_path).then((val){
+                                      if (kDebugMode)
+                                        print("opened");
+                                    });
+                                    if (kDebugMode)
+                                      print("done: " + download_path);
+                                    setState((){
+                                      is_download_proposal_enabled = true;
+                                    });
+                                  },
+                                  deleteOnCancel: true,
                                 );
 
 
+                                final download_state =
+                                    await Flowder.download(download_url, configuration);
                               }
                             ;
                           }else{

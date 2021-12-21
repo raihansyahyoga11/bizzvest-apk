@@ -30,8 +30,9 @@ dependencies:
   # persistent_bottom_nav_bar: any
   flutter:
     sdk: flutter
-  flutter_downloader: ^1.7.1
+  flowder: ^0.2.0
   path_provider: ^2.0.8
+  open_file: ^3.2.1
   permission_handler: ^8.3.0
 
   font_awesome_flutter: 9.2.0

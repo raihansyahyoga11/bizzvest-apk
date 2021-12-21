@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
 
 class CONSTANTS{
-  static final String server = "10.0.2.2:8000";
-  // static final String server = "192.168.43.117:8000";
+  static final String server = (kReleaseMode)? "bizzvest.herokuapp.com" : "10.0.2.2:8000";
+  // static final String server = (kReleaseMode)? "bizzvest.herokuapp.com" : "192.168.43.117:8000";
   static final String protocol = "http://";
 
   static final String login_path = "/start-web/login";

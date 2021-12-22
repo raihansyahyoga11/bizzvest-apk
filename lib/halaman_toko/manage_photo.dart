@@ -3,13 +3,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
-import 'package:http/http.dart' as http;
+import 'package:cookie_jar/cookie_jar.dart';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
-import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 
 
@@ -58,13 +57,19 @@ class _ManagePhotoBody extends State<ManagePhotoBody>{
   final String nama_merek;
   final String nama_perusahaan;
   final GlobalKey<ScaffoldState> _scaffold_key = GlobalKey<ScaffoldState>();
-  _ManagePhotoBody(this.nama_merek, this.nama_perusahaan);
 
   final ImagePicker _picker = ImagePicker();
-
   List<Widget> photo_items = [];
 
-  Authentication authentication = Authentication();
+  Authentication authentication = Authentication(cookie_jar: CookieJar());
+
+  _ManagePhotoBody(this.nama_merek, this.nama_perusahaan){
+    Future.value().then((value) async {
+      authentication = await Authentication.create();
+    });
+  }
+
+
 
   fetch_photo_from_server(BuildContext context, [int id=1]) async {
     var res = await authentication.get(
@@ -76,9 +81,6 @@ class _ManagePhotoBody extends State<ManagePhotoBody>{
       )
     );
 
-    print("fetch");
-    print(res.request?.url);
-    print(res.body);
     if (res.statusCode == 200){
       var result = json.decode(res.body) as List<dynamic>;
       print("fetch success");
@@ -118,7 +120,7 @@ class _ManagePhotoBody extends State<ManagePhotoBody>{
       // login
       () async {
         print("logging in");
-        http.Response resp = await authentication.login("hzzz", "1122");
+        var resp = await authentication.login("hzzz", "1122");
         if (resp.statusCode != 200 && resp.statusCode != 302){
             print("login error: " + resp.statusCode.toString());
             print(resp.body);

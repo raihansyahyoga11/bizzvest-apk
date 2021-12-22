@@ -7,18 +7,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart';
 
 import '../manage_photo.dart';
 
 
 
-Authentication authenticated_user = Authentication();
+Authentication? authenticated_user = null;
 Future<Authentication> get_authentication() async{
-  if (!authenticated_user.is_logged_in){
-    await authenticated_user.login("hzzz", "1122");
+  authenticated_user ??= await Authentication.create();
+  if (!authenticated_user!.is_logged_in){
+    await authenticated_user!.login("hzz", "1122");
   }
-  return authenticated_user;
+  return authenticated_user!;
 }
 
 

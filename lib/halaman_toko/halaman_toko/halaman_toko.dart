@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:basic_utils/basic_utils.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_body.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzvest/halaman_toko/shared/user_account.dart';
-import 'package:http/http.dart';
 
 import 'halaman_toko_properties.dart';
 
@@ -71,21 +71,33 @@ class _HalamanTokoState extends State<HalamanToko> {
             Future.error(
               snapshot.error!,
               snapshot.stackTrace);
-          }
-
-          if (snapshot.hasError
-              || snapshot.data == null
-              || is_bad_response(snapshot.data!)){
 
             return Container(
-              child: const Center(
+                child: const Center(
+                  child: Text(
+                    "An internal error has occurred. ",
+                    textDirection: TextDirection.ltr,
+                  ),
+                )
+            );
+          }
+
+          if (snapshot.data == null
+              || is_bad_response(snapshot.data!)){
+
+            Response? temp = snapshot.data;
+
+            return Container(
+              child: Center(
                 child: Text(
-                    "An error has occurred. ",
+                    "An external error has occurred. "
+        + ((snapshot.data!=null)? (temp!.reasonPhrase ?? "null") : "snapshot data is null"),
                     textDirection: TextDirection.ltr,
                 ),
               ),
             );
           }else{
+            print("test");
             Response response = snapshot.data!;
             Map<String, dynamic> resulting_json = json.decode(response.body);
             List<dynamic> images_str = resulting_json['images'];
@@ -98,6 +110,8 @@ class _HalamanTokoState extends State<HalamanToko> {
             });
 
             assert (resulting_json['is_curr_client_the_owner'] is int);
+            print("curr owner ${resulting_json['is_curr_client_the_owner'] }");
+            print("your acc ${resulting_json['your_acc'] }");
 
             return HalamanTokoWrapper(
                 child: HalamanTokoBody(

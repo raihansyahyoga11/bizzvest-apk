@@ -8,6 +8,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -222,7 +223,6 @@ class ColouredHeaderText extends StatelessWidget{
     this.textScaleFactor = 1.0,
   });
 
-
   TextStyle get_text_style(){
     return TextStyle(
       color: color,
@@ -239,8 +239,40 @@ class ColouredHeaderText extends StatelessWidget{
       textScaleFactor: textScaleFactor,
     );
   }
-
 }
+
+
+class ColouredHeaderTextSpan extends TextSpan{
+  final Color color;
+  final FontWeight fontWeight;
+  final String fontFamily;
+  final String text;
+  final List<InlineSpan>? children;
+  final GestureRecognizer? recognizer;
+  final context;
+
+  ColouredHeaderTextSpan({
+    required this.text,
+    this.context,
+    this.children,
+    this.recognizer,
+    this.color = const Color.fromARGB(255, 7, 130, 159),
+    this.fontWeight = FontWeight.bold,
+    this.fontFamily = "Quicksand",
+  }) : super(
+  text: text,
+  children: children,
+  recognizer: recognizer,
+  style: TextStyle(
+    color: color,
+    fontWeight: fontWeight,
+    fontFamily: fontFamily,
+  )
+  );
+}
+
+
+
 
 
 
@@ -618,10 +650,34 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
             margin: EdgeInsets.all(15),
           ),
 
-          ColouredHeaderText(
-            "Deskripsi",
+          RichText(
+            text: TextSpan(
+              style: DefaultTextStyle.of(context).style,  // apply default-nya
+              children: [
+                ColouredHeaderTextSpan(
+                  text: 'Deskripsi',
+                  context: context,
+                ),
+
+                TextSpan(text: "  " ),
+
+                if (prop.show_edit_option)
+                    WidgetSpan(
+                      alignment: PlaceholderAlignment.middle,
+                      child: GestureDetector(
+                        child: Icon(
+                          FontAwesomeIcons.pencilAlt,
+                          size: 18,
+                          color: ColouredHeaderTextSpan(text:"").color,
+                          // color: Color.fromARGB(255, 22, 149, 0),
+                        ),
+                      ),
+                    ),
+              ]
+            ),
             textScaleFactor: headerTextScaleFactor,
           ),
+
           Container(  // dummy container
             margin: EdgeInsets.all(4),
           ),

@@ -8,9 +8,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:bizzvest/halaman_toko/configurations.dart';
-import "package:bizzvest/halaman_toko/halaman_toko.dart";
-import 'package:bizzvest/halaman_toko/shared.dart';
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
+import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
 
 
 void main() {
@@ -67,9 +67,9 @@ class _ManagePhotoBody extends State<ManagePhotoBody>{
   Authentication authentication = Authentication();
 
   fetch_photo_from_server(BuildContext context, [int id=1]) async {
-    var res = await authentication.session.get(
-      uri: CONSTANTS.getServerUri(
-        CONSTANTS.halaman_toko_get_json_path,
+    var res = await authentication.get(
+      uri: CONSTANTS.get_server_URI(
+        CONSTANTS.halaman_toko_get_toko_json_path,
         {
           'id': id.toString()
         }

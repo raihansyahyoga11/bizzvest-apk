@@ -30,13 +30,19 @@ dependencies:
   # persistent_bottom_nav_bar: any
   flutter:
     sdk: flutter
+  flowder: ^0.2.0
+  path_provider: ^2.0.8
+  open_file: ^3.2.1
+  permission_handler: ^8.3.0
+
   font_awesome_flutter: 9.2.0
   image_picker: ^0.8.4+4
   http: ^0.13.4
   basic_utils: ^3.9.0
   carousel_slider: ^4.0.0
   persistent_bottom_nav_bar: ^4.0.2
-
+  device_preview: ^1.0.0
+  flutter_layout_grid: ^1.0.0
 
 
 

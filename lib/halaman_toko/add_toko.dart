@@ -60,7 +60,7 @@ class AddTokoMaterial extends StatelessWidget{
       ),
 
       home: SafeArea(child: Scaffold(
-        body:SingleChildScrollView(
+        body:const SingleChildScrollView(
           padding: EdgeInsets.only(bottom: 10),
           child: AddTokoBody("Bizzvest", "PT. Bizzvest Indonesia"),
         ),
@@ -245,7 +245,7 @@ class _AddTokoBody extends State<AddTokoBody>{
                         enabled: true,
                         textAlign: TextAlign.justify,
                         minLines: 4,
-                        maxLines: 20,
+                        maxLines: 8,
                         decoration: text_form_field_input_decoration.copyWith(
                           labelText: "Deskripsi",
                         ),

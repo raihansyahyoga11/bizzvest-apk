@@ -618,7 +618,10 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
             margin: EdgeInsets.all(15),
           ),
 
-          ColouredHeaderText("Deskripsi", textScaleFactor: headerTextScaleFactor,),
+          ColouredHeaderText(
+            "Deskripsi",
+            textScaleFactor: headerTextScaleFactor,
+          ),
           Container(  // dummy container
             margin: EdgeInsets.all(4),
           ),

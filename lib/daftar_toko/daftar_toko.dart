@@ -3,10 +3,30 @@ import 'package:flutter/material.dart';
 import 'widgets/main_drawer.dart';
 import './toko_data.dart';
 import './models/toko.dart';
+import './card_toko.dart';
+import './search_toko.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
-  runApp(MyApp());
+  runApp(DaftarTokoMaterial());
 }
+
+Future<void> fetchData() async {
+    const url = 'http://127.0.0.1:8000/daftar-toko/json';
+    try {
+      final response = await http.get(Uri.parse(url));
+      //print(response.body);
+      Map<String, dynamic> extractedData = jsonDecode(response.body);
+      extractedData.forEach((key, val) {
+        print(val);
+      });
+    } catch (error) {
+      print(error);
+    }
+  }
+
 
 List<CustomCard> getTokoWidget(List<Toko> daftarToko){
   List<CustomCard> list = [];
@@ -25,8 +45,8 @@ List<Text> getTokoWidgetText(List<Toko> daftarToko, String str){
 }
 
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class DaftarTokoMaterial extends StatelessWidget {
+  const DaftarTokoMaterial({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

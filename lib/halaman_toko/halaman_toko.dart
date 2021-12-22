@@ -1,26 +1,182 @@
+// ignore_for_file: non_constant_identifier_names
+
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:basic_utils/basic_utils.dart';
+import 'package:bizzvest/halaman_toko/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flowder/flowder.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bizzvest/halaman_toko/user_account.dart';
+import 'package:http/http.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-
-
-
-void main() {
-  runApp(const HalamanTokoMaterial());
+void main() async {
+  await initialize();
+  runApp(const HalamanToko(id:8));
 }
 
-class HalamanTokoMaterial extends StatelessWidget{
 
-  const HalamanTokoMaterial({Key? key}) : super(key: key);
+
+
+Future<void> initialize() async {
+}
+
+
+
+class HalamanToko extends StatefulWidget{
+  final int id;
+  const HalamanToko({this.id=1, Key? key}) : super(key: key);
+
+  @override
+  State<HalamanToko> createState() => _HalamanTokoState();
+}
+
+class _HalamanTokoState extends State<HalamanToko> {
+  static const int TIMEOUT_RETRY_LIMIT = 5;
+  int timeout_retry_number = 0;
+
+
+  @override
+  Widget build(BuildContext context){
+    return FutureBuilder(
+      future: () async {
+        var authentication = await get_authentication();
+        Response? ret = await authentication.get(
+            uri: CONSTANTS.get_server_URI(
+                CONSTANTS.halaman_toko_get_toko_json_path,
+                {'id': widget.id.toString()}
+            ));
+        return ret;
+      }(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done){
+          if (snapshot.hasError) {
+            if (snapshot.error is TimeoutException){
+              if (timeout_retry_number < TIMEOUT_RETRY_LIMIT) {
+                Future.delayed(Duration(seconds: 2+timeout_retry_number))
+                    .then((value) => setState(() {timeout_retry_number += 1;}));
+              }
+
+              return Container(
+                child: const Center(
+                  child: Text(
+                    "Request timed out",
+                    textDirection: TextDirection.ltr,
+                  ),
+                ),
+              );
+            }
+
+            Future.error(
+              snapshot.error!,
+              snapshot.stackTrace);
+          }
+
+          if (snapshot.hasError
+              || snapshot.data == null
+              || is_bad_response(snapshot.data!)){
+
+            return Container(
+              child: const Center(
+                child: Text(
+                    "An error has occurred. ",
+                    textDirection: TextDirection.ltr,
+                ),
+              ),
+            );
+          }else{
+            Response response = snapshot.data!;
+            Map<String, dynamic> resulting_json = json.decode(response.body);
+            List<dynamic> images_str = resulting_json['images'];
+            List<Image> images = [];
+
+            images_str.forEach((dynamic element_dynamic) {
+              String element = element_dynamic;
+              images.add(Image.network(
+                  CONSTANTS.protocol + CONSTANTS.server + element));
+            });
+
+            assert (resulting_json['is_curr_client_the_owner'] is int);
+
+            return HalamanTokoWrapper(
+                child: HalamanTokoBody(
+                    HalamanTokoProperties(
+                      id: widget.id,
+                      show_edit_option: resulting_json['is_curr_client_the_owner'] == 1,
+                      nama_merek: resulting_json['nama_merek'],
+                      nama_perusahaan: resulting_json['nama_perusahaan'],
+                      images: images,
+                      status_verifikasi: resulting_json['status_verifikasi'],
+                      tanggal_berakhir: resulting_json['tanggal_berakhir'],
+
+                      kode_saham: resulting_json['kode_saham'],
+                      sisa_waktu: resulting_json['sisa_waktu'],
+                      periode_dividen: resulting_json['periode_dividen'].toString() + " bulan",
+                      alamat: resulting_json['alamat'],
+                      deskripsi: resulting_json['deskripsi'],
+                      alamat_proposal: resulting_json['alamat_proposal'],
+                      owner: UserAccount(
+                        full_name: resulting_json['owner']['full_name'],
+                        username: resulting_json['owner']['username'],
+                        photo_profile: Image.network(
+                            CONSTANTS.protocol + CONSTANTS.server
+                                + resulting_json['owner']['photo_profile']
+                        ),
+                      ),
+
+                      nilai_lembar_saham: resulting_json['nilai_lembar_saham'],
+                      jumlah_lembar_saham: resulting_json['jumlah_lembar_saham'],
+                      jumlah_lembar_saham_tersisa: resulting_json['jumlah_lembar_saham_tersisa'],
+                    )
+                )
+            );
+          }
+        }else{
+          return Container(
+            child: Center(
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Center(
+                        child: CircularProgressIndicator()
+                    ),
+                    SizedBox(width:0, height:20),
+                    Center(
+                        child: Text(
+                          "Fetching company information",
+                          textDirection: TextDirection.ltr,)
+                    ),
+                  ]
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+}
+
+
+class HalamanTokoWrapper extends StatelessWidget{
+  final Widget child;
+  const HalamanTokoWrapper({required this.child, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    Widget temp_child = child;
 
+    return MaterialApp(
       theme: ThemeData(
         textTheme: Theme.of(context).textTheme.apply(
           fontSizeFactor: 1.3,
@@ -30,35 +186,9 @@ class HalamanTokoMaterial extends StatelessWidget{
       ),
 
       home: SafeArea(child: Scaffold(
-        body:SingleChildScrollView(
+        body: SingleChildScrollView(
           padding: const EdgeInsets.only(bottom: 10),
-          child: HalamanTokoBody(HalamanTokoProperties(
-            nama_merek: "Bizzvest",
-            nama_perusahaan: "PT. Bizzvest Indonesia",
-            images: [
-              Image.asset("src/img/img1.jpg"),
-              Image.asset("src/img/kecil.png"),
-              Image.asset("src/img/img3.jpg"),
-              Image.asset("src/img/profile.jpg"),
-            ],
-            status_verifikasi: "belum mengajukan tes tes tes",
-            tanggal_berakhir: "01 Jan 2024",
-
-            kode_saham: "RAZE",
-            sisa_waktu: "2 tahun",
-            periode_dividen: "12 bulan",
-            alamat: "jalan pepaya",
-            deskripsi: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel leo nunc. Etiam vitae ligula vitae arcu maximus tincidunt vitae et velit. Mauris velit quam, venenatis quis viverra ultrices, viverra sit amet purus. Curabitur nec tempus velit. Integer vehicula elit vel augue fringilla, vitae dignissim dui viverra",
-            owner: UserAccount(
-              full_name: 'Kugel Blitz',
-              username: 'hzz',
-              photo_profile: Image.asset("src/img/profile.jpg"),
-            ),
-
-            nilai_lembar_saham: 400 * 1000,
-            jumlah_lembar_saham: 400 * 1000,
-            jumlah_lembar_saham_tersisa: 100 * 1000,
-          )),
+          child: temp_child,
         ),
         backgroundColor: (Colors.lightBlue[200])!,
 
@@ -70,17 +200,20 @@ class HalamanTokoMaterial extends StatelessWidget{
 }
 
 class HalamanTokoProperties{
+  final int id;
+  final bool show_edit_option;
   final String nama_merek;
   final String nama_perusahaan;
   final List<Image> images;
 
-  final String status_verifikasi;
+  final int status_verifikasi;
   final String tanggal_berakhir;
   final String kode_saham;
   final String sisa_waktu;
   final String periode_dividen;
   final String alamat;
   final String deskripsi;
+  final String? alamat_proposal;
 
   final UserAccount owner;
 
@@ -97,6 +230,8 @@ class HalamanTokoProperties{
 
 
   HalamanTokoProperties({
+    required this.id,
+    required this.show_edit_option,
     required this.nama_merek,
     required this.nama_perusahaan,
     required this.images,
@@ -104,6 +239,7 @@ class HalamanTokoProperties{
     required this.tanggal_berakhir,
     required this.alamat,
     required this.deskripsi,
+    required this.alamat_proposal,
     required this.owner,
 
     required this.kode_saham,
@@ -127,7 +263,9 @@ class HalamanTokoProperties{
     }
     HalamanTokoProperties o = other;
     return nama_merek == o.nama_merek
+        && id == o.id
         && deskripsi == o.deskripsi
+        && alamat_proposal == o.alamat_proposal
         && alamat == o.alamat
         && nama_perusahaan == o.nama_perusahaan
         && images == o.images
@@ -146,9 +284,11 @@ class HalamanTokoProperties{
   @override
   int get hashCode =>
       nama_merek.hashCode
+      ^ id.hashCode
       ^ nama_perusahaan.hashCode
       ^ alamat.hashCode
       ^ deskripsi.hashCode
+      ^ alamat_proposal.hashCode
       ^ images.hashCode
       ^ status_verifikasi.hashCode
       ^ tanggal_berakhir.hashCode
@@ -167,7 +307,7 @@ class HalamanTokoInheritedWidget extends InheritedWidget{
   final HalamanTokoProperties properties;
   final Function(Function() func)? setState;
 
-  HalamanTokoInheritedWidget({
+  const HalamanTokoInheritedWidget({
     required this.properties,
     required Widget child,
     required this.setState,
@@ -207,6 +347,7 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
   Widget build(BuildContext context) {
     String jumlah_lembar_saham = thousand_separator(properties.jumlah_lembar_saham);
     String nilai_lembar_saham = thousand_separator(properties.nilai_lembar_saham);
+    bool is_download_proposal_enabled = true;
 
     return
       HalamanTokoInheritedWidget(properties: properties, setState: setState,
@@ -220,14 +361,14 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
             AspectRatio(
                 aspectRatio: 1 / 1,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(7)),
+                  borderRadius: const BorderRadius.all(Radius.circular(7)),
                   child: CarouselSlider.builder(
                     itemCount: properties.images.length,
                     options: CarouselOptions(
                       aspectRatio: 1/1,
                       viewportFraction: 1,
                       autoPlay: (properties.images.length > 1),
-                      autoPlayInterval: Duration(seconds: 4),
+                      autoPlayInterval: const Duration(seconds: 4),
                     ),
 
 
@@ -258,15 +399,68 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
               properties.owner.username
           ),
           HalamanTokoKodeSisaPeriode(),
-          BorderedButtonIcon(
-            onPressed: (){},
-            icon: FaIcon(FontAwesomeIcons.book),
-            label: Text("Download Proposal"),
-            margin: BorderedContainer.get_margin_static(),
-          ),
+          (properties.alamat_proposal == null
+           || properties.alamat_proposal == "")?
+              const SizedBox(width:0, height:0) : StatefulBuilder(
+                  builder: (context, setState) =>
+                      BorderedButtonIcon(
+                        on_pressed: () async {
+                          setState((){
+                            is_download_proposal_enabled = false;
+                          });
+
+                          final download_url = CONSTANTS.protocol + CONSTANTS.server + properties.alamat_proposal!;
+                          Directory? extDir;
+
+                          final status = await Permission.storage.request();
+                          if (status.isGranted){
+                              extDir = await getExternalStorageDirectory();
+
+                              if (extDir != null){
+                                String download_path = '${extDir.path}/proposal ${properties.id} ${properties.nama_merek}.pdf';
+
+                                final configuration = DownloaderUtils(
+                                  progressCallback: (current, total) {
+                                    if (kDebugMode) {
+                                      final progress = (current / total) * 100;
+                                      print('Downloading: $progress');
+                                    }
+                                  },
+                                  file: File(download_path),
+                                  progress: ProgressImplementation(),
+                                  onDone: () {
+                                    OpenFile.open(download_path).then((val){
+                                      if (kDebugMode)
+                                        print("opened");
+                                    });
+                                    if (kDebugMode)
+                                      print("done: " + download_path);
+                                    setState((){
+                                      is_download_proposal_enabled = true;
+                                    });
+                                  },
+                                  deleteOnCancel: true,
+                                );
+
+                                await Flowder.download(download_url, configuration);
+                              }
+                            ;
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content:
+                                Text("Sorry, we couldn't download the requested file because we have no permission to read-write storage")
+                                ));
+                          }
+                        },
+                        is_disabled: !is_download_proposal_enabled,
+                        icon: const FaIcon(FontAwesomeIcons.book),
+                        label: const Text("Download Proposal"),
+                        margin: BorderedContainer.get_margin_static(),
+                      )
+              ),
 
           HalamanTokoStatusContainer(
-            status_verifikasi: HalamanTokoStatusContainer.get_widget_for_value(
+            status_verifikasi: HalamanTokoStatusContainer.get_widget_according_to_status(
                 properties.status_verifikasi
             ),
             tanggal_berakhir: properties.tanggal_berakhir,
@@ -290,7 +484,7 @@ class HalamanTokoHeaderTitle extends StatelessWidget{
   final String nama_merek;
   final String nama_perusahaan;
 
-  HalamanTokoHeaderTitle(this.nama_merek, this.nama_perusahaan);
+  const HalamanTokoHeaderTitle(this.nama_merek, this.nama_perusahaan);
 
   @override
   Widget build(BuildContext context) {
@@ -364,7 +558,7 @@ class ColouredHeaderText extends StatelessWidget{
 
 
 class HalamanTokoOwnerContainer extends StatelessWidget{
-  final Widget foto_profile;
+  final Image foto_profile;
   final String nama_lengkap;
   final String username;
 
@@ -378,14 +572,18 @@ class HalamanTokoOwnerContainer extends StatelessWidget{
         children: [
           Container(
             width: 100,
-            padding: EdgeInsets.all(4),
-            margin: EdgeInsets.all(1),
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                // constraints: BoxConstraints(minWidth: 100, maxWidth: 200),
-                child: ClipOval(
-                  child: foto_profile,
+            padding: const EdgeInsets.all(4),
+            margin: const EdgeInsets.all(1),
+            child: ClipOval(
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: foto_profile.image,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -397,24 +595,20 @@ class HalamanTokoOwnerContainer extends StatelessWidget{
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    child: SelectableText(
-                      nama_lengkap,
-                      textScaleFactor: 1.35,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 14, 99, 223),
-                      ),
+                  SelectableText(
+                    nama_lengkap,
+                    textScaleFactor: 1.35,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 14, 99, 223),
                     ),
                   ),
-                  Container(
-                    child: SelectableText(
-                      "@" + username,
-                      textScaleFactor: 1.1,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.normal,
-                        color: Color.fromARGB(255, 108, 117, 125),
-                      ),
+                  SelectableText(
+                    "@" + username,
+                    textScaleFactor: 1.1,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.normal,
+                      color: Color.fromARGB(255, 108, 117, 125),
                     ),
                   ),
                 ],
@@ -429,6 +623,8 @@ class HalamanTokoOwnerContainer extends StatelessWidget{
 
 
 class HalamanTokoKodeSisaPeriode extends StatelessWidget{
+  const HalamanTokoKodeSisaPeriode({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -436,9 +632,9 @@ class HalamanTokoKodeSisaPeriode extends StatelessWidget{
 
     return BorderedContainer(
         Container(
-            padding: EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.symmetric(vertical: 5),
             child: GridView.count(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 3,
               mainAxisSpacing: 0,
               childAspectRatio: 2.8/1,
@@ -463,12 +659,28 @@ class HalamanTokoStatusContainer extends StatelessWidget{
   final String jumlah_lembar_saham;
   final String nilai_lembar_saham;
 
-  HalamanTokoStatusContainer({
+  const HalamanTokoStatusContainer({
     required this.status_verifikasi,
     required this.tanggal_berakhir,
     required this.jumlah_lembar_saham,
     required this.nilai_lembar_saham
   });
+
+  static Widget get_widget_according_to_status(int status){
+    switch (status){
+      case 0:
+        return get_widget_for_value("belum mengajukan verifikasi");
+      case 1:
+        return get_widget_for_value("menunggu verifikasi");
+      case 2:
+        return get_widget_for_value("verifikasi ditolak");
+      case 3:
+        return get_widget_for_value("terverifikasi");
+      default:
+        assert (false);
+        return get_widget_for_value("unknown error");
+    }
+  }
 
   static Widget get_widget_for_label(String str){
     return Container(
@@ -605,6 +817,7 @@ class HalamanTokoKondisiSaham extends StatelessWidget {
     String nilai_terjual  = thousand_separator(prop.total_nilai_saham_terjual);
     String nilai_tersisa  = thousand_separator(prop.total_nilai_saham_tersisa);
 
+
     return Column(
       children: [
         HalamanTokoTabularData(
@@ -627,13 +840,13 @@ class HalamanTokoKondisiSaham extends StatelessWidget {
 
         Container(
           margin: EdgeInsets.only(top: 14, bottom: 7),
-          child: const ClipRRect(
+          child: ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(4)),
             child: LinearProgressIndicator(
               minHeight: 10,
               backgroundColor: Color.fromARGB(255, 212, 212, 212),
               color: Color.fromARGB(255, 13, 202, 240),
-              value: 0.59,
+              value: double.parse(persen_terjual)/100,
             ),
           ),
         ),
@@ -753,30 +966,31 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
 
 class BorderedButtonIcon extends StatelessWidget{
   final Function()? on_pressed;
+  final bool is_disabled;
   final Text label;
   final Widget icon;
   final EdgeInsets margin;
   final EdgeInsets padding;
   // final Border border;
 
-  const BorderedButtonIcon({Key? key,
-    @required Function()? onPressed,
-    Widget icon = const FaIcon(FontAwesomeIcons.book),
-    Text label = const Text("Download Proposal", textScaleFactor: 1.2),
+  BorderedButtonIcon({Key? key,
+    required this.on_pressed,
+    this.icon = const FaIcon(FontAwesomeIcons.book),
+    this.label = const Text("Download Proposal", textScaleFactor: 1.2),
     this.margin = const EdgeInsets.symmetric(vertical: 8.0, horizontal: 25.0),
     this.padding = const EdgeInsets.all(10.0),
-  }) : on_pressed = onPressed, icon=icon, label=label, super(key: key);
+    this.is_disabled = false,
+  }) : super(key: key);
 
 
   @override
   Widget build(BuildContext context) {
     return Container(
           child: ElevatedButton.icon(
-            onPressed: on_pressed,
+            onPressed: this.is_disabled? null:this.on_pressed,
             label: label,
             style: const ButtonStyle(
               alignment: Alignment.centerLeft,
-              /* TODO: bikin rounded corner kalau sempet */
             ),
             icon: Padding(
               child: icon,

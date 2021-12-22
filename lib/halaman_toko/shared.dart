@@ -1,6 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 import 'manage_photo.dart';
+import 'configurations.dart';
+
+
+
+Authentication authenticated_user = Authentication();
+Future<Authentication> get_authentication() async{
+  if (!authenticated_user.is_logged_in){
+    await authenticated_user.login("hzzz", "1122");
+  }
+  return authenticated_user;
+}
+
+
+bool is_bad_status_code(int status_code){
+  return status_code < 200 || status_code >= 400;
+}
+
+bool is_bad_response(Response response){
+  return is_bad_status_code(response.statusCode);
+}
+
 
 class ImageTile extends StatelessWidget{
   Image img;

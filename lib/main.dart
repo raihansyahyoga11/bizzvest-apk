@@ -13,7 +13,7 @@ void main() {
     DevicePreview(
       enabled: false,
       // enabled: !kReleaseMode,
-      builder: (context) => const DaftarTokoMaterial(),
+      builder: (context) => const HalamanTokoMaterial(),
     )
   );
 }

@@ -67,9 +67,9 @@ class _ManagePhotoBody extends State<ManagePhotoBody>{
   Authentication authentication = Authentication();
 
   fetch_photo_from_server(BuildContext context, [int id=1]) async {
-    var res = await authentication.session.get(
-      uri: CONSTANTS.getServerUri(
-        CONSTANTS.halaman_toko_get_json_path,
+    var res = await authentication.get(
+      uri: CONSTANTS.get_server_URI(
+        CONSTANTS.halaman_toko_get_toko_json_path,
         {
           'id': id.toString()
         }

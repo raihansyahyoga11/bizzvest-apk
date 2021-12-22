@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 
 import '../widgets/main_drawer.dart';
+import 'EditingPage.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -39,7 +40,9 @@ class MapScreenState extends State<ProfilePage>
   Widget build(BuildContext context) {
     
     return new Scaffold(
-        drawer: MainDrawer(),
+      appBar: AppBar(
+        title: Text("My Profile"),
+      ),
         body: new Container(
           color: Colors.white,
           child: new ListView(
@@ -51,29 +54,24 @@ class MapScreenState extends State<ProfilePage>
                     color: Colors.white,
                     child: new Column(
                       children: <Widget>[
+
+
                         Padding(
-                            padding: EdgeInsets.only(left: 20.0, top: 20.0),
-                            child: new Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                new Icon(
-                                  Icons.arrow_back_ios,
-                                  color: Colors.black,
-                                  size: 22.0,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 25.0),
-                                  child: new Text('PROFILE',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20.0,
-                                          fontFamily: 'RobotoCondensed',
-                                          color: Colors.black)),
-                                )
-                              ],
-                            )),
+                          padding: EdgeInsets.only(top:30, left:230.0, right:25, bottom:20),
+                          child: Container(
+                            width: 80.0,
+                            height: 20.0,
+                            child: Container(
+                            decoration: new BoxDecoration(
+                              color: Colors.red,
+                                  shape: BoxShape.rectangle,
+                                    )),
+                            ),
+                        ),
+
+
                         Padding(
-                          padding: EdgeInsets.only(top: 20.0),
+                          padding: EdgeInsets.only(top: 5.0),
                           child: new Stack(fit: StackFit.loose, children: <Widget>[
                             new Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,8 +84,7 @@ class MapScreenState extends State<ProfilePage>
                                       shape: BoxShape.circle,
                                       image: new DecorationImage(
                                         image: new AssetImage(
-                                            'lib/assets/yoga.jpg'),
-                                            
+                                            'src/img/yoga.jpg'),   
                                         fit: BoxFit.cover,
                                       ),
                                     )),
@@ -98,15 +95,18 @@ class MapScreenState extends State<ProfilePage>
                                 child: new Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
+                                  
                                     new CircleAvatar(
                                       backgroundColor: Colors.blue,
                                       radius: 25.0,
-                                      child: new Icon(
-                                        Icons.camera_alt,
-                                        color: Colors.white,
-                                        // onPtr
-                                      ),
-                                      
+                                      child: 
+                                      // new Icon(
+                                      //   Icons.edit,
+                                      //   color: Colors.white,
+                                    
+                                      //   // onPtr
+                                      // ),
+                                      _status ? _getEditIcon() : new Container()
                                     )
                                   ],
                                 )),
@@ -127,8 +127,9 @@ class MapScreenState extends State<ProfilePage>
 
                           Padding(
                               padding: EdgeInsets.only(
-                                  left: 70.0, right: 25.0, top: 0.0, bottom:45.0),
-                              child: new Row(
+                                  left: 30.0, right: 25.0, top: 0.0, bottom:45.0),
+                              child: 
+                              new Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
@@ -155,15 +156,8 @@ class MapScreenState extends State<ProfilePage>
                                       ),
                                     ],
                                   ),
-                                  new Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      _status ? _getEditIcon() : new Container()
-                                    ],
-                                  )
-                                ],
-                              )),
+                                
+                                ])),
 
                           Padding(
                               padding: EdgeInsets.only(
@@ -413,7 +407,7 @@ class MapScreenState extends State<ProfilePage>
                                   ),
                                 ],
                               )),
-                          !_status ? _getActionButtons() : new Container(),
+                          // !_status ? _getActionButtons() : new Container(),
                         ],
                       ),
                     ),
@@ -422,89 +416,91 @@ class MapScreenState extends State<ProfilePage>
               ),
             ],
           ),
-        ));
+        ),
+         drawer: MainDrawer(),
+        );
   }
 
-  @override
-  void dispose() {
-    // Clean up the controller when the Widget is disposed
-    myFocusNode.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   // Clean up the controller when the Widget is disposed
+  //   myFocusNode.dispose();
+  //   super.dispose();
+  // }
 
-  Widget _getActionButtons() {
-    return Padding(
-      padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 45.0),
-      child: new Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(right: 10.0),
-              child: Container(
-                  child: new RaisedButton(
-                    child: new Text("Simpan perubahan"),
-                    textColor: Colors.white,
-                    color: Colors.green,
-                    onPressed: () => setState(() {
-                        _status = true;
-                        FocusScope.of(context).requestFocus(new FocusNode());
-                        showDialog <Void> (context: context, 
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                    title: const Text('Selamat!'),
-                    content: const Text('Profil telah tersimpan'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          //  .push(new MaterialPageRoute(builder: (context) => ProfilePage()));
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  );
-                              });
-                         }),
+  // Widget _getActionButtons() {
+  //   return Padding(
+  //     padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 45.0),
+  //     child: new Row(
+  //       mainAxisSize: MainAxisSize.max,
+  //       mainAxisAlignment: MainAxisAlignment.start,
+  //       children: <Widget>[
+  //         Expanded(
+  //           child: Padding(
+  //             padding: EdgeInsets.only(right: 10.0),
+  //             child: Container(
+  //                 child: new RaisedButton(
+  //                   child: new Text("Simpan perubahan"),
+  //                   textColor: Colors.white,
+  //                   color: Colors.green,
+  //                   onPressed: () => setState(() {
+  //                       _status = true;
+  //                       FocusScope.of(context).requestFocus(new FocusNode());
+  //                       showDialog <Void> (context: context, 
+  //                             builder: (BuildContext context) {
+  //                               return AlertDialog(
+  //                   title: const Text('Selamat!'),
+  //                   content: const Text('Profil telah tersimpan'),
+  //                   actions: <Widget>[
+  //                     TextButton(
+  //                       onPressed: () {
+  //                         Navigator.pop(context);
+  //                         //  .push(new MaterialPageRoute(builder: (context) => ProfilePage()));
+  //                       },
+  //                       child: const Text('OK'),
+  //                     ),
+  //                   ],
+  //                 );
+  //                             });
+  //                        }),
                          
                     
-                    shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(20.0)),
-                  )),
-            ),
-            flex: 2,
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: 10.0),
-              child: Container(
-                  child: new RaisedButton(
-                    child: new Text("Reset profil"),
-                    textColor: Colors.white,
-                    color: Colors.red,
-                    onPressed: () => setState(() {
-                      _status = true;
-                      FocusScope.of(context).requestFocus(new FocusNode());
-                      namaLengkap.clear();
-                      username.clear();
-                      jenisKelamin.clear();
-                      email.clear();
-                      NoHandphone.clear();
-                      alamat.clear();
-                      deskripsi.clear();
-                    }),
+  //                   shape: new RoundedRectangleBorder(
+  //                       borderRadius: new BorderRadius.circular(20.0)),
+  //                 )),
+  //           ),
+  //           flex: 2,
+  //         ),
+  //         Expanded(
+  //           child: Padding(
+  //             padding: EdgeInsets.only(left: 10.0),
+  //             child: Container(
+  //                 child: new RaisedButton(
+  //                   child: new Text("Reset profil"),
+  //                   textColor: Colors.white,
+  //                   color: Colors.red,
+  //                   onPressed: () => setState(() {
+  //                     _status = true;
+  //                     FocusScope.of(context).requestFocus(new FocusNode());
+  //                     namaLengkap.clear();
+  //                     username.clear();
+  //                     jenisKelamin.clear();
+  //                     email.clear();
+  //                     NoHandphone.clear();
+  //                     alamat.clear();
+  //                     deskripsi.clear();
+  //                   }),
                       
-                    shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(20.0)),
-                  )),
-            ),
-            flex: 2,
-          ),
-        ],
-      ),
-    );
-  }
+  //                   shape: new RoundedRectangleBorder(
+  //                       borderRadius: new BorderRadius.circular(20.0)),
+  //                 )),
+  //           ),
+  //           flex: 2,
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _getEditIcon() {
     return new GestureDetector(
@@ -514,13 +510,17 @@ class MapScreenState extends State<ProfilePage>
         child: new Icon(
           Icons.edit,
           color: Colors.white,
-          size: 16.0,
+          size: 25,
         ),
       ),
       onTap: () {
-        setState(() {
-          _status = false;
-        });
+        Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EditingPage()),
+            );
+        // setState(() {
+        //   _status = false;
+        // });
       },
     );
   }

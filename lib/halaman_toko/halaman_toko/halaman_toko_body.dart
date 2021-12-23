@@ -6,6 +6,7 @@ import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_edit_description
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -460,6 +461,10 @@ class HalamanTokoStatusContainer extends StatelessWidget{
 
   static Function() on_user_tap_upload_proposal(BuildContext context) {
     return () async {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
 
     };
   }

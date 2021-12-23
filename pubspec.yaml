@@ -38,6 +38,7 @@ dependencies:
   dio: ^4.0.4
   dio_cookie_manager: ^2.0.0
   cookie_jar: ^3.0.1
+  file_picker: ^4.3.0
 
   font_awesome_flutter: 9.2.0
   image_picker: ^0.8.4+4

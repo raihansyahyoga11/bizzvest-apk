@@ -8,60 +8,107 @@ void main() async {
 }
 
 
-
-class HalamanTokoEditDeskripsi extends StatelessWidget{
+class HalamanTokoEditDeskripsiMaterialApp extends StatelessWidget{
   final String initial_description;
+  final String? current_description;
 
-
-  const HalamanTokoEditDeskripsi({Key? key, required this.initial_description}) : super(key: key);
+  const HalamanTokoEditDeskripsiMaterialApp({Key? key,
+    required this.initial_description,
+    this.current_description,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         theme: ThemeData(
         textTheme: Theme.of(context).textTheme.apply(
-          fontSizeFactor: 1.3,
-          fontSizeDelta: 2.0,
-          fontFamily: 'Tisan'
-        ),
-      ),
-      home:
-        SafeArea(
+        fontSizeFactor: 1.3,
+        fontSizeDelta: 2.0,
+        fontFamily: 'Tisan'
+    ),
+    ),
+    home: HalamanTokoEditDeskripsi(
+      initial_description: initial_description,
+      current_description: current_description,
+    ),
+    );
+  }
+}
+
+
+class HalamanTokoEditDeskripsi extends StatelessWidget{
+  late GlobalKey<ScaffoldState> scaffold_key;
+  final String initial_description;
+  final String? current_description;
+
+  HalamanTokoEditDeskripsi({Key? key,
+    required this.initial_description,
+    GlobalKey<ScaffoldState>? scaffold_key,
+    this.current_description,
+  }) : super(key: key){
+
+    scaffold_key ??= GlobalKey<ScaffoldState>();
+    this.scaffold_key = scaffold_key;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("HalamanTokoEditDeskripsi");
+    return SafeArea(
           child: Scaffold(
+            key: scaffold_key,
             backgroundColor: (Colors.lightBlue[200])!,
             floatingActionButton: null,
-            body: _HalamanTokoEditDeskripsiBody(initial_description: initial_description),
+            body: _HalamanTokoEditDeskripsiBody(
+              initial_description: initial_description,
+              current_description: current_description,
+            ),
           ),
-        ),
-    );
+        );
   }
 
 }
 
 
 class _HalamanTokoEditDeskripsiBody extends StatefulWidget{
+  final description_textfield_controller = TextEditingController();
+  final GlobalKey<FormState> form_key = GlobalKey<FormState>();
   final String initial_description;
-  _HalamanTokoEditDeskripsiBody({Key? key, required this.initial_description}) : super(key: key);
+  final String? current_description;
+
+  _HalamanTokoEditDeskripsiBody({Key? key, 
+    required this.initial_description,
+    this.current_description,
+  }) : super(key: key){
+
+
+    description_textfield_controller.text = initial_description;
+
+    if (current_description != null)
+      description_textfield_controller.text = current_description!;
+  }
 
   @override
-  State<_HalamanTokoEditDeskripsiBody> createState() => _HalamanTokoEditDeskripsiBodyState(initial_description: initial_description);
+  State<_HalamanTokoEditDeskripsiBody> createState() => _HalamanTokoEditDeskripsiBodyState(
+  );
 }
 
 
 class _HalamanTokoEditDeskripsiBodyState extends State<_HalamanTokoEditDeskripsiBody> {
-  String initial_description;
+  get description_textfield_controller{
+    return widget.description_textfield_controller;
+  }
+  get form_key{
+    return widget.form_key;
+  }
 
-  final description_textfield_controller = TextEditingController();
-  final GlobalKey<FormState> form_key = GlobalKey<FormState>();
   double margin_size = 0;
   AutovalidateMode auto_validate = AutovalidateMode.disabled;
 
-  _HalamanTokoEditDeskripsiBodyState({required this.initial_description}){
-    description_textfield_controller.text = initial_description;
-  }
 
   @override
   Widget build(BuildContext context) {
+    print("_HalamanTokoEditDeskripsiBodyState");
     return WillPopScope(
       onWillPop: () async {
 
@@ -74,7 +121,7 @@ class _HalamanTokoEditDeskripsiBodyState extends State<_HalamanTokoEditDeskripsi
             }),
             SimplePromptAction("Discard", () {
               Navigator.pop(context);
-              Navigator.pop(context, initial_description);
+              Navigator.pop(context, null);
             }),
             SimplePromptAction("Save", () {
               Navigator.pop(context);
@@ -130,8 +177,8 @@ class _HalamanTokoEditDeskripsiBodyState extends State<_HalamanTokoEditDeskripsi
                                   auto_validate = AutovalidateMode.disabled;
                                 });
 
-                                Navigator.of(context).pop(description_textfield_controller.text);
-
+                                Navigator.pop(context,
+                                    description_textfield_controller.text);
                               }else{
                                 setState(() {
                                   margin_size = 30;

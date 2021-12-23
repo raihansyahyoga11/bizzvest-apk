@@ -81,16 +81,17 @@ class AddTokoBody extends StatefulWidget{
   const AddTokoBody(this.nama_merek, this.nama_perusahaan, {Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return _AddTokoBody(nama_merek, nama_perusahaan);
-  }
+  State<StatefulWidget> createState() => _AddTokoBody();
 
 }
 
 class _AddTokoBody extends State<AddTokoBody>{
-  final String nama_merek;
-  final String nama_perusahaan;
-  _AddTokoBody(this.nama_merek, this.nama_perusahaan);
+  get nama_merek{
+    return widget.nama_merek;
+  }
+  get nama_perusahaan{
+    return widget.nama_perusahaan;
+  }
 
   final GlobalKey<FormState> form_key = GlobalKey<FormState>();
   DateTime picked_date = DateTime.now().add(Duration(days:1));

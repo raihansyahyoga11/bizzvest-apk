@@ -46,16 +46,17 @@ class ManagePhotoBody extends StatefulWidget{
   ManagePhotoBody(this.nama_merek, this.nama_perusahaan, {Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return _ManagePhotoBody(nama_merek, nama_perusahaan);
-  }
-
-
+  State<StatefulWidget> createState() => _ManagePhotoBody();
 }
 
 class _ManagePhotoBody extends State<ManagePhotoBody>{
-  final String nama_merek;
-  final String nama_perusahaan;
+  get nama_merek{
+    return widget.nama_merek;
+  }
+  get nama_perusahaan{
+    return widget.nama_perusahaan;
+  }
+
   final GlobalKey<ScaffoldState> _scaffold_key = GlobalKey<ScaffoldState>();
 
   final ImagePicker _picker = ImagePicker();
@@ -63,7 +64,7 @@ class _ManagePhotoBody extends State<ManagePhotoBody>{
 
   Authentication authentication = Authentication(cookie_jar: CookieJar());
 
-  _ManagePhotoBody(this.nama_merek, this.nama_perusahaan){
+  _ManagePhotoBody(){
     Future.value().then((value) async {
       authentication = await Authentication.create();
     });
@@ -73,8 +74,8 @@ class _ManagePhotoBody extends State<ManagePhotoBody>{
 
   fetch_photo_from_server(BuildContext context, [int id=1]) async {
     var res = await authentication.get(
-      uri: CONSTANTS.get_server_URI(
-        CONSTANTS.halaman_toko_get_toko_json_path,
+      uri: NETW_CONST.get_server_URI(
+        NETW_CONST.halaman_toko_get_toko_json_path,
         {
           'id': id.toString()
         }
@@ -93,7 +94,7 @@ class _ManagePhotoBody extends State<ManagePhotoBody>{
 
           int index = photo_items.length;
           photo_items.add(
-                ImageTile(Image.network("http://" + CONSTANTS.server + map['url']),
+                ImageTile(Image.network("http://" + NETW_CONST.server + map['url']),
                 key: UniqueKey(),
 
                 on_double_tap: (){

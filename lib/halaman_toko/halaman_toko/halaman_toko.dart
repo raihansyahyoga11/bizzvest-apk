@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:basic_utils/basic_utils.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_body.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
@@ -17,7 +16,7 @@ import 'halaman_toko_properties.dart';
 
 void main() async {
   await initialize();
-  runApp(const HalamanToko(id:8));
+  runApp(HalamanTokoMaterialApp(id:8));
 }
 
 
@@ -25,15 +24,38 @@ Future<void> initialize() async {
 }
 
 
+class HalamanTokoMaterialApp extends StatelessWidget{
+  final int id;
+  const HalamanTokoMaterialApp({this.id=1, Key? key}) : super(key: key);
+
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        textTheme: Theme.of(context).textTheme.apply(
+            fontSizeFactor: 1.3,
+            fontSizeDelta: 2.0,
+            fontFamily: 'Tisan'
+        ),
+      ),
+
+      home: HalamanToko(id: id),
+    );
+  }
+}
+
+
 class HalamanToko extends StatefulWidget{
   final int id;
-  const HalamanToko({this.id=1, Key? key}) : super(key: key);
+  HalamanToko({this.id=1, Key? key}) : super(key: key);
 
   @override
   State<HalamanToko> createState() => _HalamanTokoState();
 }
 
 class _HalamanTokoState extends State<HalamanToko> {
+  final GlobalKey<ScaffoldState> scaffold_key = GlobalKey<ScaffoldState>();
   static const int TIMEOUT_RETRY_LIMIT = 5;
   int timeout_retry_number = 0;
 
@@ -43,8 +65,8 @@ class _HalamanTokoState extends State<HalamanToko> {
       future: () async {
         var authentication = await get_authentication();
         Response? ret = await authentication.get(
-            uri: CONSTANTS.get_server_URI(
-                CONSTANTS.halaman_toko_get_toko_json_path,
+            uri: NETW_CONST.get_server_URI(
+                NETW_CONST.halaman_toko_get_toko_json_path,
                 {'id': widget.id.toString()}
             ));
         return ret;
@@ -52,7 +74,8 @@ class _HalamanTokoState extends State<HalamanToko> {
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.connectionState == ConnectionState.done){
           if (snapshot.hasError) {
-            if (snapshot.error is TimeoutException){
+            if (Session.is_timeout_error(snapshot.error)){
+
               if (timeout_retry_number < TIMEOUT_RETRY_LIMIT) {
                 Future.delayed(Duration(seconds: 2+timeout_retry_number))
                     .then((value) => setState(() {timeout_retry_number += 1;}));
@@ -106,7 +129,7 @@ class _HalamanTokoState extends State<HalamanToko> {
             images_str.forEach((dynamic element_dynamic) {
               String element = element_dynamic;
               images.add(Image.network(
-                  CONSTANTS.protocol + CONSTANTS.server + element));
+                  NETW_CONST.protocol + NETW_CONST.server + element));
             });
 
             assert (resulting_json['is_curr_client_the_owner'] is int);
@@ -114,8 +137,11 @@ class _HalamanTokoState extends State<HalamanToko> {
             print("your acc ${resulting_json['your_acc'] }");
 
             return HalamanTokoWrapper(
+                scaffold_key: scaffold_key,
                 child: HalamanTokoBody(
-                    HalamanTokoProperties(
+                  scaffold_key: scaffold_key,
+                  csrf_token: resulting_json['csrf_token'],
+                  properties: HalamanTokoProperties(
                       id: widget.id,
                       show_edit_option: resulting_json['is_curr_client_the_owner'] == 1,
                       nama_merek: resulting_json['nama_merek'],
@@ -134,7 +160,7 @@ class _HalamanTokoState extends State<HalamanToko> {
                         full_name: resulting_json['owner']['full_name'],
                         username: resulting_json['owner']['username'],
                         photo_profile: Image.network(
-                            CONSTANTS.protocol + CONSTANTS.server
+                            NETW_CONST.protocol + NETW_CONST.server
                                 + resulting_json['owner']['photo_profile']
                         ),
                       ),
@@ -146,22 +172,27 @@ class _HalamanTokoState extends State<HalamanToko> {
                 )
             );
           }
+
+
         }else{
-          return Container(
-            child: Center(
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Center(
-                        child: CircularProgressIndicator()
-                    ),
-                    SizedBox(width:0, height:20),
-                    Center(
-                        child: Text(
-                          "Fetching company information",
-                          textDirection: TextDirection.ltr,)
-                    ),
-                  ]
+          return Scaffold(
+            key: scaffold_key,
+            body: Container(
+              child: Center(
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Center(
+                          child: CircularProgressIndicator()
+                      ),
+                      SizedBox(width:0, height:20),
+                      Center(
+                          child: Text(
+                            "Fetching company information",
+                            textDirection: TextDirection.ltr,)
+                      ),
+                    ]
+                ),
               ),
             ),
           );
@@ -173,45 +204,41 @@ class _HalamanTokoState extends State<HalamanToko> {
 
 
 class HalamanTokoWrapper extends StatelessWidget{
+  final GlobalKey<ScaffoldState>? scaffold_key;
   final Widget child;
-  const HalamanTokoWrapper({required this.child, Key? key}) : super(key: key);
+  HalamanTokoWrapper({required this.child, this.scaffold_key, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Widget temp_child = child;
 
-    return MaterialApp(
-      theme: ThemeData(
-        textTheme: Theme.of(context).textTheme.apply(
-          fontSizeFactor: 1.3,
-          fontSizeDelta: 2.0,
-          fontFamily: 'Tisan'
-        ),
+    return SafeArea(
+        child: Scaffold(
+          key: scaffold_key,
+          backgroundColor: (Colors.lightBlue[200])!,
+          floatingActionButton: null,
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: temp_child,
+          ),
       ),
-
-      home: SafeArea(child: Scaffold(
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: temp_child,
-        ),
-        backgroundColor: (Colors.lightBlue[200])!,
-
-        floatingActionButton: null,
-      ),
-      ),
-    );
+      );
   }
 }
 
 
 class HalamanTokoInheritedWidget extends InheritedWidget{
+  final GlobalKey<ScaffoldState>? scaffold_key;
   final HalamanTokoProperties properties;
-  final Function(Function() func)? setState;
+  final Function(Function() func) setState;
+  final String csrf_token;
 
   const HalamanTokoInheritedWidget({
     required this.properties,
     required Widget child,
     required this.setState,
+    required this.scaffold_key,
+    required this.csrf_token,
     Key? key,
   }) : super(key: key, child: child);
 

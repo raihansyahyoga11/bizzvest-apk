@@ -61,10 +61,12 @@ class _HalamanTokoState extends State<HalamanToko> {
 
   @override
   Widget build(BuildContext context){
+    Function(Function()) refresh_page = setState;
+
     return FutureBuilder(
       future: () async {
         var authentication = await get_authentication();
-        Response? ret = await authentication.get(
+        ReqResponse? ret = await authentication.get(
             uri: NETW_CONST.get_server_URI(
                 NETW_CONST.halaman_toko_get_toko_json_path,
                 {'id': widget.id.toString()}
@@ -108,7 +110,7 @@ class _HalamanTokoState extends State<HalamanToko> {
           if (snapshot.data == null
               || is_bad_response(snapshot.data!)){
 
-            Response? temp = snapshot.data;
+            ReqResponse? temp = snapshot.data;
 
             return Container(
               child: Center(
@@ -121,7 +123,7 @@ class _HalamanTokoState extends State<HalamanToko> {
             );
           }else{
             print("test");
-            Response response = snapshot.data!;
+            ReqResponse response = snapshot.data!;
             Map<String, dynamic> resulting_json = json.decode(response.body);
             List<dynamic> images_str = resulting_json['images'];
             List<Image> images = [];
@@ -139,11 +141,12 @@ class _HalamanTokoState extends State<HalamanToko> {
             return HalamanTokoWrapper(
                 scaffold_key: scaffold_key,
                 child: HalamanTokoBody(
-                  scaffold_key: scaffold_key,
-                  csrf_token: resulting_json['csrf_token'],
-                  properties: HalamanTokoProperties(
+                    refresh_page: refresh_page,
+                    scaffold_key: scaffold_key,
+                    csrf_token: resulting_json['csrf_token'],
+                    properties: HalamanTokoProperties(
                       id: widget.id,
-                      show_edit_option: resulting_json['is_curr_client_the_owner'] == 1,
+                      is_curr_client_the_owner: resulting_json['is_curr_client_the_owner'] == 1,
                       nama_merek: resulting_json['nama_merek'],
                       nama_perusahaan: resulting_json['nama_perusahaan'],
                       images: images,
@@ -155,7 +158,7 @@ class _HalamanTokoState extends State<HalamanToko> {
                       periode_dividen: resulting_json['periode_dividen'].toString() + " bulan",
                       alamat: resulting_json['alamat'],
                       deskripsi: resulting_json['deskripsi'],
-                      alamat_proposal: resulting_json['alamat_proposal'],
+                      proposal_server_path: resulting_json['alamat_proposal'],
                       owner: UserAccount(
                         full_name: resulting_json['owner']['full_name'],
                         username: resulting_json['owner']['username'],
@@ -228,12 +231,14 @@ class HalamanTokoWrapper extends StatelessWidget{
 
 
 class HalamanTokoInheritedWidget extends InheritedWidget{
+  final Function(Function()) refresh_page;
   final GlobalKey<ScaffoldState>? scaffold_key;
   final HalamanTokoProperties properties;
   final Function(Function() func) setState;
   final String csrf_token;
 
   const HalamanTokoInheritedWidget({
+    required this.refresh_page,
     required this.properties,
     required Widget child,
     required this.setState,
@@ -255,4 +260,26 @@ class HalamanTokoInheritedWidget extends InheritedWidget{
   }
 }
 
+
+class HalamanTokoRefreshInheritedWidget extends InheritedWidget{
+  final Function(Function() func) refresh;
+
+  const HalamanTokoRefreshInheritedWidget({
+    required Widget child,
+    required this.refresh,
+    Key? key,
+  }) : super(key: key, child: child);
+
+  static HalamanTokoRefreshInheritedWidget of(BuildContext context){
+    final HalamanTokoRefreshInheritedWidget? ret
+    = context.dependOnInheritedWidgetOfExactType<HalamanTokoRefreshInheritedWidget>();
+    assert (ret != null, 'HalamanTokoRefresh is not found in the context');
+    return ret!;
+  }
+
+  @override
+  bool updateShouldNotify(covariant HalamanTokoInheritedWidget old) {
+    return false;
+  }
+}
 

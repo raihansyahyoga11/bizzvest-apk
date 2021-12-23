@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:io';
 import 'dart:ui';
 
@@ -6,6 +8,7 @@ import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_edit_description
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:file_picker/file_picker.dart';
 import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,6 +25,7 @@ import 'halaman_toko_properties.dart';
 
 
 class HalamanTokoBody extends StatefulWidget{
+  Function(Function()) refresh_page;
   GlobalKey<ScaffoldState>? scaffold_key;
   final HalamanTokoProperties properties;
   final String csrf_token;
@@ -29,6 +33,7 @@ class HalamanTokoBody extends StatefulWidget{
   HalamanTokoBody({
     required this.properties,
     required this.csrf_token,
+    required this.refresh_page,
     Key? key,
     this.scaffold_key,
   }) : super(key: key);
@@ -50,134 +55,144 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
 
     return
       HalamanTokoInheritedWidget(
+          refresh_page: widget.refresh_page,
           properties: properties,
           setState: setState,
           scaffold_key: widget.scaffold_key,
           csrf_token: widget.csrf_token,
 
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+          child: Builder(builder: (context){
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
 
-              HalamanTokoHeaderTitle(properties.nama_merek, properties.nama_perusahaan),
+                HalamanTokoHeaderTitle(properties.nama_merek, properties.nama_perusahaan),
 
-              BorderedContainer(
-                AspectRatio(
-                    aspectRatio: 1 / 1,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(7)),
-                      child: CarouselSlider.builder(
-                        itemCount: properties.images.length,
-                        options: CarouselOptions(
-                          aspectRatio: 1/1,
-                          viewportFraction: 1,
-                          autoPlay: (properties.images.length > 1),
-                          autoPlayInterval: const Duration(seconds: 4),
+                BorderedContainer(
+                  AspectRatio(
+                      aspectRatio: 1 / 1,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(7)),
+                        child: CarouselSlider.builder(
+                          itemCount: properties.images.length,
+                          options: CarouselOptions(
+                            aspectRatio: 1/1,
+                            viewportFraction: 1,
+                            autoPlay: (properties.images.length > 1),
+                            autoPlayInterval: const Duration(seconds: 4),
+                          ),
+
+
+                          itemBuilder: (context, index, realIndex) {
+                            return ImageTile(
+                              properties.images[index],
+                              inner_wrapper: (context, image){
+                                return Container(
+                                  child: AspectRatio(aspectRatio: 1/1,
+                                    child: image,),
+                                );
+                              },
+                              outter_wrapper: (context, image){
+                                return image;
+                              },
+                            );
+                          },
+
                         ),
-
-
-                        itemBuilder: (context, index, realIndex) {
-                          return ImageTile(
-                            properties.images[index],
-                            inner_wrapper: (context, image){
-                              return Container(
-                                child: AspectRatio(aspectRatio: 1/1,
-                                  child: image,),
-                              );
-                            },
-                            outter_wrapper: (context, image){
-                              return image;
-                            },
-                          );
-                        },
-
-                      ),
-                    )
-                ),
-              ),
-              HalamanTokoOwnerContainer(
-                  properties.owner.photo_profile,
-                  properties.owner.full_name,
-                  properties.owner.username
-              ),
-              HalamanTokoKodeSisaPeriode(),
-              (properties.alamat_proposal == null
-                  || properties.alamat_proposal == "")?
-              const SizedBox(width:0, height:0) : StatefulBuilder(
-                  builder: (context, setState) =>
-                      BorderedButtonIcon(
-                        on_pressed: () async {
-                          setState((){
-                            is_download_proposal_enabled = false;
-                          });
-
-                          final download_url = NETW_CONST.protocol + NETW_CONST.server + properties.alamat_proposal!;
-                          Directory? extDir;
-
-                          final status = await Permission.storage.request();
-                          if (status.isGranted){
-                            extDir = await getExternalStorageDirectory();
-
-                            if (extDir != null){
-                              String download_path = '${extDir.path}/proposal ${properties.id} ${properties.nama_merek}.pdf';
-
-                              final configuration = DownloaderUtils(
-                                progressCallback: (current, total) {
-                                  if (kDebugMode) {
-                                    final progress = (current / total) * 100;
-                                    print('Downloading: $progress');
-                                  }
-                                },
-                                file: File(download_path),
-                                progress: ProgressImplementation(),
-                                onDone: () {
-                                  OpenFile.open(download_path).then((val){
-                                    if (kDebugMode)
-                                      print("opened");
-                                  });
-                                  if (kDebugMode)
-                                    print("done: " + download_path);
-                                  setState((){
-                                    is_download_proposal_enabled = true;
-                                  });
-                                },
-                                deleteOnCancel: true,
-                              );
-
-                              await Flowder.download(download_url, configuration);
-                            }
-                            ;
-                          }else{
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content:
-                                Text("Sorry, we couldn't download the requested file because we have no permission to read-write storage")
-                                ));
-                          }
-                        },
-                        is_disabled: !is_download_proposal_enabled,
-                        icon: const FaIcon(FontAwesomeIcons.book),
-                        label: const Text("Download Proposal"),
-                        margin: BorderedContainer.get_margin_static(),
                       )
-              ),
-
-              HalamanTokoStatusContainer(
-                status_verifikasi: HalamanTokoStatusContainer.get_widget_according_to_status(
-                    properties.status_verifikasi, context
+                  ),
                 ),
-                tanggal_berakhir: properties.tanggal_berakhir,
-                jumlah_lembar_saham: jumlah_lembar_saham,
-                nilai_lembar_saham: nilai_lembar_saham,
-              ),
+                HalamanTokoOwnerContainer(
+                    properties.owner.photo_profile,
+                    properties.owner.full_name,
+                    properties.owner.username
+                ),
+                HalamanTokoKodeSisaPeriode(),
+                (properties.proposal_server_path == null
+                    || properties.proposal_server_path == "")?
+                const SizedBox(width:0, height:0) : StatefulBuilder(
+                    builder: (context, setState) =>
+                        BorderedButtonIcon(
+                          on_pressed: () async {
+                            setState((){
+                              is_download_proposal_enabled = false;
+                            });
 
-              BorderedContainer(
-                  HalamanTokoKondisiSaham()
-              ),
-              BorderedContainer(
-                  HalamanTokoAlamatDeskripsi()
-              )
-            ],
-          )
+                            HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
+                            HalamanTokoProperties properties = inh_widg.properties;
+                            Directory? extDir;
+                            // harus di deklarasikan ulang setiap kali di-klik, sebab bisa aja pengguna sudah
+                            // mengupload file baru tanpa me-refresh (tutup app lalu buka lagi).
+                            // Oleh karena itu, setiap mau download, linknya harus diupdate
+                            final download_url = NETW_CONST.protocol
+                                + NETW_CONST.server
+                                + properties.proposal_server_path!;
+
+                            final status = await Permission.storage.request();
+                            if (status.isGranted){
+                              extDir = await getExternalStorageDirectory();
+
+                              if (extDir != null){
+                                String download_path = '${extDir.path}/proposal ${properties.id} ${properties.nama_merek}.pdf';
+
+                                final configuration = DownloaderUtils(
+                                  progressCallback: (current, total) {
+                                    if (kDebugMode) {
+                                      final progress = (current / total) * 100;
+                                      print('Downloading: $progress');
+                                    }
+                                  },
+                                  file: File(download_path),
+                                  progress: ProgressImplementation(),
+                                  onDone: () {
+                                    OpenFile.open(download_path).then((val){
+                                      if (kDebugMode)
+                                        print("opened");
+                                    });
+                                    if (kDebugMode)
+                                      print("done: " + download_path);
+                                    setState((){
+                                      is_download_proposal_enabled = true;
+                                    });
+                                  },
+                                  deleteOnCancel: true,
+                                );
+
+                                await Flowder.download(download_url, configuration);
+                              }
+                              ;
+                            }else{
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content:
+                                  Text("Sorry, we couldn't download the requested file because we have no permission to read-write storage")
+                                  ));
+                            }
+                          },
+                          is_disabled: !is_download_proposal_enabled,
+                          icon: const FaIcon(FontAwesomeIcons.book),
+                          label: const Text("Download Proposal"),
+                          margin: BorderedContainer.get_margin_static(),
+                        )
+                ),
+
+                HalamanTokoStatusContainer(
+                  status_verifikasi: HalamanTokoStatusContainer.get_widget_according_to_status(
+                      properties.status_verifikasi, context
+                  ),
+                  tanggal_berakhir: properties.tanggal_berakhir,
+                  jumlah_lembar_saham: jumlah_lembar_saham,
+                  nilai_lembar_saham: nilai_lembar_saham,
+                ),
+
+                BorderedContainer(
+                    HalamanTokoKondisiSaham()
+                ),
+                BorderedContainer(
+                    HalamanTokoAlamatDeskripsi()
+                )
+              ],
+            );
+          })
       );
   }
 }
@@ -402,7 +417,8 @@ class HalamanTokoStatusContainer extends StatelessWidget{
   static Widget get_widget_according_to_status(int status,
       BuildContext context, {bool show_edit_option: true}){
 
-    String extra_space = "  ";
+    String extra_space_1 = "  ";
+    String extra_space_2 = "      ";
 
     switch (status){
       case 0:
@@ -410,7 +426,7 @@ class HalamanTokoStatusContainer extends StatelessWidget{
             style: DefaultTextStyle.of(context).style,  // apply default-nya
             children: [
               WidgetSpan(
-                child: get_widget_for_value("belum mengajukan" + extra_space, false)
+                child: get_widget_for_value("belum mengajukan" + extra_space_1, false)
               ),
 
 
@@ -421,14 +437,14 @@ class HalamanTokoStatusContainer extends StatelessWidget{
                     onTap: on_user_tap_upload_proposal(context),
                     child: const Icon(
                       FontAwesomeIcons.fileUpload,
-                      size: 20,
+                      size: 22,
                       color: Colors.black,
                       // color: Color.fromARGB(255, 22, 149, 0),
                     ),
                   ),
                 ),
 
-              TextSpan(text: "    "),
+              TextSpan(text: extra_space_2),
 
               if (show_edit_option)
                 WidgetSpan(
@@ -437,7 +453,7 @@ class HalamanTokoStatusContainer extends StatelessWidget{
                     onTap: on_user_tap_submit_verification(context),
                     child: const Icon(
                       FontAwesomeIcons.fileExport,
-                      size: 20,
+                      size: 22,
                       color: Colors.black,
                       // color: Color.fromARGB(255, 22, 149, 0),
                     ),
@@ -460,17 +476,113 @@ class HalamanTokoStatusContainer extends StatelessWidget{
   }
 
   static Function() on_user_tap_upload_proposal(BuildContext context) {
+    HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
+    HalamanTokoProperties prop = inh_widg.properties;
+
     return () async {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
       );
 
+      if (result == null || result.files.length == 0 || result.paths[0] == null){
+        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("user didn't pick any proposal")));
+        return;
+      }
+
+      ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("uploading...")));
+
+      var auth = await get_authentication();
+      var response = await auth.post(
+          uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_upload_proposal),
+          data: {
+            COOKIE_CONST.csrf_token_formdata: inh_widg.csrf_token,
+            'company_id': prop.id,
+            'proposal': await dio.MultipartFile.fromFile(result.paths[0]!),
+          }
+      );
+
+      if (response.has_problem){
+        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Error ${response.reasonPhrase}:  ${response.body} ")));
+        return;
+      }
+
+      ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("uploaded successfully to the server")));
+      inh_widg.setState((){
+        prop.proposal_server_path = response.body;  // update the new URL for the proposal
+      });  // refresh
     };
   }
 
   static Function() on_user_tap_submit_verification(BuildContext context) {
+
+    HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
+    HalamanTokoProperties prop = inh_widg.properties;
+
+    Future<void> kirim_verifikasi() async {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Mengajukan verifikasi")));
+
+      var auth = await get_authentication();
+      var response = await auth.post(
+        uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_ajukan_verifikasi),
+        data: {
+          'id': prop.id,
+          COOKIE_CONST.csrf_token_formdata: inh_widg.csrf_token,
+        },
+      );
+
+      if (response.has_problem){
+        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Error ${response.reasonPhrase}:  ${response.body} ")));
+        return;
+      }
+
+      ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Berhasil mengajukan verifikasi")));
+
+      inh_widg.refresh_page((){});
+    };
+
     return () async {
+
+      Function([int state])? func;
+      func = ([int state=0]) async {
+        SimplePrompt(
+            const Text("Submit for verification"),
+            Text("Apakah Anda benar-benar ingin mengajukan verifikasi?  "
+                + ((state == 1)? "(sekali lagi)" : "") + "\n\n"
+                + "Jika anda sudah mengajukan verifikasi, maka anda tidak akan "
+                + "bisa mengubah informasi apapun lagi untuk kedepannya."),
+            [
+              SimplePromptAction("Tidak, batalkan verifikasi", () {
+                Navigator.pop(context);
+              }),
+              SimplePromptAction("Ya, lanjutkan verifikasi", () {
+                Navigator.pop(context);
+
+                if (state == 0)
+                  func!(state + 1);
+                else{
+                  kirim_verifikasi();
+                }
+              }),
+            ]
+        ).show(context);
+      };
+
+      func();
 
     };
   }
@@ -746,7 +858,9 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
 
                 TextSpan(text: "  "),
 
-                if (prop.show_edit_option)
+                // kalau belum mengajukan verifikasi dan pengunjung saat ini merupakan
+                // pemilik dari toko itu sendiri
+                if (prop.is_curr_client_the_owner && prop.status_verifikasi == 0)
                     WidgetSpan(
                       alignment: PlaceholderAlignment.middle,
                       child: GestureDetector(
@@ -831,7 +945,7 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
               );
 
       try{
-        Response resp = await auth.post(
+        ReqResponse resp = await auth.post(
             uri: NETW_CONST.get_server_URI(
                 NETW_CONST
                     .halaman_toko_save_company_form),
@@ -853,7 +967,7 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Saved successfully")));
         return;
 
-      } on Response catch(e){
+      } on ReqResponse catch(e){
         ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Connection error: " + e.reasonPhrase))

@@ -26,7 +26,7 @@ bool is_bad_status_code(int status_code){
   return status_code < 200 || status_code >= 400;
 }
 
-bool is_bad_response(Response response){
+bool is_bad_response(ReqResponse response){
   return is_bad_status_code(response.statusCode);
 }
 

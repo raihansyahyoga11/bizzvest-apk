@@ -53,6 +53,8 @@ class NETW_CONST{
   static const String halaman_toko_get_photo_json_path = "/halaman-toko/halaman-toko-photo-json";
   static const String halaman_toko_get_toko_json_path = "/halaman-toko/halaman-toko-json";
   static const String halaman_toko_save_company_form = "/halaman-toko/save-edited-company-form";
+  static const String halaman_toko_upload_proposal = "/halaman-toko/upload-proposal";
+  static const String halaman_toko_ajukan_verifikasi = "/halaman-toko/request-for-verification";
 
   static final Uri server_uri = Uri.http(server, '/');
   static final Uri login_uri = Uri.http(server, login_path);
@@ -68,7 +70,7 @@ class COOKIE_CONST{
 }
 
 
-class Response<T>{
+class ReqResponse<T>{
   late bool is_dio;
   late dio.Response dio_resp;
   late http.Response http_resp;
@@ -103,7 +105,7 @@ class Response<T>{
     return http_resp.reasonPhrase;
   }
 
-  Response({dio.Response<T>? dio, http.Response? http}){
+  ReqResponse({dio.Response<T>? dio, http.Response? http}){
     assert ((dio == null && http != null) || (dio != null && http == null));
 
     if (dio != null){
@@ -157,13 +159,13 @@ class Authentication extends Session{
     return comp;
   }
 
-  Future<Response> login(String username, String password) async {
+  Future<ReqResponse> login(String username, String password) async {
     var form = <String, String>{
       'username': username,
       'password': password,
     };
 
-    Response ret = await post(uri: NETW_CONST.login_uri, data: form);
+    ReqResponse ret = await post(uri: NETW_CONST.login_uri, data: form);
 
     if (ret.statusCode >= 200 && ret.statusCode < 400){
       is_logged_in = true;
@@ -222,33 +224,33 @@ class Session{
   }
 
   Map<String, String> header = {};
-  Future<Response<dynamic>> get({
+  Future<ReqResponse<dynamic>> get({
           Uri? uri, String? url, Map<String, dynamic>? data
         }) async{
     assert (uri == null && url != null || url == null && uri != null);
 
     if (uri != null){
-      return Response<dynamic>(dio: await dio.getUri(uri));
+      return ReqResponse<dynamic>(dio: await dio.getUri(uri));
     }else{
       assert (url != null);
-      return Response<dynamic>(dio: await dio.get(url!, queryParameters:data));
+      return ReqResponse<dynamic>(dio: await dio.get(url!, queryParameters:data));
     }
   }
 
-  Future<Response<dynamic>> post({
+  Future<ReqResponse<dynamic>> post({
           Uri? uri, String? url, Duration timeout = const Duration(seconds: 5), required Map<String, dynamic> data
         }) async{
     assert (uri == null && url != null || url == null && uri != null);
 
     if (uri != null){
-      return Response<dynamic>(
+      return ReqResponse<dynamic>(
           dio: await dio.postUri(
             uri,
             data: FormData.fromMap(data),
         ));
     }else{
       assert (url != null);
-      return Response<dynamic>(dio: await dio.post(
+      return ReqResponse<dynamic>(dio: await dio.post(
           url!,
           data: FormData.fromMap(data)
       ));

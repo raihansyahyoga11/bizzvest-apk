@@ -15,7 +15,7 @@ class HalamanTokoProperties{
   final String sisa_waktu;
   final String periode_dividen;
   final String alamat;
-  final String deskripsi;
+  String deskripsi;
   final String? alamat_proposal;
 
   final UserAccount owner;

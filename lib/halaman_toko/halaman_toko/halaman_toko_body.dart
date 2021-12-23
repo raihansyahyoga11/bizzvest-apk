@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
+import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_edit_description.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -20,18 +21,25 @@ import 'halaman_toko_properties.dart';
 
 
 class HalamanTokoBody extends StatefulWidget{
+  GlobalKey<ScaffoldState>? scaffold_key;
   final HalamanTokoProperties properties;
-  const HalamanTokoBody(this.properties, {Key? key}) : super(key: key);
+  final String csrf_token;
+
+  HalamanTokoBody({
+    required this.properties,
+    required this.csrf_token,
+    Key? key,
+    this.scaffold_key,
+  }) : super(key: key);
 
   @override
-  State<HalamanTokoBody> createState() =>
-      _HalamanTokoBodyState(properties:properties);
+  State<HalamanTokoBody> createState() => _HalamanTokoBodyState();
 }
 
 class _HalamanTokoBodyState extends State<HalamanTokoBody> {
-  final HalamanTokoProperties properties;
-  _HalamanTokoBodyState({required this.properties});
-
+  get properties{
+    return widget.properties;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +48,12 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
     bool is_download_proposal_enabled = true;
 
     return
-      HalamanTokoInheritedWidget(properties: properties, setState: setState,
+      HalamanTokoInheritedWidget(
+          properties: properties,
+          setState: setState,
+          scaffold_key: widget.scaffold_key,
+          csrf_token: widget.csrf_token,
+
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -97,7 +110,7 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
                             is_download_proposal_enabled = false;
                           });
 
-                          final download_url = CONSTANTS.protocol + CONSTANTS.server + properties.alamat_proposal!;
+                          final download_url = NETW_CONST.protocol + NETW_CONST.server + properties.alamat_proposal!;
                           Directory? extDir;
 
                           final status = await Permission.storage.request();
@@ -149,7 +162,7 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
 
               HalamanTokoStatusContainer(
                 status_verifikasi: HalamanTokoStatusContainer.get_widget_according_to_status(
-                    properties.status_verifikasi
+                    properties.status_verifikasi, context
                 ),
                 tanggal_berakhir: properties.tanggal_berakhir,
                 jumlah_lembar_saham: jumlah_lembar_saham,
@@ -385,10 +398,54 @@ class HalamanTokoStatusContainer extends StatelessWidget{
     required this.nilai_lembar_saham
   });
 
-  static Widget get_widget_according_to_status(int status){
+  static Widget get_widget_according_to_status(int status,
+      BuildContext context, {bool show_edit_option: true}){
+
+    String extra_space = "  ";
+
     switch (status){
       case 0:
-        return get_widget_for_value("belum mengajukan verifikasi");
+        return RichText(text: TextSpan(
+            style: DefaultTextStyle.of(context).style,  // apply default-nya
+            children: [
+              WidgetSpan(
+                child: get_widget_for_value("belum mengajukan" + extra_space, false)
+              ),
+
+
+              if (show_edit_option)
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  child: GestureDetector(
+                    onTap: on_user_tap_upload_proposal(context),
+                    child: const Icon(
+                      FontAwesomeIcons.fileUpload,
+                      size: 20,
+                      color: Colors.black,
+                      // color: Color.fromARGB(255, 22, 149, 0),
+                    ),
+                  ),
+                ),
+
+              TextSpan(text: "    "),
+
+              if (show_edit_option)
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  child: GestureDetector(
+                    onTap: on_user_tap_submit_verification(context),
+                    child: const Icon(
+                      FontAwesomeIcons.fileExport,
+                      size: 20,
+                      color: Colors.black,
+                      // color: Color.fromARGB(255, 22, 149, 0),
+                    ),
+                  ),
+                ),
+
+
+            ]
+        ));
       case 1:
         return get_widget_for_value("menunggu verifikasi");
       case 2:
@@ -400,6 +457,19 @@ class HalamanTokoStatusContainer extends StatelessWidget{
         return get_widget_for_value("unknown error");
     }
   }
+
+  static Function() on_user_tap_upload_proposal(BuildContext context) {
+    return () async {
+
+    };
+  }
+
+  static Function() on_user_tap_submit_verification(BuildContext context) {
+    return () async {
+
+    };
+  }
+
 
   static Widget get_widget_for_label(String str){
     return Container(
@@ -418,22 +488,30 @@ class HalamanTokoStatusContainer extends StatelessWidget{
     );
   }
 
-  static Widget get_widget_for_value(String str){
-    return Container(
-      child: Align(
+  static Widget get_widget_for_value(String str, [bool extra_wrapper=true]){
+    Widget ret;
+
+    ret = Align(
         alignment: Alignment.centerLeft,
-        child:
-        SelectableText(str,
-          style: const TextStyle(
-            fontFamily: 'arial',
-          ),
-          textScaleFactor: 0.85,
-          textAlign: TextAlign.left,
-        ),
+        child: SelectableText(str,
+      style: const TextStyle(
+        fontFamily: 'arial',
       ),
-      margin: EdgeInsets.symmetric(vertical: 6),
-    );
+      textScaleFactor: 0.85,
+      textAlign: TextAlign.left,
+    ));
+
+    if (extra_wrapper) {
+      ret = Container(
+        child: ret,
+        margin: EdgeInsets.symmetric(vertical: 6),
+      );
+    }
+
+    return ret;
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -445,7 +523,7 @@ class HalamanTokoStatusContainer extends StatelessWidget{
         ],
 
         children: [
-          get_widget_for_label("Status"),         status_verifikasi,
+          get_widget_for_label("Status"),         Align(child:status_verifikasi),
           get_widget_for_label("Berakhir pada"),  get_widget_for_value(tanggal_berakhir),
           get_widget_for_label("Jumlah saham"),   get_widget_for_value("$jumlah_lembar_saham lembar"),
           get_widget_for_label("Harga saham"),    get_widget_for_value("Rp$nilai_lembar_saham,00"),
@@ -628,7 +706,9 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    HalamanTokoProperties prop = HalamanTokoInheritedWidget.of(context).properties;
+    HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
+    HalamanTokoProperties prop = inh_widg.properties;
+
     return Container(
       padding: EdgeInsets.all(7),
       child: Column(
@@ -659,15 +739,16 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
                   context: context,
                 ),
 
-                TextSpan(text: "  " ),
+                TextSpan(text: "  "),
 
                 if (prop.show_edit_option)
                     WidgetSpan(
                       alignment: PlaceholderAlignment.middle,
                       child: GestureDetector(
+                        onTap: on_user_tap_description_pencil_edit_button(context),
                         child: Icon(
                           FontAwesomeIcons.pencilAlt,
-                          size: 18,
+                          size: 20,
                           color: ColouredHeaderTextSpan(text:"").color,
                           // color: Color.fromARGB(255, 22, 149, 0),
                         ),
@@ -691,6 +772,111 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
         ],
       ),
     );
+  }
+
+  static Function() on_user_tap_description_pencil_edit_button(BuildContext context) {
+    HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
+    HalamanTokoProperties prop = inh_widg.properties;
+
+    return () async {
+      await goto_halaman_toko_edit_description(context,
+          MaterialPageRoute(builder: (context){
+            return HalamanTokoEditDeskripsi(initial_description: prop.deskripsi);
+          })
+      );
+    };
+  }
+
+  static Future<void> goto_halaman_toko_edit_description(
+        BuildContext context,
+        Route<String> route,
+      ) async {
+    HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
+    HalamanTokoProperties prop = inh_widg.properties;
+
+    String old_description = prop.deskripsi;
+    String? new_description = await Navigator.push(context, route);
+
+    if (new_description == null){
+      if (kDebugMode)
+        print("discarded");
+      return;
+    }
+
+    print("new desc ${new_description}");
+
+    inh_widg.setState((){
+      prop.deskripsi = new_description;
+    });
+
+
+    BuildContext? curr_context =  inh_widg.scaffold_key?.currentContext;
+    ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+    if (curr_context != null)
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Saving to server...")));
+
+
+    // () async {
+      var auth = await get_authentication();
+      auth.cookie_jar.loadForRequest(NETW_CONST.get_server_URI("/"))
+          .then(
+                (List<Cookie> value){
+                  print(value);
+                }
+              );
+
+      try{
+        Response resp = await auth.post(
+            uri: NETW_CONST.get_server_URI(
+                NETW_CONST
+                    .halaman_toko_save_company_form),
+            data: {
+              COOKIE_CONST.csrf_token_formdata: inh_widg.csrf_token,
+              'id': prop.id,
+              'deskripsi': new_description
+            }
+        );
+
+        if (resp.has_problem) {
+          throw resp;
+        }
+        
+        print("no problem");
+
+        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+        if (curr_context != null)
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Saved successfully")));
+        return;
+
+      } on Response catch(e){
+        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Connection error: " + e.reasonPhrase))
+        );
+      } on Exception catch(e){
+        SnackBar snackbar;
+
+        if (Session.is_timeout_error(e)){
+          snackbar = SnackBar(content: Text("Connection timed out"));
+        }else{
+          snackbar = SnackBar(content: Text("Error: " + e.toString()));
+        }
+        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      }
+
+      // bagian ini hanya dijalankan kalau error.
+      // kalau tidak error, kita return saja.
+      goto_halaman_toko_edit_description(
+          context,
+          MaterialPageRoute(builder: (context){
+            return HalamanTokoEditDeskripsi(
+              initial_description: old_description,
+              current_description: new_description,
+            );
+          })
+      );
+    // }();
   }
 }
 

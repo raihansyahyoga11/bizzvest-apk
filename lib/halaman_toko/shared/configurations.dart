@@ -55,6 +55,7 @@ class NETW_CONST{
   static const String halaman_toko_save_company_form = "/halaman-toko/save-edited-company-form";
   static const String halaman_toko_upload_proposal = "/halaman-toko/upload-proposal";
   static const String halaman_toko_ajukan_verifikasi = "/halaman-toko/request-for-verification";
+  static const String halaman_toko_add_toko_API = "/halaman-toko/add-toko-api";
 
   static final Uri server_uri = Uri.http(server, '/');
   static final Uri login_uri = Uri.http(server, login_path);
@@ -72,34 +73,40 @@ class COOKIE_CONST{
 
 class ReqResponse<T>{
   late bool is_dio;
-  late dio.Response dio_resp;
+  late dio.Response<T> dio_resp;
   late http.Response http_resp;
 
   bool get has_problem{
-    return statusCode < 200 || statusCode >= 400;
+    return statusCode == null || statusCode! < 200 || statusCode! >= 400;
   }
 
-  get statusCode{
+  int? get statusCode{
     if (is_dio)
       return dio_resp.statusCode;
     return http_resp.statusCode;
   }
 
-  get body{
+  dynamic get body{
     return data;
   }
 
-  get data{
+  dynamic get data{
     if (is_dio)
       return dio_resp.data;
     return http_resp.body;
   }
 
-  get statusMessage{
+  String? get data_string{
+    if (is_dio)
+      return cast<String>(dio_resp.data);
+    return http_resp.body;
+  }
+
+  String? get statusMessage{
     return reasonPhrase;
   }
 
-  get reasonPhrase{
+  String? get reasonPhrase{
     if (is_dio)
       return dio_resp.statusMessage;
     return http_resp.reasonPhrase;
@@ -116,15 +123,16 @@ class ReqResponse<T>{
       http_resp = http;
       is_dio = false;
     }
-
   }
 
+  static T? cast<T>(dynamic obj) => (obj is T)? obj:null;
 
   @override
   String toString() {
-    return data.toString();
+    if (is_dio)
+      return dio_resp.toString();
+    return http_resp.toString();
   }
-
 }
 
 
@@ -167,7 +175,7 @@ class Authentication extends Session{
 
     ReqResponse ret = await post(uri: NETW_CONST.login_uri, data: form);
 
-    if (ret.statusCode >= 200 && ret.statusCode < 400){
+    if (!ret.has_problem){
       is_logged_in = true;
       if (kDebugMode) {
         print("logged in " + ret.statusCode.toString() + " " + (ret.reasonPhrase ?? "null"));
@@ -176,6 +184,8 @@ class Authentication extends Session{
     return ret;
   }
 }
+
+
 
 class Session{
   static const bool DEBUG = kDebugMode;
@@ -186,6 +196,7 @@ class Session{
       receiveTimeout: default_timeout,
       sendTimeout: default_timeout,
       responseType: ResponseType.plain,
+
       followRedirects: false,
       validateStatus: (status) { return true; }
   ));

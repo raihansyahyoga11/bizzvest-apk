@@ -1,4 +1,4 @@
-import 'package:bizzvest/halaman_toko/add_toko.dart';
+import 'package:bizzvest/halaman_toko/add_toko/add_toko.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

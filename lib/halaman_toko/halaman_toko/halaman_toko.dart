@@ -83,11 +83,13 @@ class _HalamanTokoState extends State<HalamanToko> {
                     .then((value) => setState(() {timeout_retry_number += 1;}));
               }
 
-              return Container(
-                child: const Center(
-                  child: Text(
-                    "Request timed out",
-                    textDirection: TextDirection.ltr,
+              return Scaffold(
+                body: Container(
+                  child: const Center(
+                    child: Text(
+                      "Request timed out",
+                      textDirection: TextDirection.ltr,
+                    ),
                   ),
                 ),
               );
@@ -116,7 +118,7 @@ class _HalamanTokoState extends State<HalamanToko> {
               child: Center(
                 child: Text(
                     "An external error has occurred. "
-        + ((snapshot.data!=null)? (temp!.reasonPhrase ?? "null") : "snapshot data is null"),
+        + ((temp!=null)? (temp.reasonPhrase ?? "null") : "snapshot data is null"),
                     textDirection: TextDirection.ltr,
                 ),
               ),

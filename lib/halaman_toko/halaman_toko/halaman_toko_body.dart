@@ -970,7 +970,7 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
       } on ReqResponse catch(e){
         ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Connection error: " + e.reasonPhrase))
+            SnackBar(content: Text("Connection error: " + (e.reasonPhrase ?? "null")))
         );
       } on Exception catch(e){
         SnackBar snackbar;

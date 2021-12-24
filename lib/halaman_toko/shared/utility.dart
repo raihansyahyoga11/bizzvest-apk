@@ -27,7 +27,7 @@ bool is_bad_status_code(int status_code){
 }
 
 bool is_bad_response(ReqResponse response){
-  return is_bad_status_code(response.statusCode);
+  return response.statusCode == null || is_bad_status_code(response.statusCode!);
 }
 
 

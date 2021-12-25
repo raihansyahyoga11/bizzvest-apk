@@ -6,6 +6,7 @@ import 'dart:ui';
 
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_body.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
+import 'package:bizzvest/halaman_toko/shared/loading_screen.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -16,7 +17,7 @@ import 'halaman_toko_properties.dart';
 
 void main() async {
   await initialize();
-  runApp(HalamanTokoMaterialApp(id:8));
+  runApp(HalamanTokoMaterialApp(id:13));
 }
 
 
@@ -48,6 +49,7 @@ class HalamanTokoMaterialApp extends StatelessWidget{
 
 class HalamanToko extends StatefulWidget{
   final int id;
+  final GlobalKey<ScaffoldState> scaffold_key = GlobalKey<ScaffoldState>();
   HalamanToko({this.id=1, Key? key}) : super(key: key);
 
   @override
@@ -55,16 +57,16 @@ class HalamanToko extends StatefulWidget{
 }
 
 class _HalamanTokoState extends State<HalamanToko> {
-  final GlobalKey<ScaffoldState> scaffold_key = GlobalKey<ScaffoldState>();
-  static const int TIMEOUT_RETRY_LIMIT = 5;
-  int timeout_retry_number = 0;
+  GlobalKey<ScaffoldState> get scaffold_key{
+    return widget.scaffold_key;
+  }
 
   @override
   Widget build(BuildContext context){
     Function(Function()) refresh_page = setState;
 
-    return FutureBuilder(
-      future: () async {
+    return RequestLoadingScreenBuilder(
+      request_function: () async {
         var authentication = await get_authentication();
         ReqResponse? ret = await authentication.get(
             uri: NETW_CONST.get_server_URI(
@@ -72,8 +74,74 @@ class _HalamanTokoState extends State<HalamanToko> {
                 {'id': widget.id.toString()}
             ));
         return ret;
-      }(),
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+      },
+
+      wrapper: (widget, status) {
+        if (status != RequestStatus.success) {
+          return Scaffold(
+            key: scaffold_key,
+            body: widget,
+            backgroundColor: STYLE_CONST.background_color,
+          );
+        }
+
+        return HalamanTokoWrapper(
+          child: widget,
+          scaffold_key: scaffold_key,
+        );
+      },
+
+      on_success: (context, snapshot, response, refresh) {
+        ReqResponse response = snapshot.data!;
+        Map<String, dynamic> resulting_json = json.decode(response.body);
+        List<dynamic> images_str = resulting_json['images'];
+        List<Image> images = [];
+
+        images_str.forEach((dynamic element_dynamic) {
+          String element = element_dynamic;
+          images.add(Image.network(
+              NETW_CONST.protocol + NETW_CONST.host + element));
+        });
+
+        assert (resulting_json['is_curr_client_the_owner'] is int);
+        print("curr owner ${resulting_json['is_curr_client_the_owner'] }");
+        print("your acc ${resulting_json['your_acc'] }");
+
+        return HalamanTokoBody(
+            refresh_page: refresh_page,
+            scaffold_key: scaffold_key,
+            csrf_token: resulting_json['csrf_token'],
+            properties: HalamanTokoProperties(
+              id: widget.id,
+              is_curr_client_the_owner: resulting_json['is_curr_client_the_owner'] == 1,
+              nama_merek: resulting_json['nama_merek'],
+              nama_perusahaan: resulting_json['nama_perusahaan'],
+              images: images,
+              status_verifikasi: resulting_json['status_verifikasi'],
+              tanggal_berakhir: resulting_json['tanggal_berakhir'],
+
+              kode_saham: resulting_json['kode_saham'],
+              sisa_waktu: resulting_json['sisa_waktu'],
+              periode_dividen: resulting_json['periode_dividen'].toString() + " bulan",
+              alamat: resulting_json['alamat'],
+              deskripsi: resulting_json['deskripsi'],
+              proposal_server_path: resulting_json['alamat_proposal'],
+              owner: UserAccount(
+                full_name: resulting_json['owner']['full_name'],
+                username: resulting_json['owner']['username'],
+                photo_profile: Image.network(
+                    NETW_CONST.protocol + NETW_CONST.host
+                        + resulting_json['owner']['photo_profile']
+                ),
+              ),
+
+              nilai_lembar_saham: resulting_json['nilai_lembar_saham'],
+              jumlah_lembar_saham: resulting_json['jumlah_lembar_saham'],
+              jumlah_lembar_saham_tersisa: resulting_json['jumlah_lembar_saham_tersisa'],
+            )
+        );
+      },
+      /*builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.connectionState == ConnectionState.done){
           if (snapshot.hasError) {
             if (Session.is_timeout_error(snapshot.error)){
@@ -202,7 +270,7 @@ class _HalamanTokoState extends State<HalamanToko> {
             ),
           );
         }
-      },
+      },*/
     );
   }
 }
@@ -220,7 +288,7 @@ class HalamanTokoWrapper extends StatelessWidget{
     return SafeArea(
         child: Scaffold(
           key: scaffold_key,
-          backgroundColor: (Colors.lightBlue[200])!,
+          backgroundColor: STYLE_CONST.background_color,
           floatingActionButton: null,
           body: SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 10),

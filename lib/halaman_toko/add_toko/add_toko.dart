@@ -6,6 +6,7 @@ import 'package:bizzvest/halaman_toko/add_toko/toko_model.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_edit_description.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
+import 'package:bizzvest/halaman_toko/shared/loading_screen.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -90,91 +91,21 @@ class _AddTokoWrapperState extends State<AddTokoWrapper> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
-        body: FutureBuilder(
-          future: () async {
+        body: RequestLoadingScreenBuilder(
+          request_function: () async {
             var auth = await get_authentication();
             return auth.get(
               uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_add_toko_API)
             );
-          }(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.connectionState != ConnectionState.done){
-              return Container(
-                  child: Center(
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Center(
-                              child: CircularProgressIndicator()
-                          ),
-                          SizedBox(width:0, height:20),
-                          Center(
-                              child: Text(
-                                "Getting csrf token",
-                                textDirection: TextDirection.ltr,)
-                          ),
-                        ]
-                    ),
-                  ),
-              );
-            }
+          },
 
-            ReqResponse? req_resp = cast<ReqResponse>(snapshot.data);
-            if (snapshot.hasError){
-              if (Session.is_timeout_error(snapshot.error)){
+          wrapper: (widget, status) {
+            return widget;
+          },
 
-                if (timeout_retry_number < TIMEOUT_RETRY_LIMIT) {
-                  Future.delayed(Duration(seconds: 2+timeout_retry_number))
-                      .then((value) => setState(() {timeout_retry_number += 1;}));
-                }
-
-                return Container(
-                    child: const Center(
-                      child: Text(
-                        "Request timed out",
-                        textDirection: TextDirection.ltr,
-                      ),
-                    ),
-                );
-              }
-
-              Future.error(
-                  snapshot.error!,
-                  snapshot.stackTrace);
-
-              return Container(
-                    child: const Center(
-                      child: Text(
-                        "An internal error has occurred. ",
-                        textDirection: TextDirection.ltr,
-                      ),
-                    )
-              );
-            }
-
-            if (req_resp == null) {
-              return Container(
-                child: const Center(
-                  child: Text(
-                    "request response is null",
-                    textDirection: TextDirection.ltr,
-                  ),
-                ),
-              );
-            }
-
-            if (req_resp.has_problem) {
-              return Container(
-                child: Center(
-                  child: Text(
-                    "Error ${req_resp.statusCode} ${req_resp.reasonPhrase}",
-                    textDirection: TextDirection.ltr,
-                  ),
-                ),
-              );
-            }
-
-            String raw_content = req_resp.body as String;
+          on_success: (BuildContext context, AsyncSnapshot<dynamic> snapshot,
+                ReqResponse response, Function(Function()) refresh) {
+            String raw_content = response.data_string!;
             Map<String, dynamic> map = json.decode(raw_content);
 
             return SingleChildScrollView(
@@ -185,7 +116,7 @@ class _AddTokoWrapperState extends State<AddTokoWrapper> {
             );
           },
         ),
-        backgroundColor: (Colors.lightBlue[200])!,
+        backgroundColor: STYLE_CONST.background_color,
 
         floatingActionButton: null,
       ),
@@ -230,7 +161,6 @@ class _AddTokoBody extends State<AddTokoBody>{
   void initState() {
     super.initState();
     csrf_token = widget.initial_csrf;
-    print(csrf_token);
   }
 
   @override
@@ -498,7 +428,6 @@ class _AddTokoBody extends State<AddTokoBody>{
       enable_submit_button = false;
     });
     show_snackbar(context, "Validating current form to server");
-    print("bruh");
 
     var auth = await get_authentication();
     ReqResponse response;
@@ -523,9 +452,6 @@ class _AddTokoBody extends State<AddTokoBody>{
       });
     }
 
-    print("asdfgh");
-    print(response.body);
-    print(response.body.runtimeType.toString());
 
     Map<String, dynamic> map;
     if (!response.has_problem || response.statusCode == 422){
@@ -554,11 +480,9 @@ class _AddTokoBody extends State<AddTokoBody>{
 
 
     if (response.has_problem){
-      print("problem");
       show_snackbar(context, "Error ${response.statusCode} ${response.reasonPhrase}");
       return;
     }
-    print("no problem. " + response.data_string!);
 
 
     SimplePrompt(
@@ -642,7 +566,6 @@ class _AddTokoBody extends State<AddTokoBody>{
     Map<String, dynamic> map = json.decode(
         response.data_string!
     );
-    print(map);
     int id = map['id'];
 
     Navigator.pop(context);

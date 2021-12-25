@@ -2,11 +2,13 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
@@ -58,6 +60,8 @@ class NETW_CONST{
   static const String halaman_toko_add_toko_API = "/halaman-toko/add-toko-api";
   static const String halaman_toko_manage_photos_init_api = "/halaman-toko/manage-photos-init-api";
   static const String halaman_toko_add_photo = "/halaman-toko/add-photo";
+  static const String halaman_toko_set_photos_order = "/halaman-toko/photo-reorder";
+  static const String halaman_toko_delete_photo = "/halaman-toko/delete-photo";
 
   static final Uri server_uri = Uri.http(host, '/');
   static final Uri login_uri = Uri.http(host, login_path);
@@ -70,6 +74,10 @@ class NETW_CONST{
 class COOKIE_CONST{
   static const String csrf_token_formdata = "csrfmiddlewaretoken";
   static const String csrf_token_cookie_name = "csrftoken";
+}
+
+class STYLE_CONST{
+  static final Color? background_color = Colors.lightBlue[200];
 }
 
 

@@ -132,60 +132,7 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
     return StatefulBuilder(
         builder: (context, setState) =>
             BorderedButtonIcon(
-              on_pressed: () async {
-                setState((){
-                  is_download_proposal_enabled = false;
-                });
-
-                HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
-                HalamanTokoProperties properties = inh_widg.properties;
-                Directory? extDir;
-                // harus di deklarasikan ulang setiap kali di-klik, sebab bisa aja pengguna sudah
-                // mengupload file baru tanpa me-refresh (tutup app lalu buka lagi).
-                // Oleh karena itu, setiap mau download, linknya harus diupdate
-                final download_url = NETW_CONST.protocol
-                    + NETW_CONST.host
-                    + properties.proposal_server_path!;
-
-                final status = await Permission.storage.request();
-                if (status.isGranted){
-                  extDir = await getExternalStorageDirectory();
-
-                  if (extDir != null){
-                    String download_path = '${extDir.path}/proposal ${properties.id} ${properties.nama_merek}.pdf';
-
-                    final configuration = DownloaderUtils(
-                      progressCallback: (current, total) {
-                        if (kDebugMode) {
-                          final progress = (current / total) * 100;
-                          print('Downloading: $progress');
-                        }
-                      },
-                      file: File(download_path),
-                      progress: ProgressImplementation(),
-                      onDone: () {
-                        OpenFile.open(download_path).then((val){
-                          if (kDebugMode)
-                            print("opened");
-                        });
-                        if (kDebugMode)
-                          print("done: " + download_path);
-                        setState((){
-                          is_download_proposal_enabled = true;
-                        });
-                      },
-                      deleteOnCancel: true,
-                    );
-
-                    await Flowder.download(download_url, configuration);
-                  }
-                }else{
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content:
-                      Text("Sorry, we couldn't download the requested file because we have no permission to read-write storage")
-                      ));
-                }
-              },
+              on_pressed: download_proposal(context),
               is_disabled: !is_download_proposal_enabled,
               icon: const FaIcon(FontAwesomeIcons.book),
               label: const Text("Download Proposal"),
@@ -193,6 +140,61 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
             )
     );
   }
+
+  Function() download_proposal(BuildContext context){
+    return () async {
+      setState((){
+        is_download_proposal_enabled = false;
+      });
+
+      HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
+      HalamanTokoProperties properties = inh_widg.properties;
+      Directory? extDir;
+      // harus di deklarasikan ulang setiap kali di-klik, sebab bisa aja pengguna sudah
+      // mengupload file baru tanpa me-refresh (tutup app lalu buka lagi).
+      // Oleh karena itu, setiap mau download, linknya harus diupdate
+      final download_url = NETW_CONST.protocol
+          + NETW_CONST.host
+          + properties.proposal_server_path!;
+
+      final status = await Permission.storage.request();
+      if (status.isGranted){
+        extDir = await getExternalStorageDirectory();
+
+        if (extDir != null){
+          String download_path = '${extDir.path}/proposal ${properties.id} ${properties.nama_merek}.pdf';
+
+          final configuration = DownloaderUtils(
+            progressCallback: (current, total) {
+              if (kDebugMode) {
+                final progress = (current / total) * 100;
+                print('Downloading: $progress');
+              }
+            },
+            file: File(download_path),
+            progress: ProgressImplementation(),
+            onDone: () {
+              OpenFile.open(download_path).then((val){
+                if (kDebugMode)
+                  print("opened");
+              });
+              if (kDebugMode)
+                print("done: " + download_path);
+              setState((){
+                is_download_proposal_enabled = true;
+              });
+            },
+            deleteOnCancel: true,
+          );
+
+          await Flowder.download(download_url, configuration);
+        }
+      }else{
+        show_snackbar(context, "Sorry, we couldn't download the requested file because we have no permission to read-write storage");
+      }
+    };
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +225,7 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
 
                 HalamanTokoKodeSisaPeriode(),
 
-                if (properties.proposal_server_path == null || properties.proposal_server_path == "")
+                if (properties.proposal_server_path != null && properties.proposal_server_path != "")
                   build_proposal_download_button(context),
 
                 HalamanTokoStatusContainer(

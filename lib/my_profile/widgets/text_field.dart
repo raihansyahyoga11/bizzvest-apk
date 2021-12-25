@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:ui';
 
 class TextFieldWidget extends StatefulWidget {
   final int maxLines;

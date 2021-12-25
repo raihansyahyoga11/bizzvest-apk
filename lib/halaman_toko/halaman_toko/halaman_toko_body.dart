@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_edit_description.dart';
+import 'package:bizzvest/halaman_toko/manage_photo.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -43,15 +44,160 @@ class HalamanTokoBody extends StatefulWidget{
 }
 
 class _HalamanTokoBodyState extends State<HalamanTokoBody> {
-  get properties{
+  HalamanTokoProperties get properties{
     return widget.properties;
+  }
+
+  bool is_download_proposal_enabled = true;
+
+
+  Widget build_photo_carousel(BuildContext context){
+    bool show_edit_option = (properties.is_curr_client_the_owner && properties.status_verifikasi == 0);
+    return BorderedContainer(
+      Column(
+        children:[
+          // jika pengunjung saat ini adala
+          if (show_edit_option)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                RichText(text: TextSpan(
+                    style: DefaultTextStyle.of(context).style,  // apply default-nya
+                    children: [
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: GestureDetector(
+                            onTap: on_tap_goto_manage_photo(context),
+                            child: Icon(
+                              FontAwesomeIcons.edit,
+                              size: 24,
+                              color: ColouredHeaderTextSpan(text:"").color,
+                            ),
+                          ),
+                        ),
+                    ]
+                )),
+                SizedBox(width: 10, height: 0,)
+              ]
+            ),
+
+          AspectRatio(
+              aspectRatio: 1 / 1,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(7)),
+                child: CarouselSlider.builder(
+                  itemCount: properties.images.length,
+                  options: CarouselOptions(
+                    aspectRatio: 1/1,
+                    viewportFraction: 1,
+                    autoPlay: (properties.images.length > 1),
+                    autoPlayInterval: const Duration(seconds: 4),
+                  ),
+
+
+                  itemBuilder: (context, index, realIndex) {
+                    return ImageTile(
+                      properties.images[index],
+                      inner_wrapper: (context, image){
+                        return Container(
+                          child: AspectRatio(aspectRatio: 1/1,
+                            child: image,),
+                        );
+                      },
+                      outter_wrapper: (context, image){
+                        return image;
+                      },
+                    );
+                  },
+
+                ),
+              )
+          ),
+        ],
+      ),
+    );
+  }
+
+  Function() on_tap_goto_manage_photo(BuildContext context){
+    HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
+
+    return (){
+      Navigator.push(context, MaterialPageRoute(
+          builder: (context) => ManagePhoto(company_id: inh_widg.properties.id)))
+          .then((value) => inh_widg.refresh_page((){}));
+    };
+  }
+
+  Widget build_proposal_download_button(BuildContext context){
+    return StatefulBuilder(
+        builder: (context, setState) =>
+            BorderedButtonIcon(
+              on_pressed: () async {
+                setState((){
+                  is_download_proposal_enabled = false;
+                });
+
+                HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
+                HalamanTokoProperties properties = inh_widg.properties;
+                Directory? extDir;
+                // harus di deklarasikan ulang setiap kali di-klik, sebab bisa aja pengguna sudah
+                // mengupload file baru tanpa me-refresh (tutup app lalu buka lagi).
+                // Oleh karena itu, setiap mau download, linknya harus diupdate
+                final download_url = NETW_CONST.protocol
+                    + NETW_CONST.host
+                    + properties.proposal_server_path!;
+
+                final status = await Permission.storage.request();
+                if (status.isGranted){
+                  extDir = await getExternalStorageDirectory();
+
+                  if (extDir != null){
+                    String download_path = '${extDir.path}/proposal ${properties.id} ${properties.nama_merek}.pdf';
+
+                    final configuration = DownloaderUtils(
+                      progressCallback: (current, total) {
+                        if (kDebugMode) {
+                          final progress = (current / total) * 100;
+                          print('Downloading: $progress');
+                        }
+                      },
+                      file: File(download_path),
+                      progress: ProgressImplementation(),
+                      onDone: () {
+                        OpenFile.open(download_path).then((val){
+                          if (kDebugMode)
+                            print("opened");
+                        });
+                        if (kDebugMode)
+                          print("done: " + download_path);
+                        setState((){
+                          is_download_proposal_enabled = true;
+                        });
+                      },
+                      deleteOnCancel: true,
+                    );
+
+                    await Flowder.download(download_url, configuration);
+                  }
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content:
+                      Text("Sorry, we couldn't download the requested file because we have no permission to read-write storage")
+                      ));
+                }
+              },
+              is_disabled: !is_download_proposal_enabled,
+              icon: const FaIcon(FontAwesomeIcons.book),
+              label: const Text("Download Proposal"),
+              margin: BorderedContainer.get_margin_static(),
+            )
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     String jumlah_lembar_saham = thousand_separator(properties.jumlah_lembar_saham);
     String nilai_lembar_saham = thousand_separator(properties.nilai_lembar_saham);
-    bool is_download_proposal_enabled = true;
 
     return
       HalamanTokoInheritedWidget(
@@ -67,113 +213,18 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
               children: [
 
                 HalamanTokoHeaderTitle(properties.nama_merek, properties.nama_perusahaan),
+                build_photo_carousel(context),
 
-                BorderedContainer(
-                  AspectRatio(
-                      aspectRatio: 1 / 1,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(7)),
-                        child: CarouselSlider.builder(
-                          itemCount: properties.images.length,
-                          options: CarouselOptions(
-                            aspectRatio: 1/1,
-                            viewportFraction: 1,
-                            autoPlay: (properties.images.length > 1),
-                            autoPlayInterval: const Duration(seconds: 4),
-                          ),
-
-
-                          itemBuilder: (context, index, realIndex) {
-                            return ImageTile(
-                              properties.images[index],
-                              inner_wrapper: (context, image){
-                                return Container(
-                                  child: AspectRatio(aspectRatio: 1/1,
-                                    child: image,),
-                                );
-                              },
-                              outter_wrapper: (context, image){
-                                return image;
-                              },
-                            );
-                          },
-
-                        ),
-                      )
-                  ),
-                ),
                 HalamanTokoOwnerContainer(
                     properties.owner.photo_profile,
                     properties.owner.full_name,
                     properties.owner.username
                 ),
+
                 HalamanTokoKodeSisaPeriode(),
-                (properties.proposal_server_path == null
-                    || properties.proposal_server_path == "")?
-                const SizedBox(width:0, height:0) : StatefulBuilder(
-                    builder: (context, setState) =>
-                        BorderedButtonIcon(
-                          on_pressed: () async {
-                            setState((){
-                              is_download_proposal_enabled = false;
-                            });
 
-                            HalamanTokoInheritedWidget inh_widg = HalamanTokoInheritedWidget.of(context);
-                            HalamanTokoProperties properties = inh_widg.properties;
-                            Directory? extDir;
-                            // harus di deklarasikan ulang setiap kali di-klik, sebab bisa aja pengguna sudah
-                            // mengupload file baru tanpa me-refresh (tutup app lalu buka lagi).
-                            // Oleh karena itu, setiap mau download, linknya harus diupdate
-                            final download_url = NETW_CONST.protocol
-                                + NETW_CONST.server
-                                + properties.proposal_server_path!;
-
-                            final status = await Permission.storage.request();
-                            if (status.isGranted){
-                              extDir = await getExternalStorageDirectory();
-
-                              if (extDir != null){
-                                String download_path = '${extDir.path}/proposal ${properties.id} ${properties.nama_merek}.pdf';
-
-                                final configuration = DownloaderUtils(
-                                  progressCallback: (current, total) {
-                                    if (kDebugMode) {
-                                      final progress = (current / total) * 100;
-                                      print('Downloading: $progress');
-                                    }
-                                  },
-                                  file: File(download_path),
-                                  progress: ProgressImplementation(),
-                                  onDone: () {
-                                    OpenFile.open(download_path).then((val){
-                                      if (kDebugMode)
-                                        print("opened");
-                                    });
-                                    if (kDebugMode)
-                                      print("done: " + download_path);
-                                    setState((){
-                                      is_download_proposal_enabled = true;
-                                    });
-                                  },
-                                  deleteOnCancel: true,
-                                );
-
-                                await Flowder.download(download_url, configuration);
-                              }
-                              ;
-                            }else{
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content:
-                                  Text("Sorry, we couldn't download the requested file because we have no permission to read-write storage")
-                                  ));
-                            }
-                          },
-                          is_disabled: !is_download_proposal_enabled,
-                          icon: const FaIcon(FontAwesomeIcons.book),
-                          label: const Text("Download Proposal"),
-                          margin: BorderedContainer.get_margin_static(),
-                        )
-                ),
+                if (properties.proposal_server_path == null || properties.proposal_server_path == "")
+                  build_proposal_download_button(context),
 
                 HalamanTokoStatusContainer(
                   status_verifikasi: HalamanTokoStatusContainer.get_widget_according_to_status(
@@ -429,7 +480,6 @@ class HalamanTokoStatusContainer extends StatelessWidget{
                 child: get_widget_for_value("belum mengajukan" + extra_space_1, false)
               ),
 
-
               if (show_edit_option)
                 WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
@@ -486,15 +536,11 @@ class HalamanTokoStatusContainer extends StatelessWidget{
       );
 
       if (result == null || result.files.length == 0 || result.paths[0] == null){
-        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("user didn't pick any proposal")));
+        show_snackbar(context, "user didn't pick any proposal");
         return;
       }
 
-      ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("uploading...")));
+      show_snackbar(context, "uploading...");
 
       var auth = await get_authentication();
       var response = await auth.post(
@@ -566,10 +612,10 @@ class HalamanTokoStatusContainer extends StatelessWidget{
                 + "Jika anda sudah mengajukan verifikasi, maka anda tidak akan "
                 + "bisa mengubah informasi apapun lagi untuk kedepannya."),
             [
-              SimplePromptAction("Tidak, batalkan verifikasi", () {
+              SimplePromptAction("Cancel", () {
                 Navigator.pop(context);
               }),
-              SimplePromptAction("Ya, lanjutkan verifikasi", () {
+              SimplePromptAction("Tetap submit", () {
                 Navigator.pop(context);
 
                 if (state == 0)

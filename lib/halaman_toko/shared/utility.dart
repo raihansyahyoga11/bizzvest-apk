@@ -30,8 +30,21 @@ bool is_bad_response(ReqResponse response){
   return response.statusCode == null || is_bad_status_code(response.statusCode!);
 }
 
+T? cast<T>(x) => x is T ? x : null;
+
+
+void show_snackbar(BuildContext context, String message){
+  ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+  ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(
+          message
+      ))
+  );
+}
+
 
 class ImageTile extends StatelessWidget{
+  int img_id;
   Image img;
   Widget Function(BuildContext context, Widget image) inner_wrapper;
   Widget Function(BuildContext context, Widget image) outter_wrapper;
@@ -39,6 +52,7 @@ class ImageTile extends StatelessWidget{
   ImageTile(this.img, {Key? key, this.on_double_tap,
     this.inner_wrapper = default_inner_wrapper,
     this.outter_wrapper = default_outter_wrapper,
+    this.img_id = -1,
   }) : super(key: key);
   Function()? on_double_tap;
 

@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:bizzvest/halaman_toko/add_toko/toko_model.dart';
+import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_edit_description.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
@@ -18,6 +19,7 @@ void main() {
 
 const InputDecoration text_form_field_input_decoration = InputDecoration(
   labelText: 'Label text',
+  errorMaxLines: 2,
   floatingLabelBehavior: FloatingLabelBehavior.always,
   labelStyle: TextStyle(
     color: Color(0xFF0047D3),
@@ -150,7 +152,29 @@ class _AddTokoWrapperState extends State<AddTokoWrapper> {
               );
             }
 
-            String raw_content = cast<ReqResponse>(snapshot.data)?.body as String;
+            if (req_resp == null) {
+              return Container(
+                child: const Center(
+                  child: Text(
+                    "request response is null",
+                    textDirection: TextDirection.ltr,
+                  ),
+                ),
+              );
+            }
+
+            if (req_resp.has_problem) {
+              return Container(
+                child: Center(
+                  child: Text(
+                    "Error ${req_resp.statusCode} ${req_resp.reasonPhrase}",
+                    textDirection: TextDirection.ltr,
+                  ),
+                ),
+              );
+            }
+
+            String raw_content = req_resp.body as String;
             Map<String, dynamic> map = json.decode(raw_content);
 
             return SingleChildScrollView(
@@ -169,7 +193,7 @@ class _AddTokoWrapperState extends State<AddTokoWrapper> {
   }
 }
 
-T? cast<T>(x) => x is T ? x : null;
+
 
 
 
@@ -236,7 +260,6 @@ class _AddTokoBody extends State<AddTokoBody>{
                     children: [
                       SizedBox(height: 30,),
                       TextFormField(
-                        initialValue: "Ayog",
                         decoration: text_form_field_input_decoration.copyWith(
                           labelText: "Nama merek",
                         ),
@@ -254,7 +277,6 @@ class _AddTokoBody extends State<AddTokoBody>{
 
                       SizedBox(height: margin_size,),
                       TextFormField(
-                        initialValue: "Goya",
                         decoration: text_form_field_input_decoration.copyWith(
                           labelText: "Nama perusahaan",
                         ),
@@ -272,7 +294,6 @@ class _AddTokoBody extends State<AddTokoBody>{
 
                       SizedBox(height: margin_size,),
                       TextFormField(
-                        initialValue: "YAGO",
                         decoration: text_form_field_input_decoration.copyWith(
                           labelText: "Kode saham",
                         ),
@@ -297,7 +318,6 @@ class _AddTokoBody extends State<AddTokoBody>{
 
                       SizedBox(height: margin_size,),
                       TextFormField(
-                        initialValue: "alamat perusahaan",
                         decoration: text_form_field_input_decoration.copyWith(
                           labelText: "Alamat perusahaan",
                         ),
@@ -315,7 +335,6 @@ class _AddTokoBody extends State<AddTokoBody>{
 
                       SizedBox(height: margin_size,),
                       TextFormField(
-                        initialValue: "123",
                         decoration: text_form_field_input_decoration.copyWith(
                           labelText: "Jumlah lembar saham",
                         ),
@@ -333,7 +352,6 @@ class _AddTokoBody extends State<AddTokoBody>{
 
                       SizedBox(height: margin_size,),
                       TextFormField(
-                        initialValue: "123",
                         decoration: text_form_field_input_decoration.copyWith(
                           labelText: "Nilai lembar saham (rupiah)",
                         ),
@@ -352,7 +370,6 @@ class _AddTokoBody extends State<AddTokoBody>{
 
                       SizedBox(height: margin_size,),
                       TextFormField(
-                        initialValue: "123",
                         decoration: text_form_field_input_decoration.copyWith(
                           labelText: "Dividen (bulan)",
                         ),
@@ -412,7 +429,6 @@ class _AddTokoBody extends State<AddTokoBody>{
 
                       SizedBox(height: margin_size,),
                       TextFormField(
-                        initialValue: "deskripsi perusahaan",
                         textInputAction: TextInputAction.newline,
                         keyboardType: TextInputType.multiline,
                         enabled: true,
@@ -461,22 +477,18 @@ class _AddTokoBody extends State<AddTokoBody>{
           margin_size = 0;
           auto_validate = AutovalidateMode.disabled;
         });
-        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Sending to server")));
 
+        show_snackbar(context, "Sending to server");
         form_key.currentState?.save();
-
         is_validate_only = true;
         await validate_form_to_server(context);
+
       }else{
         setState(() {
           margin_size = 30;
           auto_validate = AutovalidateMode.onUserInteraction;
         });
-        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Invalid input")));
+        show_snackbar(context, "Invalid input");
       }
     };
   }
@@ -485,9 +497,7 @@ class _AddTokoBody extends State<AddTokoBody>{
     setState(() {
       enable_submit_button = false;
     });
-    ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Validating current form to server")));
+    show_snackbar(context, "Validating current form to server");
     print("bruh");
 
     var auth = await get_authentication();
@@ -503,9 +513,7 @@ class _AddTokoBody extends State<AddTokoBody>{
       );
     } on DioError catch(e){
       if (Session.is_timeout_error(e)){
-        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Request timed out")));
+        show_snackbar(context, "Request timed out");
         return;
       }
       throw e;
@@ -538,9 +546,7 @@ class _AddTokoBody extends State<AddTokoBody>{
           form_errors = CompanyFormErrors.from_map(map_of_error);
           form_key.currentState?.validate();
         });
-        ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Invalid form data")));
+        show_snackbar(context, "Invalid form data");
         return;
       }
     }
@@ -549,10 +555,7 @@ class _AddTokoBody extends State<AddTokoBody>{
 
     if (response.has_problem){
       print("problem");
-
-      ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error ${response.statusCode}")));
+      show_snackbar(context, "Error ${response.statusCode} ${response.reasonPhrase}");
       return;
     }
     print("no problem. " + response.data_string!);
@@ -564,13 +567,12 @@ class _AddTokoBody extends State<AddTokoBody>{
           "Apakah Anda benar-benar ingin mengirim data?"
           + "\n\n"
           + "Setelah Anda mengirim data, Anda tidak akan dapat menghapus "
-          + "maupun mengubah beberapa data yang telah Anda submit sampai "
-          + "batas waktu terakhir perusahaan ini."),
+          + "maupun mengubah beberapa data yang telah Anda submit. "),
       [
         SimplePromptAction("Cancel", (){
           Navigator.pop(context);
         }),
-        SimplePromptAction("Submit", () async {
+        SimplePromptAction("Tetap submit", () async {
           Navigator.pop(context);
           await submit_form_to_server(context);
         }),
@@ -579,17 +581,74 @@ class _AddTokoBody extends State<AddTokoBody>{
   }
 
   Future<void> submit_form_to_server(BuildContext context) async {
-    ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Submitting current form to server")));
+    setState(() {
+      enable_submit_button = false;
+    });
 
+    show_snackbar(context, "Submitting current form to server");
 
+    var auth = await get_authentication();
+    ReqResponse? response;
+    try {
+      for (var i=3; i >= 1; i--){
+        try {
+          response = await auth.post(
+            uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_add_toko_API),
+            data: form_data.to_map()
+              ..addAll({
+                COOKIE_CONST.csrf_token_formdata: csrf_token,
+                'is_validate_only': 0,
+              }),
+          );
+          break;
+        } on DioError catch(e){
+          if (Session.is_timeout_error(e)){
+            String temp = "";
+            if (i > 1)
+              temp = "Retrying...";
+            show_snackbar(context, "Request timed out. " + temp);
+          }
+          if (i == 1)
+            throw e;
+        }
+      }
+
+    }finally{
+      setState(() {
+        enable_submit_button = true;
+      });
+    }
+
+    if (response == null){
+      ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Internal error: null response")));
+      return;
+    }
+    if (response.has_problem){
+      ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Errpor ${response.statusCode} ${response.reasonPhrase}")));
+      return;
+    }
 
     ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
     ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Successfully submitted to server")));
-  }
+    setState(() {
+      enable_submit_button = true;
+    });
 
+    Map<String, dynamic> map = json.decode(
+        response.data_string!
+    );
+    print(map);
+    int id = map['id'];
+
+    Navigator.pop(context);
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => HalamanToko(id: id)));
+  }
 }
 
 

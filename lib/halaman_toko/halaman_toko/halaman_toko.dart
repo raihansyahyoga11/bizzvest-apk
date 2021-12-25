@@ -133,7 +133,7 @@ class _HalamanTokoState extends State<HalamanToko> {
             images_str.forEach((dynamic element_dynamic) {
               String element = element_dynamic;
               images.add(Image.network(
-                  NETW_CONST.protocol + NETW_CONST.server + element));
+                  NETW_CONST.protocol + NETW_CONST.host + element));
             });
 
             assert (resulting_json['is_curr_client_the_owner'] is int);
@@ -165,7 +165,7 @@ class _HalamanTokoState extends State<HalamanToko> {
                         full_name: resulting_json['owner']['full_name'],
                         username: resulting_json['owner']['username'],
                         photo_profile: Image.network(
-                            NETW_CONST.protocol + NETW_CONST.server
+                            NETW_CONST.protocol + NETW_CONST.host
                                 + resulting_json['owner']['photo_profile']
                         ),
                       ),

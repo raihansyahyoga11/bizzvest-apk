@@ -44,7 +44,7 @@ void main() async {
 
 class NETW_CONST{
   // static final String server = "bizzvest.herokuapp.com";
-  static const String server = (kReleaseMode)? "bizzvest.herokuapp.com" : "10.0.2.2:8000";
+  static const String host = (kReleaseMode)? "bizzvest.herokuapp.com" : "10.0.2.2:8000";
   // static final String server = (kReleaseMode)? "bizzvest.herokuapp.com" : "192.168.43.117:8000";
   static const String protocol = "http://";
 
@@ -56,12 +56,14 @@ class NETW_CONST{
   static const String halaman_toko_upload_proposal = "/halaman-toko/upload-proposal";
   static const String halaman_toko_ajukan_verifikasi = "/halaman-toko/request-for-verification";
   static const String halaman_toko_add_toko_API = "/halaman-toko/add-toko-api";
+  static const String halaman_toko_manage_photos_init_api = "/halaman-toko/manage-photos-init-api";
+  static const String halaman_toko_add_photo = "/halaman-toko/add-photo";
 
-  static final Uri server_uri = Uri.http(server, '/');
-  static final Uri login_uri = Uri.http(server, login_path);
+  static final Uri server_uri = Uri.http(host, '/');
+  static final Uri login_uri = Uri.http(host, login_path);
 
   static get_server_URI(String path, [Map<String, dynamic> query=const {}]){
-    return Uri.http(server, path, query);
+    return Uri.http(host, path, query);
   }
 }
 
@@ -236,12 +238,24 @@ class Session{
 
   Map<String, String> header = {};
   Future<ReqResponse<dynamic>> get({
-          Uri? uri, String? url, Map<String, dynamic>? data
+          Uri? uri, String? url, Map<String, String>? data
         }) async{
     assert (uri == null && url != null || url == null && uri != null);
 
     if (uri != null){
-      return ReqResponse<dynamic>(dio: await dio.getUri(uri));
+      if (data != null){
+        Uri new_uri = Uri(
+          scheme: uri.scheme,
+          userInfo: uri.userInfo,
+          host: uri.host,
+          port: uri.port,
+          pathSegments: uri.pathSegments,
+          query: uri.query,
+          queryParameters: {...uri.queryParameters, ...data},
+          fragment: uri.fragment,
+        );
+        return ReqResponse<dynamic>(dio: await dio.getUri(new_uri));
+      }else return ReqResponse<dynamic>(dio: await dio.getUri(uri));
     }else{
       assert (url != null);
       return ReqResponse<dynamic>(dio: await dio.get(url!, queryParameters:data));
@@ -249,21 +263,25 @@ class Session{
   }
 
   Future<ReqResponse<dynamic>> post({
-          Uri? uri, String? url, Duration timeout = const Duration(seconds: 5), required Map<String, dynamic> data
+          Uri? uri, String? url,
+          Duration timeout = const Duration(seconds: 5),
+          Map<String, dynamic>? data,
+          FormData? form_data,
         }) async{
     assert (uri == null && url != null || url == null && uri != null);
+    assert (data == null && form_data != null || form_data == null && data != null);
 
     if (uri != null){
       return ReqResponse<dynamic>(
           dio: await dio.postUri(
             uri,
-            data: FormData.fromMap(data),
+            data: (data!=null)? FormData.fromMap(data):form_data!,
         ));
     }else{
       assert (url != null);
       return ReqResponse<dynamic>(dio: await dio.post(
           url!,
-          data: FormData.fromMap(data)
+          data: (data!=null)? FormData.fromMap(data):form_data!
       ));
     }
   }

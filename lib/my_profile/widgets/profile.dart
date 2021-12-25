@@ -32,18 +32,7 @@ class ProfileWidget extends StatelessWidget {
       ),
     );
   }
-  Widget changePhoto(BuildContext context) {
-      return RaisedButton(
-      child: Text('UPLOAD FILE'),
-      onPressed: () async {
-        var picked = await FilePicker.platform.pickFiles();
-
-        if (picked != null) {
-          print(picked.files.first.name);
-        }
-      },
-    );
-  }
+  
   Widget buildImage() {
     final image = NetworkImage(imagePath);
 

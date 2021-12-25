@@ -1,0 +1,6 @@
+io/flutter/plugins/GeneratedPluginRegistrant.java
+ io.flutter.plugins.GeneratedPluginRegistrant
+com/herokuapp/bizzvest/bizzvest/BuildConfig.java
+ com.herokuapp.bizzvest.bizzvest.BuildConfig
+com/herokuapp/bizzvest/bizzvest/MainActivity.java
+ com.herokuapp.bizzvest.bizzvest.MainActivity

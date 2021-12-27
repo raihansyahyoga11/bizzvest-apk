@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:cookie_jar/cookie_jar.dart';
@@ -45,12 +46,11 @@ void main() async {
 
 
 class NETW_CONST{
-  // static final String server = "bizzvest.herokuapp.com";
-  static const String host = (kReleaseMode)? "bizzvest.herokuapp.com" : "10.0.2.2:8000";
-  // static final String server = (kReleaseMode)? "bizzvest.herokuapp.com" : "192.168.43.117:8000";
   static const String protocol = "http://";
+  static const String host = (kReleaseMode)? "bizzvest.herokuapp.com" : "10.0.2.2:8000";
 
   static const String login_path = "/start-web/login";
+  static const String acc_info = "/halaman-toko/account-information";
 
   static const String halaman_toko_get_photo_json_path = "/halaman-toko/halaman-toko-photo-json";
   static const String halaman_toko_get_toko_json_path = "/halaman-toko/halaman-toko-json";
@@ -147,7 +147,10 @@ class ReqResponse<T>{
 
 
 class Authentication extends Session{
-  bool is_logged_in = false;
+  bool _is_logged_in = false;
+  bool get is_logged_in{
+    return _is_logged_in;
+  }
 
   Authentication({required cookie_jar}) : super(cookie_jar: cookie_jar);
 
@@ -186,9 +189,18 @@ class Authentication extends Session{
     ReqResponse ret = await post(uri: NETW_CONST.login_uri, data: form);
 
     if (!ret.has_problem){
-      is_logged_in = true;
-      if (kDebugMode) {
-        print("logged in " + ret.statusCode.toString() + " " + (ret.reasonPhrase ?? "null"));
+      ReqResponse resp = await get(
+          uri: NETW_CONST.get_server_URI(NETW_CONST.acc_info));
+
+      if (!resp.has_problem && json.decode(resp.body)['is_logged_in'] == 1){
+        _is_logged_in = true;
+
+        if (kDebugMode) {
+          print("logged in " +
+              ret.statusCode.toString() +
+              " " +
+              (ret.reasonPhrase ?? "null"));
+        }
       }
     }
     return ret;
@@ -199,12 +211,12 @@ class Authentication extends Session{
 
 class Session{
   static const bool DEBUG = kDebugMode;
-  static const default_timeout = 10000;
+  static const _default_timeout = 10000;
 
   var dio =  Dio(BaseOptions(
-      connectTimeout: default_timeout,
-      receiveTimeout: default_timeout,
-      sendTimeout: default_timeout,
+      connectTimeout: _default_timeout,
+      receiveTimeout: _default_timeout,
+      sendTimeout: _default_timeout,
       responseType: ResponseType.plain,
 
       followRedirects: false,
@@ -244,7 +256,7 @@ class Session{
     return false;
   }
 
-  Map<String, String> header = {};
+
   Future<ReqResponse<dynamic>> get({
           Uri? uri, String? url, Map<String, String>? data
         }) async{
@@ -298,7 +310,7 @@ class Session{
 
 
 
-
+@deprecated  // ga working
 class AuthenticationOld extends SessionOld{
   bool is_logged_in = false;
 
@@ -321,6 +333,7 @@ class AuthenticationOld extends SessionOld{
 
 }
 
+@deprecated
 class SessionOld{
   static const bool DEBUG = kDebugMode;
 
@@ -402,7 +415,7 @@ class SessionOld{
 
 
        header['cookie'] = cookie_string;
-int index_end = cookie_string.indexOf(';');
+        int index_end = cookie_string.indexOf(';');
        index_end = (index_end == -1)? cookie_string.length:index_end;
        header['cookie'] = cookie_string.substring(0, index_end);
 

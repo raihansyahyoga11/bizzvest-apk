@@ -335,7 +335,8 @@ class AuthenticationOld extends SessionOld{
 
 @deprecated
 class SessionOld{
-  static const bool DEBUG = kDebugMode;
+  // static const bool DEBUG = kDebugMode;
+  static const bool DEBUG = false;
 
   Map<String, String> header = {};
   Future<http.Response> get({
@@ -418,7 +419,6 @@ class SessionOld{
         int index_end = cookie_string.indexOf(';');
        index_end = (index_end == -1)? cookie_string.length:index_end;
        header['cookie'] = cookie_string.substring(0, index_end);
-
      }
   }
 

@@ -46,7 +46,7 @@ void main() async {
 
 
 class NETW_CONST{
-  static const String protocol = "http://";
+  static const String protocol = (kReleaseMode)? "https://" : "http://";
   static const String host = (kReleaseMode)? "bizzvest.herokuapp.com" : "10.0.2.2:8000";
 
   static const String login_path = "/start-web/login";

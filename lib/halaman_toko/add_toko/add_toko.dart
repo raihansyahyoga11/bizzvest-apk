@@ -68,23 +68,23 @@ class AddTokoMaterial extends StatelessWidget{
         ),
       ),
 
-      home: AddTokoWrapper(),
+      home: AddToko(),
     );
   }
 }
 
 
 
-class AddTokoWrapper extends StatefulWidget{
-  const AddTokoWrapper({Key? key}) : super(key: key);
+class AddToko extends StatefulWidget{
+  const AddToko({Key? key}) : super(key: key);
 
   @override
-  State<AddTokoWrapper> createState() => _AddTokoWrapperState();
+  State<AddToko> createState() => _AddTokoState();
 }
 
 
 
-class _AddTokoWrapperState extends State<AddTokoWrapper> {
+class _AddTokoState extends State<AddToko> {
   static const int TIMEOUT_RETRY_LIMIT = 4;
   int timeout_retry_number = 0;
 

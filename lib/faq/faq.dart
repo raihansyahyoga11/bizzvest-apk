@@ -875,20 +875,18 @@ class MyApp extends StatelessWidget {
 
   // function to login
   void _navigateToLoginScreen(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => FaqUtamaScreen()));
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => SignupForm()));
   }
 
   // function to daftar toko
   void _navigateToDaftarTokoScreen(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => FaqUtamaScreen()));
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => DaftarTokoMaterial()));
   }
 
   // function to add toko
   void _navigateToAddTokoScreen(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => FaqUtamaScreen()));
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddToko()));
   }
-
-
 }
 
 

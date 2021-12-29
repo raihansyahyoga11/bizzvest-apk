@@ -565,7 +565,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
->>>>>>> 2f695594cb6b184a06522fdea6293da4a6890cba
   typed_data:
     dependency: transitive
     description:

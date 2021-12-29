@@ -174,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (item) {
       case 0:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LoginForm()));
+            .push(MaterialPageRoute(builder: (context) => MyProfile()));
         break;
       case 1:
         Navigator.of(context)

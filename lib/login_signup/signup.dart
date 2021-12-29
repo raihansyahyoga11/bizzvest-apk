@@ -178,13 +178,16 @@ class Signup extends State<SignupForm> {
                             'email': email,
                             'password': password,
                           });
-                      final loggingIn = await request
-                          .login("http://localhost:8000/start-web/login-flutter", {
-                        'username': username,
-                        'password': password,
-                      });
-                      if (response['status'] && loggingIn['status']) {
-                        Navigator.pop(context);
+                      if (response['status']) {
+                        final loggingIn = await request
+                            .login(
+                            "http://localhost:8000/start-web/login-flutter", {
+                          'username': username,
+                          'password': password,
+                        });
+                        if (loggingIn['status']) {
+                          Navigator.pop(context);
+                        }
                       }
                     }
                       },

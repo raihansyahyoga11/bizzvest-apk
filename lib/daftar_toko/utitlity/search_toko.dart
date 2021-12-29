@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './daftar_toko.dart';
+import 'daftar_toko.dart';
 
 // Diolah dari https://docs.flutter.dev/cookbook/forms/retrieve-input
 class MyCustomForm extends StatefulWidget {

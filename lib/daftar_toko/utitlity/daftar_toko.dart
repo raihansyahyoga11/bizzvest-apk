@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'widgets/main_drawer.dart';
-import './models/toko.dart';
-import './card_toko.dart';
-import './search_toko.dart';
+import '../widgets/main_drawer.dart';
+import '../models/toko.dart';
+import '../screen/card_toko.dart';
+import 'search_toko.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';

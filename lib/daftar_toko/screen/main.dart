@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'widgets/main_drawer.dart';
-import './models/toko.dart';
+import '../widgets/main_drawer.dart';
+import '../models/toko.dart';
 
 void main() {
   runApp(MyApp());

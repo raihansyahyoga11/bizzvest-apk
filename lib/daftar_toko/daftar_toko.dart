@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'widgets/main_drawer.dart';
-import './toko_data.dart';
 import './models/toko.dart';
 import './card_toko.dart';
 import './search_toko.dart';
@@ -97,129 +96,13 @@ class DaftarToko extends StatelessWidget {
           ),
          body: new Container(
               child: new ListView(
-                children: getTokoWidget(DAFTAR_TOKO),
-              )
-
+                children: Text("Sementara"),
+              ),
             ),
       
     );
   }
 }
 
-// Diolah dari https://docs.flutter.dev/cookbook/forms/retrieve-input
-class MyCustomForm extends StatefulWidget {
-  const MyCustomForm({Key? key}) : super(key: key);
-
-  @override
-  _MyCustomFormState createState() => _MyCustomFormState();
-}
-
-// Define a corresponding State class.
-// This class holds the data related to the Form.
-class _MyCustomFormState extends State<MyCustomForm> {
-  // Create a text controller and use it to retrieve the current value
-  // of the TextField.
-  final myController = TextEditingController();
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    myController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-                controller: myController,
-                decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                      tooltip: 'Cari toko!',
-                      icon: Icon(Icons.search),
-                      onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text(
-                                  'Hasil pencarian untuk '+myController.text+':\n(Fungsi pencarian masih belum benar, hanya untuk testing form saja)',
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
-                                ),
-                                // Retrieve the text the user has entered by using the
-                                // TextEditingController.
-                                content: setAlertDialogColumn(),
-                              ); 
-                            },
-                          );
-                        },
-                      ),
-                    prefixIcon: IconButton(
-                      tooltip: 'Hapus pencarian!',
-                      icon: Icon(Icons.clear),
-                      onPressed: () {
-                        /* Clear the search field */
-                        myController.text = '';
-                      },
-                    ),
-                    hintText: 'Search...',
-                    border: InputBorder.none),
-              );
-  }
-
-  Widget setAlertDialogColumn() {
-    return Container(
-      height: 300.0, // Change as per your requirement
-      width: 300.0,
-      child: ListView(
-        children: getTokoWidgetText(DAFTAR_TOKO, myController.text),
-    ),
-    );
-  }
-}
 
 
-
-// processed from https://stackoverflow.com/questions/49819221/flutter-cards-how-to-loop-a-card-widgets-in-flutter
-class CustomCard extends StatelessWidget {
-  String nama_toko="";
-  String nama_perusahaan="";
-  String photo_id="";
-  CustomCard(String nama_toko, String nama_perusahaan, int photo_id){
-    this.nama_toko = nama_toko;
-    this.nama_perusahaan = nama_perusahaan;
-    this.photo_id = photo_id.toString();
-  }
-  @override
-  Widget build(BuildContext context) {
-              return new Card(
-                      child: InkWell(                        
-                        child: new Column(
-                      children: <Widget>[
-                        new Padding(
-                          padding: new EdgeInsets.all(7.0),
-                          child: new Column(
-                            children: <Widget>[
-                              new Image.asset('/images/'+this.photo_id+'.jpg',width:300,height:300),
-                              new Padding(
-                               padding: new EdgeInsets.all(7.0),
-                               child: new Text(this.nama_toko ,style: new TextStyle(fontSize: 18.0),
-                              ),
-                              ),
-                              new Padding(
-                               padding: new EdgeInsets.all(7.0),
-                               child: new Text(this.nama_perusahaan ,style: new TextStyle(fontSize: 13.0),
-                               ),
-                             ),
-                            ],
-                          )
-                        )
-                      ],
-                    ),                      
-                        onTap: () {                          
-                        print("tapped on card");
-                        },                      
-                      )
-                      
-                  );
-  }
-}

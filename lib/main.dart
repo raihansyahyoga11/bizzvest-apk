@@ -1,3 +1,4 @@
+import 'package:bizzvest/faq/faq.dart';
 import 'package:bizzvest/my_profile/screens/ProfilePage.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzvest/login_signup/login.dart';
@@ -42,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final _widgetOptions = [
     new LoginForm(),
     new SignupForm(),
-    new LoginForm(),
+    new FaqUtamaScreen(),
   ];
 
   void _onItemTapped(int index) {

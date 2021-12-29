@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 
 class HalamanTokoProperties{
   final int id;
-  final bool show_edit_option;
+  final bool is_curr_client_the_owner;
   final String nama_merek;
   final String nama_perusahaan;
   final List<Image> images;
@@ -15,8 +15,8 @@ class HalamanTokoProperties{
   final String sisa_waktu;
   final String periode_dividen;
   final String alamat;
-  final String deskripsi;
-  final String? alamat_proposal;
+  String deskripsi;
+  String? proposal_server_path;
 
   final UserAccount owner;
 
@@ -34,7 +34,7 @@ class HalamanTokoProperties{
 
   HalamanTokoProperties({
     required this.id,
-    required this.show_edit_option,
+    required this.is_curr_client_the_owner,
     required this.nama_merek,
     required this.nama_perusahaan,
     required this.images,
@@ -42,7 +42,7 @@ class HalamanTokoProperties{
     required this.tanggal_berakhir,
     required this.alamat,
     required this.deskripsi,
-    required this.alamat_proposal,
+    required this.proposal_server_path,
     required this.owner,
 
     required this.kode_saham,
@@ -68,7 +68,7 @@ class HalamanTokoProperties{
     return nama_merek == o.nama_merek
         && id == o.id
         && deskripsi == o.deskripsi
-        && alamat_proposal == o.alamat_proposal
+        && proposal_server_path == o.proposal_server_path
         && alamat == o.alamat
         && nama_perusahaan == o.nama_perusahaan
         && images == o.images
@@ -91,7 +91,7 @@ class HalamanTokoProperties{
       ^ nama_perusahaan.hashCode
       ^ alamat.hashCode
       ^ deskripsi.hashCode
-      ^ alamat_proposal.hashCode
+      ^ proposal_server_path.hashCode
       ^ images.hashCode
       ^ status_verifikasi.hashCode
       ^ tanggal_berakhir.hashCode

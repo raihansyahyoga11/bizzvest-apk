@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: DaftarToko(),
       debugShowCheckedModeBanner: false,
-      theme: ThemeData( 
+      theme: ThemeData(
         scaffoldBackgroundColor: const Color.fromRGBO(242, 255, 253, 1),
         primarySwatch: Colors.blue,
         accentColor: Colors.blue,
@@ -59,29 +59,29 @@ class DaftarToko extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: MainDrawer(), 
-        backgroundColor: const Color.fromRGBO(201, 244, 255, 1),
-        // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
-        appBar: AppBar(
-          // The search area here
+      drawer: MainDrawer(),
+      backgroundColor: const Color.fromRGBO(201, 244, 255, 1),
+      // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
+      appBar: AppBar(
+        // The search area here
           title: Container(
             width: double.infinity,
             height: 40,
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(5)),
             child: Center(
-            // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
+              // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
               child: MyCustomForm(),
-            ), 
-          )
-          ),
-         body: new Container(
-              child: new ListView(
-                children: getTokoWidget(DAFTAR_TOKO),
-              )
-
             ),
-      
+          )
+      ),
+      body: new Container(
+          child: new ListView(
+            children: getTokoWidget(DAFTAR_TOKO),
+          )
+
+      ),
+
     );
   }
 }
@@ -111,39 +111,39 @@ class _MyCustomFormState extends State<MyCustomForm> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-                controller: myController,
-                decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                      tooltip: 'Cari toko!',
-                      icon: Icon(Icons.search),
-                      onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text(
-                                  'Hasil pencarian untuk '+myController.text+':\n(Fungsi pencarian masih belum benar, hanya untuk testing form saja)',
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
-                                ),
-                                // Retrieve the text the user has entered by using the
-                                // TextEditingController.
-                                content: setAlertDialogColumn(),
-                              ); 
-                            },
-                          );
-                        },
-                      ),
-                    prefixIcon: IconButton(
-                      tooltip: 'Hapus pencarian!',
-                      icon: Icon(Icons.clear),
-                      onPressed: () {
-                        /* Clear the search field */
-                        myController.text = '';
-                      },
+      controller: myController,
+      decoration: InputDecoration(
+          suffixIcon: IconButton(
+            tooltip: 'Cari toko!',
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text(
+                      'Hasil pencarian untuk '+myController.text+':\n(Fungsi pencarian masih belum benar, hanya untuk testing form saja)',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
                     ),
-                    hintText: 'Search...',
-                    border: InputBorder.none),
+                    // Retrieve the text the user has entered by using the
+                    // TextEditingController.
+                    content: setAlertDialogColumn(),
+                  );
+                },
               );
+            },
+          ),
+          prefixIcon: IconButton(
+            tooltip: 'Hapus pencarian!',
+            icon: Icon(Icons.clear),
+            onPressed: () {
+              /* Clear the search field */
+              myController.text = '';
+            },
+          ),
+          hintText: 'Search...',
+          border: InputBorder.none),
+    );
   }
 
   Widget setAlertDialogColumn() {
@@ -152,7 +152,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
       width: 300.0,
       child: ListView(
         children: getTokoWidgetText(DAFTAR_TOKO, myController.text),
-    ),
+      ),
     );
   }
 }
@@ -171,35 +171,35 @@ class CustomCard extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-              return new Card(
-                      child: InkWell(                        
-                        child: new Column(
-                      children: <Widget>[
-                        new Padding(
-                          padding: new EdgeInsets.all(7.0),
-                          child: new Column(
-                            children: <Widget>[
-                              new Image.asset('/images/'+this.photo_id+'.jpg',width:300,height:300),
-                              new Padding(
-                               padding: new EdgeInsets.all(7.0),
-                               child: new Text(this.nama_toko ,style: new TextStyle(fontSize: 18.0),
-                              ),
-                              ),
-                              new Padding(
-                               padding: new EdgeInsets.all(7.0),
-                               child: new Text(this.nama_perusahaan ,style: new TextStyle(fontSize: 13.0),
-                               ),
-                             ),
-                            ],
-                          )
-                        )
-                      ],
-                    ),                      
-                        onTap: () {                          
-                        print("tapped on card");
-                        },                      
-                      )
-                      
-                  );
+    return new Card(
+        child: InkWell(
+          child: new Column(
+            children: <Widget>[
+              new Padding(
+                  padding: new EdgeInsets.all(7.0),
+                  child: new Column(
+                    children: <Widget>[
+                      new Image.asset('/images/'+this.photo_id+'.jpg',width:300,height:300),
+                      new Padding(
+                        padding: new EdgeInsets.all(7.0),
+                        child: new Text(this.nama_toko ,style: new TextStyle(fontSize: 18.0),
+                        ),
+                      ),
+                      new Padding(
+                        padding: new EdgeInsets.all(7.0),
+                        child: new Text(this.nama_perusahaan ,style: new TextStyle(fontSize: 13.0),
+                        ),
+                      ),
+                    ],
+                  )
+              )
+            ],
+          ),
+          onTap: () {
+            print("tapped on card");
+          },
+        )
+
+    );
   }
 }

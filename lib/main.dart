@@ -1,3 +1,4 @@
+import 'package:bizzvest/my_profile/screens/ProfilePage.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzvest/login_signup/login.dart';
 import 'package:bizzvest/login_signup/signup.dart';
@@ -159,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (item) {
       case 0:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LoginForm()));
+            .push(MaterialPageRoute(builder: (context) => MyProfile()));
         break;
       case 1:
         Navigator.of(context)

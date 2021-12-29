@@ -7,7 +7,6 @@ import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_edit_description.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/loading_screen.dart';
-import 'package:bizzvest/halaman_toko/shared/provider_matrial_app.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -59,22 +58,33 @@ class AddTokoMaterial extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return ProviderMaterialApp(AddToko());
+    return MaterialApp(
+
+      theme: ThemeData(
+        textTheme: Theme.of(context).textTheme.apply(
+            fontSizeFactor: 1.3,
+            fontSizeDelta: 2.0,
+            fontFamily: 'Tisan'
+        ),
+      ),
+
+      home: AddTokoWrapper(),
+    );
   }
 }
 
 
 
-class AddToko extends StatefulWidget{
-  const AddToko({Key? key}) : super(key: key);
+class AddTokoWrapper extends StatefulWidget{
+  const AddTokoWrapper({Key? key}) : super(key: key);
 
   @override
-  State<AddToko> createState() => _AddTokoState();
+  State<AddTokoWrapper> createState() => _AddTokoWrapperState();
 }
 
 
 
-class _AddTokoState extends State<AddToko> {
+class _AddTokoWrapperState extends State<AddTokoWrapper> {
   static const int TIMEOUT_RETRY_LIMIT = 4;
   int timeout_retry_number = 0;
 
@@ -83,7 +93,7 @@ class _AddTokoState extends State<AddToko> {
     return SafeArea(child: Scaffold(
         body: RequestLoadingScreenBuilder(
           request_function: () async {
-            var auth = await get_authentication(context);
+            var auth = await get_authentication();
             return auth.get(
               uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_add_toko_API)
             );
@@ -96,7 +106,6 @@ class _AddTokoState extends State<AddToko> {
           on_success: (BuildContext context, AsyncSnapshot<dynamic> snapshot,
                 ReqResponse response, Function(Function()) refresh) {
             String raw_content = response.data_string!;
-            print(raw_content);
             Map<String, dynamic> map = json.decode(raw_content);
 
             return SingleChildScrollView(
@@ -420,21 +429,16 @@ class _AddTokoBody extends State<AddTokoBody>{
     });
     show_snackbar(context, "Validating current form to server");
 
-    var auth = await get_authentication(context);
+    var auth = await get_authentication();
     ReqResponse response;
-    var dict = form_data.to_map()
-      ..addAll({
-        COOKIE_CONST.csrf_token_formdata: csrf_token,
-        'is_validate_only': 1,
-        'my_data': json.encode([1, 2, 3]),
-      });
-
     try {
-
-      print(dict);
       response = await auth.post(
         uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_add_toko_API),
-        data: dict,
+        data: form_data.to_map()
+          ..addAll({
+            COOKIE_CONST.csrf_token_formdata: csrf_token,
+            'is_validate_only': 1,
+          }),
       );
     } on DioError catch(e){
       if (Session.is_timeout_error(e)){
@@ -507,7 +511,7 @@ class _AddTokoBody extends State<AddTokoBody>{
 
     show_snackbar(context, "Submitting current form to server");
 
-    var auth = await get_authentication(context);
+    var auth = await get_authentication();
     ReqResponse? response;
     try {
       for (var i=3; i >= 1; i--){

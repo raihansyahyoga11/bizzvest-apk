@@ -1,72 +1,51 @@
 import 'dart:ffi';
-import 'dart:ui';
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter/gestures.dart';
-import 'dart:async' show Future;
-import 'EditingPage.dart';
-import '../models/UserAccount.dart';
-import '../api/api_my_profile.dart';
+
 import '../widgets/main_drawer.dart';
+import 'EditingPage.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
- 
 
 
-void main() {
-  runApp(MyProfile());
-}
 
-class MyProfile extends StatefulWidget {
-  MyProfile();
+class ProfilePage extends StatefulWidget {
   @override
-  MyProfileState createState() => MyProfileState();
+  MapScreenState createState() => MapScreenState();
 }
 
-class MyProfileState extends State<MyProfile> {
-    Widget _getEditIcon() {
-    return new GestureDetector(
-      child: new CircleAvatar(
-        backgroundColor: Colors.blue,
-        radius: 14.0,
-        child: new Icon(
-          Icons.edit,
-          color: Colors.white,
-          size: 25,
-        ),
-      ),
-      onTap: () {
-        Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => EditingPage(),
-            ));
-        // setState(() {
-        //   _status = false;
-        // });
-      },
-    );
-  }
+class MapScreenState extends State<ProfilePage>
+
+    with SingleTickerProviderStateMixin {
+      final namaLengkap = TextEditingController();
+      final username = TextEditingController();
+      final jenisKelamin = TextEditingController();
+      final email= TextEditingController();
+      final NoHandphone= TextEditingController();
+      final alamat= TextEditingController();
+      final deskripsi = TextEditingController();
       
-  final bool _status = true;
+  bool _status = true;
   final FocusNode myFocusNode = FocusNode();
 
-  // void getReq() async {
-  //     final response = await http.get(Uri.parse("http://10.0.2.2:8000/my-profile/my-profile-json"),headers: <String, String>{'Content-Type':'application/json'});
-  //     print(response.body);
-  //   }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
-  Widget futureWidget() {
-    return new FutureBuilder<User>(
-      future: loadUser(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return new Container(
-            color: Colors.white,
-            child: new ListView(
+  @override
+  Widget build(BuildContext context) {
+    
+    return new Scaffold(
+      appBar: AppBar(
+        title: Text("My Profile"),
+      ),
+        body: new Container(
+          color: Colors.white,
+          child: new ListView(
             children: <Widget>[
               Column(
                 children: <Widget>[
@@ -75,23 +54,19 @@ class MyProfileState extends State<MyProfile> {
                     color: Colors.white,
                     child: new Column(
                       children: <Widget>[
+
+
                         Padding(
                           padding: EdgeInsets.only(top:30, left:230.0, right:25, bottom:20),
                           child: Container(
                             width: 80.0,
                             height: 20.0,
                             child: Container(
-                              child: Center(
-                                child: Text("Investor",
-                                style: TextStyle(fontSize: 15, color: Colors.white))),
                             decoration: new BoxDecoration(
                               color: Colors.red,
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.circular(10)
-                              )),
-                              
+                                  shape: BoxShape.rectangle,
+                                    )),
                             ),
-                          
                         ),
 
 
@@ -109,7 +84,7 @@ class MyProfileState extends State<MyProfile> {
                                       shape: BoxShape.circle,
                                       image: new DecorationImage(
                                         image: new AssetImage(
-                                            "${snapshot.data?.photoProfile}"),   
+                                            'src/img/yoga.jpg'),   
                                         fit: BoxFit.cover,
                                       ),
                                     )),
@@ -164,7 +139,7 @@ class MyProfileState extends State<MyProfile> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       new Text(
-                                        "${snapshot.data?.namaLengkap}",
+                                        'Raihansyah Yoga Adhitama',
                                         style: TextStyle(
                                             fontSize: 18.0,
                                             fontWeight: FontWeight.bold,
@@ -172,7 +147,7 @@ class MyProfileState extends State<MyProfile> {
                                         // mainAxisAlignment: MainAxisAlignment.center,
                                       ),
                                       new Text(
-                                        "${snapshot.data?.username}",
+                                        '@raihansyahyoga',
                                         style: TextStyle(
                                             fontSize: 18.0,
                                             fontWeight: FontWeight.normal,
@@ -227,15 +202,21 @@ class MyProfileState extends State<MyProfile> {
                                   Flexible(
                                     child: Padding(
                                       padding: EdgeInsets.only(right: 10.0),
-                                      child: new Text(
-                                        "${snapshot.data?.namaLengkap}",
+                                      child: new TextFormField(
+                                        controller: namaLengkap,
+                                        decoration: const InputDecoration(
+                                            hintText: "Tambahkan nama lengkap"),
+                                        enabled: !_status,
                                       ),
                                     ),
                                     flex: 2,
                                   ),
                                   Flexible(
-                                    child: new Text(
-                                     "${snapshot.data?.username}",
+                                    child: new TextFormField(
+                                      controller: username,
+                                      decoration: const InputDecoration(
+                                          hintText: "Masukkan username"),
+                                      enabled: !_status,
                                     ),
                                     flex: 2,
                                   ),
@@ -269,8 +250,11 @@ class MyProfileState extends State<MyProfile> {
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   new Flexible(
-                                    child: new Text(
-                                     "${snapshot.data?.jenisKelamin}",
+                                    child: new TextField(
+                                      controller: jenisKelamin,
+                                      decoration: const InputDecoration(
+                                          hintText: "Masukkan jenis kelamin"),
+                                      enabled: !_status,
                                     ),
                                   ),
                                 ],
@@ -303,8 +287,11 @@ class MyProfileState extends State<MyProfile> {
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   new Flexible(
-                                    child: new Text(
-                                      "${snapshot.data?.email}"
+                                    child: new TextField(
+                                      controller: email,
+                                      decoration: const InputDecoration(
+                                          hintText: "Masukkan email"),
+                                      enabled: !_status,
                                     ),
                                   ),
                                 ],
@@ -337,8 +324,11 @@ class MyProfileState extends State<MyProfile> {
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   new Flexible(
-                                    child: new Text(
-                                   "${snapshot.data?.nomorTelepon}"
+                                    child: new TextField(
+                                      controller: NoHandphone,
+                                      decoration: const InputDecoration(
+                                          hintText: "Masukkan nomor handphone"),
+                                      enabled: !_status,
                                     ),
                                   ),
                                 ],
@@ -371,8 +361,11 @@ class MyProfileState extends State<MyProfile> {
                             mainAxisSize: MainAxisSize.max,
                             children: <Widget>[
                               new Flexible(
-                                child: new Text(
-                               "${snapshot.data?.alamat}"
+                                child: new TextField(
+                                  controller: alamat,
+                                  decoration: const InputDecoration(
+                                      hintText: "Masukkan alamat"),
+                                  enabled: !_status,
                                 ),
                               ),
                             ],
@@ -405,8 +398,11 @@ class MyProfileState extends State<MyProfile> {
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   new Flexible(
-                                    child: new Text(
-                                      "${snapshot.data?.deskripsi}"
+                                    child: new TextField(
+                                      controller: deskripsi,
+                                      decoration: const InputDecoration(
+                                          hintText: "Masukkan deskripsi"),
+                                      enabled: !_status,
                                     ),
                                   ),
                                 ],
@@ -419,33 +415,113 @@ class MyProfileState extends State<MyProfile> {
                 ],
               ),
             ],
-          
-           
-            
-            
-        ),);
-        } 
-        else if (snapshot.hasError) {
-          return new Text("${snapshot.error}");
-        }
-        return new CircularProgressIndicator();
-      },
-    );
+          ),
+        ),
+         drawer: MainDrawer(),
+        );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      
-      home: new Scaffold(
-          appBar: new AppBar(
+  // @override
+  // void dispose() {
+  //   // Clean up the controller when the Widget is disposed
+  //   myFocusNode.dispose();
+  //   super.dispose();
+  // }
 
-            title: new Text('My Profile'),
-          ),
-          body: futureWidget(),
-          drawer: MainDrawer(),
-      )
+  // Widget _getActionButtons() {
+  //   return Padding(
+  //     padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 45.0),
+  //     child: new Row(
+  //       mainAxisSize: MainAxisSize.max,
+  //       mainAxisAlignment: MainAxisAlignment.start,
+  //       children: <Widget>[
+  //         Expanded(
+  //           child: Padding(
+  //             padding: EdgeInsets.only(right: 10.0),
+  //             child: Container(
+  //                 child: new RaisedButton(
+  //                   child: new Text("Simpan perubahan"),
+  //                   textColor: Colors.white,
+  //                   color: Colors.green,
+  //                   onPressed: () => setState(() {
+  //                       _status = true;
+  //                       FocusScope.of(context).requestFocus(new FocusNode());
+  //                       showDialog <Void> (context: context, 
+  //                             builder: (BuildContext context) {
+  //                               return AlertDialog(
+  //                   title: const Text('Selamat!'),
+  //                   content: const Text('Profil telah tersimpan'),
+  //                   actions: <Widget>[
+  //                     TextButton(
+  //                       onPressed: () {
+  //                         Navigator.pop(context);
+  //                         //  .push(new MaterialPageRoute(builder: (context) => ProfilePage()));
+  //                       },
+  //                       child: const Text('OK'),
+  //                     ),
+  //                   ],
+  //                 );
+  //                             });
+  //                        }),
+                         
+                    
+  //                   shape: new RoundedRectangleBorder(
+  //                       borderRadius: new BorderRadius.circular(20.0)),
+  //                 )),
+  //           ),
+  //           flex: 2,
+  //         ),
+  //         Expanded(
+  //           child: Padding(
+  //             padding: EdgeInsets.only(left: 10.0),
+  //             child: Container(
+  //                 child: new RaisedButton(
+  //                   child: new Text("Reset profil"),
+  //                   textColor: Colors.white,
+  //                   color: Colors.red,
+  //                   onPressed: () => setState(() {
+  //                     _status = true;
+  //                     FocusScope.of(context).requestFocus(new FocusNode());
+  //                     namaLengkap.clear();
+  //                     username.clear();
+  //                     jenisKelamin.clear();
+  //                     email.clear();
+  //                     NoHandphone.clear();
+  //                     alamat.clear();
+  //                     deskripsi.clear();
+  //                   }),
+                      
+  //                   shape: new RoundedRectangleBorder(
+  //                       borderRadius: new BorderRadius.circular(20.0)),
+  //                 )),
+  //           ),
+  //           flex: 2,
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget _getEditIcon() {
+    return new GestureDetector(
+      child: new CircleAvatar(
+        backgroundColor: Colors.blue,
+        radius: 14.0,
+        child: new Icon(
+          Icons.edit,
+          color: Colors.white,
+          size: 25,
+        ),
+      ),
+      onTap: () {
+        Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EditingPage()),
+            );
+        // setState(() {
+        //   _status = false;
+        // });
+      },
     );
-    
   }
 }

@@ -7,6 +7,7 @@ import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_edit_description.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/loading_screen.dart';
+import 'package:bizzvest/halaman_toko/shared/provider_matrial_app.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -58,18 +59,7 @@ class AddTokoMaterial extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-
-      theme: ThemeData(
-        textTheme: Theme.of(context).textTheme.apply(
-            fontSizeFactor: 1.3,
-            fontSizeDelta: 2.0,
-            fontFamily: 'Tisan'
-        ),
-      ),
-
-      home: AddToko(),
-    );
+    return ProviderMaterialApp(AddToko());
   }
 }
 
@@ -93,7 +83,7 @@ class _AddTokoState extends State<AddToko> {
     return SafeArea(child: Scaffold(
         body: RequestLoadingScreenBuilder(
           request_function: () async {
-            var auth = await get_authentication();
+            var auth = await get_authentication(context);
             return auth.get(
               uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_add_toko_API)
             );
@@ -430,7 +420,7 @@ class _AddTokoBody extends State<AddTokoBody>{
     });
     show_snackbar(context, "Validating current form to server");
 
-    var auth = await get_authentication();
+    var auth = await get_authentication(context);
     ReqResponse response;
     var dict = form_data.to_map()
       ..addAll({
@@ -517,7 +507,7 @@ class _AddTokoBody extends State<AddTokoBody>{
 
     show_snackbar(context, "Submitting current form to server");
 
-    var auth = await get_authentication();
+    var auth = await get_authentication(context);
     ReqResponse? response;
     try {
       for (var i=3; i >= 1; i--){

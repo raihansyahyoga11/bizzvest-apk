@@ -1,3 +1,5 @@
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzvest/login_signup/main.dart';
 import 'package:bizzvest/login_signup/cookie.dart';
@@ -17,6 +19,9 @@ class Login extends State<LoginForm> {
 
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+    () async {
+      await request.init(context);
+    }();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -106,11 +111,15 @@ class Login extends State<LoginForm> {
                     child: FlatButton(
                       onPressed: () async {
                         final response = await request
-                            .login("http://localhost:8000/start-web/login-flutter", {
-                          'username': username,
-                          'password': password,
-                        });
+                            .login(NETW_CONST.get_server_URL("/start-web/login-flutter"),
+                            {
+                              'username': username,
+                              'password': password,
+                            }
+                        );
+
                         if (response['status']) {
+                          set_authentication(request.cookies[COOKIE_CONST.session_id_cookie_name]!);
                           Navigator.pop(context);
                         }
                       },

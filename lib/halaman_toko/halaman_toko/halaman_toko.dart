@@ -7,6 +7,7 @@ import 'dart:ui';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_body.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/loading_screen.dart';
+import 'package:bizzvest/halaman_toko/shared/provider_matrial_app.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -32,17 +33,7 @@ class HalamanTokoMaterialApp extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        textTheme: Theme.of(context).textTheme.apply(
-            fontSizeFactor: 1.3,
-            fontSizeDelta: 2.0,
-            fontFamily: 'Tisan'
-        ),
-      ),
-
-      home: HalamanToko(id: id),
-    );
+    return ProviderMaterialApp(HalamanToko(id: id));
   }
 }
 
@@ -67,7 +58,7 @@ class _HalamanTokoState extends State<HalamanToko> {
 
     return RequestLoadingScreenBuilder(
       request_function: () async {
-        var authentication = await get_authentication();
+        var authentication = await get_authentication(context);
         ReqResponse? ret = await authentication.get(
             uri: NETW_CONST.get_server_URI(
                 NETW_CONST.halaman_toko_get_toko_json_path,

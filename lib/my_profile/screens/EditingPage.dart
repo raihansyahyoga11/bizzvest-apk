@@ -175,7 +175,7 @@ Future<void> submit_to_server(BuildContext context) async{
     // if (!enable_submit_button)
     //   return null;
 
-    var auth = await get_authentication();
+    var auth = await get_authentication(context);
     final dict;
     final response = await auth.post(
       uri: Uri.parse('http://10.0.2.2:8000/my-profile/my-profile-api'),

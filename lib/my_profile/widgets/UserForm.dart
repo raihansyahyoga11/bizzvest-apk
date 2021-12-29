@@ -47,13 +47,13 @@ Map<String,dynamic> to_map() {
   return {
     'csrf_token': this.csrf_token,
     'nama_lengkap': this.nama_lengkap,
-    'nomor_telepon': this.nomor_telepon,
+    'phone_number': this.nomor_telepon,
     'jenis_kelamin': this.jenis_kelamin,
-    'user_name': this.user_name,
-    'e_mail': this.e_mail,
-    'deskripsi_saya': this.deskripsi_saya,
+    'username': this.user_name,
+    'email': this.e_mail,
+    'deskripsi_diri': this.deskripsi_saya,
     'status_verifikasi': this.status_verifikasi,
-    'alamat_saya': this.alamat_saya,
+    'alamat': this.alamat_saya,
     'photo_profile': this.photo_profile
   };
 }

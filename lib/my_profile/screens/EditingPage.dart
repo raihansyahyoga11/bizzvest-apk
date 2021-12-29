@@ -1,8 +1,8 @@
 import 'dart:ffi';
-import 'package:bizzvest/faq/faq.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:bizzvest/my_profile/widgets/UserForm.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'dart:ui';
 import 'dart:convert';
 
@@ -31,6 +31,8 @@ class EditingPage extends StatefulWidget {
   int maxLines;
   String label;
   String text;
+  GlobalKey<FormState> form_key = GlobalKey<FormState>();
+
   // final ValueChanged<dynamic> onChanged;
   String dropdownvalue = 'Pilih jenis kelamin';
   var items =  ['Laki-laki','Perempuan'];
@@ -40,6 +42,7 @@ class EditingPage extends StatefulWidget {
     this.maxLines = 1,
     this.label="",
     this.text="",
+    // required this.onChanged,
   }) : super(key: key);
 
   @override
@@ -50,13 +53,19 @@ class EditingPage extends StatefulWidget {
 
 
 class EditingScreenState extends State<EditingPage> {
+
+  late final controlNamaLengkap = TextEditingController();
   UserForm formUser = UserForm();
   bool _status = false;
   final FocusNode myFocusNode = FocusNode();
+  GlobalKey<FormState> get form_key{
+    return widget.form_key;
+  }
 
   @override
   void initState() {
     super.initState();
+  // controlNamaLengkap.addListener(UserForm().nama_lengkap = '${controlNamaLengkap.text}')
   }
 
   @override
@@ -89,9 +98,10 @@ class EditingScreenState extends State<EditingPage> {
                     child: new Text("Simpan"),
                     textColor: Colors.white,
                     color: Colors.green,
-                    onPressed: () => setState(() {
+                    onPressed: () async{
                         _status = true;
                         FocusScope.of(context).requestFocus(new FocusNode());
+                        submit_to_server(context);
                         
 
 
@@ -111,7 +121,7 @@ class EditingScreenState extends State<EditingPage> {
                                   ],
                                 );
                               });
-                         }),
+                         },
                          
                     
                     shape: new RoundedRectangleBorder(
@@ -161,19 +171,21 @@ class EditingScreenState extends State<EditingPage> {
     );
   }
 
-// Future<void> submit_to_server(BuildContext context) async{
-//     // if (!enable_submit_button)
-//     //   return null;
+Future<void> submit_to_server(BuildContext context) async{
+    // if (!enable_submit_button)
+    //   return null;
 
-//     var auth = await get_authentication();
-//     final response;
-//     try {
-//       response = await auth.post(Uri.parse('http://10.0.2.2:8000/my-profile/my-profile-json'), headers: {"Accept": "application/json"});
-//       data: UserForm().to_map()
-      
-//     }
-//   }
-
+    // var auth = await get_authentication();
+    // var dict = UserForm().to_map();
+    final response = await http.post(Uri.parse('http://10.0.2.2:8000/my-profile/my-profile-api'),
+    headers: <String, String> {
+      'Content-Type':'application/json;charset=UTF-8',
+    },
+    body: jsonEncode(UserForm().to_map())
+    );
+    // print(response);
+    print(response.body);
+}
 
 
 Widget futureWidgetEdit() {
@@ -182,6 +194,7 @@ Widget futureWidgetEdit() {
       builder: (context,snapshot) {
         if(snapshot.hasData) {
           child: return Form(
+            key: form_key,
             child: 
            new ListView(
               padding: EdgeInsets.symmetric(horizontal: 32),
@@ -207,13 +220,20 @@ Widget futureWidgetEdit() {
                       borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    initialValue: "${snapshot.data?.namaLengkap}",
+                    
+                    // initialValue: "${snapshot.data?.namaLengkap}",
                     maxLines: widget.maxLines,
-                    validator: (value) {
-                      if(value != null) {
-                      onSaved: UserForm().nama_lengkap = value;
-                      }
+                    controller: controlNamaLengkap,
+                    // validator: (value) {
+                    // }          
+                    onChanged: (String value) async {
+                      UserForm().nama_lengkap= value;
                     }
+                    
+              
+                      
+
+                      
                 ),
                  
                   ],

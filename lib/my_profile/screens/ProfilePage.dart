@@ -42,8 +42,8 @@ class MyAppState extends State<MyApp> {
       onTap: () {
         Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => EditingPage()),
-            );
+              MaterialPageRoute(builder: (context) => EditingPage(),
+            ));
         // setState(() {
         //   _status = false;
         // });

@@ -18,6 +18,6 @@ main() {
         primaryColor: Color(0xff0082CD),
 
         primaryColorDark: Color(0xff0082CD)),
-    home: new ProfilePage(),
+    home: new MyApp(),
   ));
 }

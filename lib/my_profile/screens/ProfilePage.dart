@@ -18,16 +18,16 @@ import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 
 void main() {
-  runApp(MyApp());
+  runApp(MyProfile());
 }
 
-class MyApp extends StatefulWidget {
-  MyApp();
+class MyProfile extends StatefulWidget {
+  MyProfile();
   @override
-  MyAppState createState() => MyAppState();
+  MyProfileState createState() => MyProfileState();
 }
 
-class MyAppState extends State<MyApp> {
+class MyProfileState extends State<MyProfile> {
     Widget _getEditIcon() {
     return new GestureDetector(
       child: new CircleAvatar(

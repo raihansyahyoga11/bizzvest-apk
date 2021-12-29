@@ -114,7 +114,7 @@ class EditingScreenState extends State<EditingPage> {
                                     TextButton(
                                       onPressed: () {
                                         // Navigator.pop(context);
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => MyProfile()));
                                       },
                                       child: const Text('OK'),
                                     ),

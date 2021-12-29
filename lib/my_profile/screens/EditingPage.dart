@@ -175,16 +175,17 @@ Future<void> submit_to_server(BuildContext context) async{
     // if (!enable_submit_button)
     //   return null;
 
-    // var auth = await get_authentication();
-    // var dict = UserForm().to_map();
-    final response = await http.post(Uri.parse('http://10.0.2.2:8000/my-profile/my-profile-api'),
-    headers: <String, String> {
-      'Content-Type':'application/json;charset=UTF-8',
-    },
-    body: jsonEncode(UserForm().to_map())
+    var auth = await get_authentication();
+    final dict;
+    final response = await auth.post(
+      uri: Uri.parse('http://10.0.2.2:8000/my-profile/my-profile-api'),
+    // headers: <String, String> {
+    //   'Content-Type':'application/json;charset=UTF-8',
+    // },
+    data: UserForm().to_map()
     );
     // print(response);
-    print(response.body);
+  
 }
 
 

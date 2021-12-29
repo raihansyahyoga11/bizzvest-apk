@@ -47,7 +47,9 @@ void main() async {
 
 class NETW_CONST{
   static const String protocol = (kReleaseMode)? "https://" : "http://";
-  static const String host = (kReleaseMode)? "bizzvest.herokuapp.com" : "10.0.2.2:8000";
+  static const String host =
+        (kReleaseMode)? "bizzvest.herokuapp.com" :
+            (kIsWeb? "127.0.0.1:8000" : "10.0.2.2:8000");
 
   static const String login_path = "/start-web/login";
   static const String acc_info = "/halaman-toko/account-information";
@@ -172,7 +174,7 @@ class Authentication extends Session{
 
   static Future<Authentication> create() async {
     Authentication comp;
-    if (kReleaseMode) {
+    if (!kIsWeb) {
       Directory temp = await getApplicationDocumentsDirectory();
       Directory dir =
           await (Directory(temp.path + '/' + '.cache').create(recursive: true));

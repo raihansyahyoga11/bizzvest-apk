@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:bizzvest/daftar_toko/models/toko.dart';
 import 'package:http/http.dart' as http;
+import 'daftar_toko/models/toko.dart';
+
 
 Future<List<Toko>?> fetchDaftarToko() async {
   final response = await http.get(Uri.parse('https://bizzvest.herokuapp.com/daftar-toko/'));

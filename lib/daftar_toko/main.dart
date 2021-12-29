@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
 
 import 'widgets/main_drawer.dart';
-import './toko_data.dart';
 import './models/toko.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-List<CustomCard> getTokoWidget(List<Toko> daftarToko){
-  List<CustomCard> list = [];
-  for(var i=0; i < daftarToko.length; i++){
-    list.add(new CustomCard(daftarToko[i].namaToko, daftarToko[i].namaPerusahaan, i+1));
-  }
-  return list;
-}
+// List<CustomCard> getTokoWidget(List<Toko> daftarToko){
+//   List<CustomCard> list = [];
+//   for(var i=0; i < daftarToko.length; i++){
+//     list.add(new CustomCard(daftarToko[i].namaToko, daftarToko[i].namaPerusahaan, i+1));
+//   }
+//   return list;
+// }
 
-List<Text> getTokoWidgetText(List<Toko> daftarToko, String str){
-  List<Text> list = [];
-  for(var i=0; i < daftarToko.length; i++){
-    list.add(new Text(daftarToko[i].namaToko+'\n'));
-  }
-  return list;
-}
+// List<Text> getTokoWidgetText(List<Toko> daftarToko, String str){
+//   List<Text> list = [];
+//   for(var i=0; i < daftarToko.length; i++){
+//     list.add(new Text(daftarToko[i].namaToko+'\n'));
+//   }
+//   return list;
+// }
 
 
 class MyApp extends StatelessWidget {
@@ -76,9 +75,9 @@ class DaftarToko extends StatelessWidget {
           )
       ),
       body: new Container(
-          child: new ListView(
-            children: getTokoWidget(DAFTAR_TOKO),
-          )
+          // child: new ListView(
+          //   children: getTokoWidget(DAFTAR_TOKO),
+          // )
 
       ),
 
@@ -151,7 +150,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
       height: 300.0, // Change as per your requirement
       width: 300.0,
       child: ListView(
-        children: getTokoWidgetText(DAFTAR_TOKO, myController.text),
+        // children: getTokoWidgetText(DAFTAR_TOKO, myController.text),
       ),
     );
   }

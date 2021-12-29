@@ -67,7 +67,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
       height: 300.0, // Change as per your requirement
       width: 300.0,
       child: ListView(
-        children: getTokoWidgetText(DAFTAR_TOKO, myController.text),
+        // children: getTokoWidgetText(DAFTAR_TOKO, myController.text),
     ),
     );
   }

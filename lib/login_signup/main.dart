@@ -56,53 +56,109 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("BizzVest"),
-        backgroundColor: Colors.blue,
-        actions: <Widget>[
-          Theme(
-            data: Theme.of(context).copyWith(
-                textTheme: TextTheme().apply(bodyColor: Colors.black),
-                dividerColor: Colors.white,
-                iconTheme: IconThemeData(color: Colors.white)),
-            child: PopupMenuButton<int>(
-              icon: Icon(Icons.account_circle_outlined),
-              color: Colors.white,
-              itemBuilder: (context) => [
-                PopupMenuItem<int>(value: 0, child: Text("Login")),
-                PopupMenuDivider(),
-                PopupMenuItem<int>(value: 1, child: Text("Sign Up")),
-              ],
-              onSelected: (item) => SelectedItem(context, item),
+    var x = 2;
+    CookieRequest request = Provider.of<CookieRequest>(context);
+    if (!request.loggedIn) {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text("BizzVest"),
+          backgroundColor: Colors.blue,
+          actions: <Widget>[
+            Theme(
+              data: Theme.of(context).copyWith(
+                  textTheme: TextTheme().apply(bodyColor: Colors.black),
+                  dividerColor: Colors.white,
+                  iconTheme: IconThemeData(color: Colors.white)),
+              child: PopupMenuButton<int>(
+                icon: Icon(Icons.account_circle_outlined),
+                color: Colors.white,
+                itemBuilder: (context) =>
+                [
+                  PopupMenuItem<int>(value: 0, child: Text("Login")),
+                  PopupMenuDivider(),
+                  PopupMenuItem<int>(value: 1, child: Text("Sign Up")),
+                ],
+                onSelected: (item) => SelectedItem(context, item),
+              ),
             ),
-          ),
-        ],
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.shifting,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt),
-              title: Text('Daftar Toko'),
-              backgroundColor: Colors.blue),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              title: Text('Home'),
-              backgroundColor: Colors.blue),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.question_answer),
-              title: Text('FAQ'),
-              backgroundColor: Colors.blue),
-        ],
-      ),
-    );
+          ],
+        ),
+        body: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.shifting,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.list_alt),
+                title: Text('Daftar Toko'),
+                backgroundColor: Colors.blue),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                title: Text('Home'),
+                backgroundColor: Colors.blue),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.question_answer),
+                title: Text('FAQ'),
+                backgroundColor: Colors.blue),
+          ],
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text("BizzVest"),
+          backgroundColor: Colors.blue,
+          actions: <Widget>[
+            Theme(
+              data: Theme.of(context).copyWith(
+                  textTheme: TextTheme().apply(bodyColor: Colors.black),
+                  dividerColor: Colors.white,
+                  iconTheme: IconThemeData(color: Colors.white)),
+              child: PopupMenuButton<int>(
+                icon: Icon(Icons.account_circle_outlined),
+                color: Colors.white,
+                itemBuilder: (context) =>
+                [
+                  PopupMenuItem<int>(value: 0, child: Text("Profil")),
+                  PopupMenuItem<int>(value: 1, child: Text("Tambah Toko")),
+                  PopupMenuItem<int>(value: 2, child: Text("Status Investasi")),
+                  PopupMenuDivider(),
+                  PopupMenuItem<int>(value: 3, child: Text("Log Out")),
+                ],
+                onSelected: (item) => SelectedItemLogged(context, item),
+              ),
+            ),
+          ],
+        ),
+        body: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.shifting,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.list_alt),
+                title: Text('Daftar Toko'),
+                backgroundColor: Colors.blue),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                title: Text('Home'),
+                backgroundColor: Colors.blue),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.question_answer),
+                title: Text('FAQ'),
+                backgroundColor: Colors.blue),
+          ],
+        ),
+      );
+    }
   }
 
   void SelectedItem(BuildContext context, item) {
@@ -115,6 +171,31 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => SignupForm()));
         break;
+    }
+  }
+
+  Future<void> SelectedItemLogged(BuildContext context, item) async {
+    final request = context.read<CookieRequest>();
+    switch (item) {
+      case 0:
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => LoginForm()));
+        break;
+      case 1:
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => SignupForm()));
+        break;
+      case 2:
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => SignupForm()));
+        break;
+      case 3:
+        final isLogged = await request.logoutAccount("http://localhost:8000/start-web/logout-flutter");
+        if(isLogged["status"]) {
+          setState((){
+            request.loggedIn = false;
+          });
+        }
     }
   }
 }

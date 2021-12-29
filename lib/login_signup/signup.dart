@@ -172,23 +172,21 @@ class Signup extends State<SignupForm> {
                     child: FlatButton(
                       onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      // Submit to Django server and wait for response
                       final response = await request.post(
-                          "http://localhost:8000/start-web/signup-flutter",
-                          convert.jsonEncode(<String, String>{
+                          "http://localhost:8000/start-web/signup-flutter", {
                             'username': username,
                             'email': email,
                             'password': password,
-                          }));
-                      if (response['status'] == 'success') {
-                        Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) => MyHomePage()));
+                          });
+                      final loggingIn = await request
+                          .login("http://localhost:8000/start-web/login-flutter", {
+                        'username': username,
+                        'password': password,
+                      });
+                      if (response['status'] && loggingIn['status']) {
+                        Navigator.pop(context);
                       }
                     }
-                        // if (_formKey.currentState?.validate() ?? true) {
-                        //   Navigator.push(context,
-                        //       MaterialPageRoute(builder: (_) => MyHomePage()));
-                        // }
                       },
                       child: Text(
                         'Daftar',

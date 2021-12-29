@@ -13,6 +13,7 @@ class Login extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   String username = "";
   String password = "";
+  bool refresh = false;
 
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
@@ -110,13 +111,8 @@ class Login extends State<LoginForm> {
                           'password': password,
                         });
                         if (response['status']) {
-                          Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) => MyHomePage()));
+                          Navigator.pop(context);
                         }
-                        // if (_formKey.currentState?.validate() ?? true) {
-                        //   Navigator.push(context,
-                        //       MaterialPageRoute(builder: (_) => MyHomePage()));
-                        // }
                       },
                       child: Text(
                         'Masuk',

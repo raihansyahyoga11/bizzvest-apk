@@ -431,14 +431,19 @@ class _AddTokoBody extends State<AddTokoBody>{
 
     var auth = await get_authentication();
     ReqResponse response;
+    var dict = form_data.to_map()
+      ..addAll({
+        COOKIE_CONST.csrf_token_formdata: csrf_token,
+        'is_validate_only': 1,
+        'my_data': json.encode([1, 2, 3]),
+      });
+
     try {
+
+      print(dict);
       response = await auth.post(
         uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_add_toko_API),
-        data: form_data.to_map()
-          ..addAll({
-            COOKIE_CONST.csrf_token_formdata: csrf_token,
-            'is_validate_only': 1,
-          }),
+        data: dict,
       );
     } on DioError catch(e){
       if (Session.is_timeout_error(e)){

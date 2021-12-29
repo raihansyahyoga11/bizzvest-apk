@@ -171,12 +171,18 @@ class Authentication extends Session{
   }
 
   static Future<Authentication> create() async {
-    Directory temp = await getApplicationDocumentsDirectory();
-    Directory dir = await (Directory(temp.path + '/' + '.cache').create(recursive: true));
+    Authentication comp;
+    if (kReleaseMode) {
+      Directory temp = await getApplicationDocumentsDirectory();
+      Directory dir =
+          await (Directory(temp.path + '/' + '.cache').create(recursive: true));
 
-    var comp = Authentication(cookie_jar: PersistCookieJar(
-        storage: FileStorage(dir.path + "/.cache")
-    ));
+      comp = Authentication(
+          cookie_jar:
+              PersistCookieJar(storage: FileStorage(dir.path + "/.cache")));
+    }else{
+      comp = Authentication(cookie_jar: CookieJar());
+    }
     return comp;
   }
 

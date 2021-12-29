@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class ProfileWidget extends StatelessWidget {
@@ -31,6 +31,18 @@ class ProfileWidget extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+  Widget changePhoto(BuildContext context) {
+      return RaisedButton(
+      child: Text('UPLOAD FILE'),
+      onPressed: () async {
+        var picked = await FilePicker.platform.pickFiles();
+
+        if (picked != null) {
+          print(picked.files.first.name);
+        }
+      },
     );
   }
   

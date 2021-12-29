@@ -96,7 +96,7 @@ class DaftarToko extends StatelessWidget {
           ),
          body: new Container(
               child: new ListView(
-                children: Text("Sementara"),
+                // children: Text("Sementara"),
               ),
             ),
       

@@ -173,18 +173,16 @@ class Authentication extends Session{
   }
 
   static Future<Authentication> create() async {
-    Authentication comp;
-    if (!kIsWeb) {
-      Directory temp = await getApplicationDocumentsDirectory();
-      Directory dir =
-          await (Directory(temp.path + '/' + '.cache').create(recursive: true));
+    assert (kIsWeb == false, "Authentication() tidak bisa digunakan di website");
 
-      comp = Authentication(
-          cookie_jar:
-              PersistCookieJar(storage: FileStorage(dir.path + "/.cache")));
-    }else{
-      comp = Authentication(cookie_jar: CookieJar());
-    }
+    Authentication comp;
+    Directory temp = await getApplicationDocumentsDirectory();
+    Directory dir =
+        await (Directory(temp.path + '/' + '.cache').create(recursive: true));
+
+    comp = Authentication(
+        cookie_jar:
+            PersistCookieJar(storage: FileStorage(dir.path + "/.cache")));
     return comp;
   }
 
@@ -195,7 +193,7 @@ class Authentication extends Session{
     };
 
     ReqResponse ret = await post(uri: NETW_CONST.login_uri, data: form);
-
+    print(await cookie_jar);
     if (!ret.has_problem){
       ReqResponse resp = await get(
           uri: NETW_CONST.get_server_URI(NETW_CONST.acc_info));
@@ -208,8 +206,20 @@ class Authentication extends Session{
               ret.statusCode.toString() +
               " " +
               (ret.reasonPhrase ?? "null"));
+        }else if (resp.has_problem){
+          print("login problem 2a: ${ret.statusCode} ${ret.reasonPhrase}}");
+          print("");
+          print(resp.data);
+        }else{
+          print("login problem 2b");
+          print("");
+          print(resp.data);
         }
       }
+    }else if (kDebugMode){
+      print("login problem 1: ${ret.statusCode} ${ret.reasonPhrase}}");
+      print("");
+      print(ret.data);
     }
     return ret;
   }

@@ -15,8 +15,9 @@ import '../manage_photo.dart';
 Authentication? authenticated_user = null;
 Future<Authentication> get_authentication() async{
   authenticated_user ??= await Authentication.create();
-  if (!authenticated_user!.is_logged_in){
+  if (!(authenticated_user!.is_logged_in)){
     await authenticated_user!.login("hzz", "1122");
+    assert (authenticated_user!.is_logged_in);
   }
   return authenticated_user!;
 }

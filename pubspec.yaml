@@ -101,7 +101,7 @@ flutter:
   assets:
     - src/img/
     - src/img/yoga.jpg
-    - src/img/front-image-small-png
+    - src/img/front-image-small.png
     
   fonts:
     - family: Quicksand

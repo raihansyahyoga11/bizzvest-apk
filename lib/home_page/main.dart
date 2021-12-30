@@ -24,7 +24,9 @@ class _HomePageState extends State<HomePage> {
     
     String email = "";
     String message = "";
-    String apiURL = "http://192.168.42.130:8002/save-api/";
+    // perlu ganti URL-nya sesuai server django
+    String apiURL = "http://192.168.42.66:8002/save-api/";
+    // urlku aneh2 karena pake usb ke hp :)
 
     final TextEditingController _emailController = new TextEditingController();
     final TextEditingController _messageController = new TextEditingController();
@@ -32,8 +34,9 @@ class _HomePageState extends State<HomePage> {
     @override
     Widget build(BuildContext context) {
         return Scaffold(
-            appBar: AppBar(title: Text("Bizzvest")),
+            appBar: AppBar(title: Text("Homepage")),
             body: Container(
+                color: Color(0xffdafcff),
                 child: ListView(
                     padding: EdgeInsets.all(24),
                     children: <Widget>[

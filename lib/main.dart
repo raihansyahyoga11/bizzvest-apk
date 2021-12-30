@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //list of widgets to call ontap
   final _widgetOptions = [
     new DaftarTokoMaterial(),  // nanti diisi sama daftar toko
-    new home_page.MyHomePage(title: 'Bizzvest',),
+    new home_page.HomePage(),
     new FaqUtamaScreen(),
   ];
 

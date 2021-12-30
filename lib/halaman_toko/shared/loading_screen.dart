@@ -1,6 +1,5 @@
 
 
-import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -49,8 +48,8 @@ class _RequestLoadingScreenBuilderState extends State<RequestLoadingScreenBuilde
   int timeout_retry_number = 0;
 
 
-  void refresh([Function()? func]){
-    setState(func ?? (){});
+  void refresh(Function() func){
+    setState(func);
   }
 
   @override
@@ -58,6 +57,7 @@ class _RequestLoadingScreenBuilderState extends State<RequestLoadingScreenBuilde
     return FutureBuilder(
         future: widget.request_function(),
         builder: (context, AsyncSnapshot snapshot) {
+
           if (snapshot.connectionState != ConnectionState.done){
             return widget.wrapper(
                 Container(

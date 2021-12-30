@@ -544,7 +544,7 @@ class HalamanTokoStatusContainer extends StatelessWidget{
 
       show_snackbar(context, "uploading...");
 
-      var auth = await get_authentication(context);
+      var auth = await get_authentication();
       var response = await auth.post(
           uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_upload_proposal),
           data: {
@@ -580,7 +580,7 @@ class HalamanTokoStatusContainer extends StatelessWidget{
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Mengajukan verifikasi")));
 
-      var auth = await get_authentication(context);
+      var auth = await get_authentication();
       var response = await auth.post(
         uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_ajukan_verifikasi),
         data: {
@@ -984,7 +984,7 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
 
 
     // () async {
-      var auth = await get_authentication(context);
+      var auth = await get_authentication();
       auth.cookie_jar.loadForRequest(NETW_CONST.get_server_URI("/"))
           .then(
                 (List<Cookie> value){

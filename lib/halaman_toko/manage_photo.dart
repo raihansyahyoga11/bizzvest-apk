@@ -60,7 +60,7 @@ class ManagePhoto extends StatelessWidget{
             );
           },
 
-          on_success: (context, snapshot, req_resp, refresh){
+          on_success: (context, snapshot, req_resp, this_widget){
             Map<String, dynamic> map = json.decode(req_resp.data);
 
             List<Tuple2<int, String>> initial_photo_items =

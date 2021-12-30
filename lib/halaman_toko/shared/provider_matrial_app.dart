@@ -21,7 +21,6 @@ class ProviderMaterialApp extends StatelessWidget{
         },
 
         child: MaterialApp(
-          theme: STYLE_CONST.default_theme_of_halamanToko(context),
           title: "Bizzvest",
           home: widget,
       ),

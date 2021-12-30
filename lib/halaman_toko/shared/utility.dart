@@ -49,16 +49,19 @@ Future<void> set_authentication(String session_id) async {
 }
 
 bool login_page_semaphore_unlocked = true;
-void goto_login_page(BuildContext context){
+Future<dynamic>? goto_login_page(BuildContext context){
 
   if (login_page_semaphore_unlocked) {
-    Future.microtask(() async {
+
+    return Future<dynamic>.microtask(() async {
       login_page_semaphore_unlocked = false;
-      await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      var ret = await Navigator.push(context, MaterialPageRoute(builder: (context) {
         return LoginForm();
       }));
       login_page_semaphore_unlocked = true;
+      return ret;
     });
+
   }
 }
 

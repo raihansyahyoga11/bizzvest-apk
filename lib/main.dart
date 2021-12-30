@@ -1,7 +1,12 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
+import 'package:bizzvest/faq/faq.dart';
+import 'package:bizzvest/halaman_toko/add_toko/add_toko.dart';
 import 'package:bizzvest/my_profile/screens/ProfilePage.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzvest/login_signup/login.dart';
 import 'package:bizzvest/login_signup/signup.dart';
+import 'package:bizzvest/home_page/main.dart' as home_page;
 import 'package:bizzvest/login_signup/cookie.dart';
 import 'package:provider/provider.dart';
 
@@ -40,9 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //list of widgets to call ontap
   final _widgetOptions = [
-    new LoginForm(),
-    new SignupForm(),
-    new LoginForm(),
+    new home_page.MyHomePage(title: 'Bizzvest',),  // nanti diisi sama daftar toko
+    new home_page.MyHomePage(title: 'Bizzvest',),
+    new FaqUtamaScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -118,14 +123,15 @@ class _MyHomePageState extends State<MyHomePage> {
               child: PopupMenuButton<int>(
                 icon: Icon(Icons.account_circle_outlined),
                 color: Colors.white,
-                itemBuilder: (context) =>
-                [
-                  PopupMenuItem<int>(value: 0, child: Text("Profil")),
-                  PopupMenuItem<int>(value: 1, child: Text("Tambah Toko")),
-                  PopupMenuItem<int>(value: 2, child: Text("Status Investasi")),
-                  PopupMenuDivider(),
-                  PopupMenuItem<int>(value: 3, child: Text("Log Out")),
-                ],
+                itemBuilder: (context){
+                  return [
+                    PopupMenuItem<int>(value: 0, child: Text("Profil"), textStyle: TextStyle(color: Colors.black),),
+                    PopupMenuItem<int>(value: 1, child: Text("Tambah Toko"), textStyle: TextStyle(color: Colors.black)),
+                    PopupMenuItem<int>(value: 2, child: Text("Status Investasi"), textStyle: TextStyle(color: Colors.black)),
+                    PopupMenuDivider(),
+                    PopupMenuItem<int>(value: 3, child: Text("Log Out"), textStyle: TextStyle(color: Colors.black)),
+                  ];
+                },
                 onSelected: (item) => SelectedItemLogged(context, item),
               ),
             ),
@@ -178,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
       case 1:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => SignupForm()));
+            .push(MaterialPageRoute(builder: (context) => AddToko()));
         break;
       case 2:
         Navigator.of(context)

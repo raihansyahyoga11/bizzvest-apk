@@ -1,5 +1,6 @@
 
 
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:provider/provider.dart';
 import 'package:bizzvest/login_signup/cookie.dart';
@@ -20,13 +21,7 @@ class ProviderMaterialApp extends StatelessWidget{
         },
 
         child: MaterialApp(
-          theme: ThemeData(
-            textTheme: Theme.of(context).textTheme.apply(
-                fontSizeFactor: 1.3,
-                fontSizeDelta: 2.0,
-                fontFamily: 'Tisan'
-            ),
-          ),
+          theme: STYLE_CONST.default_theme_of_halamanToko(context),
           title: "Bizzvest",
           home: widget,
       ),

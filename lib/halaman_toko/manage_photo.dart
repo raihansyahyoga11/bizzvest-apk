@@ -39,37 +39,40 @@ class ManagePhoto extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return RequestLoadingScreenBuilder(
-        request_function: () async {
-          var auth = await get_authentication(context);
-          var response = await auth.get(
-            uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_manage_photos_init_api),
-            data: {
-              'id': this.company_id.toString(),
-            }
-          );
-          return response;
-        },
+    return Theme(
+      data: STYLE_CONST.default_theme_of_halamanToko(context),
+      child: RequestLoadingScreenBuilder(
+          request_function: () async {
+            var auth = await get_authentication(context);
+            var response = await auth.get(
+              uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_manage_photos_init_api),
+              data: {
+                'id': this.company_id.toString(),
+              }
+            );
+            return response;
+          },
 
-        wrapper: (Widget widget, RequestStatus req_stat){
-          return Scaffold(
-            body: widget,
-            backgroundColor: STYLE_CONST.background_color,
-          );
-        },
+          wrapper: (Widget widget, RequestStatus req_stat){
+            return Scaffold(
+              body: widget,
+              backgroundColor: STYLE_CONST.background_color,
+            );
+          },
 
-        on_success: (context, snapshot, req_resp, refresh){
-          Map<String, dynamic> map = json.decode(req_resp.data);
+          on_success: (context, snapshot, req_resp, refresh){
+            Map<String, dynamic> map = json.decode(req_resp.data);
 
-          List<Tuple2<int, String>> initial_photo_items =
-              fetched_photo_list__to__list_of_tuple(map['photos']);
+            List<Tuple2<int, String>> initial_photo_items =
+                fetched_photo_list__to__list_of_tuple(map['photos']);
 
-          return ManagePhotoBody(
-            company_id: company_id,
-            initial_csrf: map['csrftoken'],
-            initial_photo_items: initial_photo_items,
-          );
-        }
+            return ManagePhotoBody(
+              company_id: company_id,
+              initial_csrf: map['csrftoken'],
+              initial_photo_items: initial_photo_items,
+            );
+          }
+      ),
     );
   }
 

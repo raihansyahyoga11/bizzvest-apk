@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../widgets/main_drawer.dart';
 import '../models/toko.dart';
-import '../screen/card_toko.dart';
-import 'search_toko.dart';
+import 'card_toko.dart';
+import '../utility/search_toko.dart';
+import '../utility/list_daftar_toko.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -12,37 +13,19 @@ void main() {
   runApp(DaftarTokoMaterial());
 }
 
-Future<void> fetchData() async {
-    const url = 'http://127.0.0.1:8000/daftar-toko/json';
-    try {
-      final response = await http.get(Uri.parse(url));
-      //print(response.body);
-      Map<String, dynamic> extractedData = jsonDecode(response.body);
-      extractedData.forEach((key, val) {
-        print(val);
-      });
-    } catch (error) {
-      print(error);
-    }
-  }
-
-
-List<CustomCard> getTokoWidget(List<Toko> daftarToko){
-  List<CustomCard> list = [];
-  for(var i=0; i < daftarToko.length; i++){
-    list.add(new CustomCard(daftarToko[i].namaToko, daftarToko[i].namaPerusahaan, i+1));
-  }
-  return list;
-}
-
-List<Text> getTokoWidgetText(List<Toko> daftarToko, String str){
-  List<Text> list = [];
-  for(var i=0; i < daftarToko.length; i++){
-    list.add(new Text(daftarToko[i].namaToko+'\n'));
-  }
-  return list;
-}
-
+// Future<void> fetchData() async {
+//     const url = 'http://127.0.0.1:8000/daftar-toko/search';
+//     try {
+//       final response = await http.get(Uri.parse(url));
+//       //print(response.body);
+//       Map<String, dynamic> extractedData = jsonDecode(response.body);
+//       extractedData.forEach((key, val) {
+//         print(val);
+//       });
+//     } catch (error) {
+//       print(error);
+//     }
+//   }
 
 class DaftarTokoMaterial extends StatelessWidget {
   const DaftarTokoMaterial({Key? key}) : super(key: key);
@@ -87,19 +70,17 @@ class DaftarToko extends StatelessWidget {
             width: double.infinity,
             height: 40,
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(5)),
+              color: Colors.white, borderRadius: BorderRadius.circular(5)
+            ),
             child: Center(
-            // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
+          // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
               child: MyCustomForm(),
             ), 
           )
-          ),
-         body: new Container(
-              child: new ListView(
-                // children: Text("Sementara"),
-              ),
-            ),
-      
+        ),
+        body: Column(
+          children: [DaftarTokoListScreen()],
+        )
     );
   }
 }

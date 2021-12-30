@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
 
 
 // processed from https://stackoverflow.com/questions/49819221/flutter-cards-how-to-loop-a-card-widgets-in-flutter
-class CustomCard extends StatelessWidget {
-  String nama_toko="";
-  String nama_perusahaan="";
-  String photo_id="";
-  CustomCard(String nama_toko, String nama_perusahaan, int photo_id){
-    this.nama_toko = nama_toko;
-    this.nama_perusahaan = nama_perusahaan;
-    this.photo_id = photo_id.toString();
-  }
+class CardToko extends StatelessWidget {
+  int id;
+  String namaPerusahaan;
+  String namaToko;
+  String img;
+  
+   CardToko(
+    {
+      required this.id,
+      required this.namaToko,
+      required this.namaPerusahaan,
+      required this.img,
+    }
+  );
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -21,15 +28,15 @@ class CustomCard extends StatelessWidget {
                 padding: EdgeInsets.all(7.0),
                 child: Column(
                   children: <Widget>[
-                    Image.asset('/images/'+this.photo_id+'.jpg',width:300,height:300),
+                    Image.network(img,width:300,height:300),
                     Padding(
                       padding: EdgeInsets.all(7.0),
-                      child: Text(this.nama_toko ,style: TextStyle(fontSize: 18.0),
+                      child: Text(namaToko ,style: TextStyle(fontSize: 18.0),
                     ),
                     ),
                     Padding(
                       padding: EdgeInsets.all(7.0),
-                      child: Text(this.nama_perusahaan ,style: TextStyle(fontSize: 13.0),
+                      child: Text(namaPerusahaan ,style: TextStyle(fontSize: 13.0),
                       ),
                     ),
                   ],
@@ -37,8 +44,9 @@ class CustomCard extends StatelessWidget {
               )
             ],
           ),                      
-          onTap: () {                          
-          print("tapped on card");
+          onTap: () {     
+            // TODO                     
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HalamanTokoMaterialApp(id: id)));
           },                      
         )
         

@@ -1,20 +1,3 @@
-import 'dart:ffi';
-import 'dart:ui';
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter/gestures.dart';
-import 'dart:async' show Future;
-import 'package:flutter/services.dart' show rootBundle;
-import '../screens/EditingPage.dart';
-import '../screens/ProfilePage.dart';
-import '../api/api_my_profile.dart';
-import '../widgets/main_drawer.dart';
-import '../models/UserAccount.dart';
-
-import 'package:flutter/cupertino.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class UserForm{
   String csrf_token;

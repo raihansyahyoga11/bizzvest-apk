@@ -1,4 +1,8 @@
 import 'dart:convert';
+import 'package:bizzvest/daftar_toko/daftar_toko.dart';
+import 'package:bizzvest/halaman_toko/add_toko/add_toko.dart';
+import 'package:bizzvest/login_signup/cookie.dart';
+import 'package:bizzvest/login_signup/signup.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -8,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'models/question.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 late Future<List<Question>?> futureQuestion = fetchQuestion();
 
@@ -324,64 +329,70 @@ class MyApp extends StatelessWidget {
                     hoverColor: Color(0xff3e69e3),
 
                     onPressed: () async {
+                      CookieRequest request = Provider.of<CookieRequest>(context);
+                      if (!request.loggedIn) {
+                        // kondisi untuk user yang belum login
 
-                      // kondisi untuk user yang belum login
-
-                      // Alert(
-                      //   context: context,
-                      //   type: AlertType.none,
-                      //   title: "DAFTARKAN USAHA",
-                      //   desc: "Anda belum masuk ke dalam akun BizzVest. Silahkan sign up atau sign in terlebih dahulu sebelum mendaftarkan usaha.",
-                      //   buttons: [
-                      //     DialogButton(
-                      //       child: Text(
-                      //         "Close",
-                      //         style: TextStyle(color: Colors.white, fontSize: 17),
-                      //       ),
-                      //       onPressed: () => Navigator.pop(context),
-                      //       width: 80,
-                      //       color: Color(0xff6f6f6f),
-                      //     ),
-                      //     DialogButton(
-                      //       child: Text(
-                      //         "Sign Up Sekarang",
-                      //         style: TextStyle(color: Colors.white, fontSize: 17),
-                      //       ),
-                      //       onPressed: () => Navigator.pop(context),
-                      //       width: 80,
-                      //       color: Color(0xff3d51ff),
-                      //     )
-                      //   ],
-                      // ).show();
-
-                      // kondisi untuk user yang sudah login
-
-                      Alert(
-                        context: context,
-                        type: AlertType.none,
-                        title: "DAFTARKAN USAHA",
-                        desc: "Apakah Anda ingin mendaftarkan usaha yang Anda miliki?",
-                        buttons: [
-                          DialogButton(
-                            child: Text(
-                              "Close",
-                              style: TextStyle(color: Colors.white, fontSize: 17),
+                        Alert(
+                          context: context,
+                          type: AlertType.none,
+                          title: "DAFTARKAN USAHA",
+                          desc: "Anda belum masuk ke dalam akun BizzVest. Silahkan sign up atau sign in terlebih dahulu sebelum mendaftarkan usaha.",
+                          buttons: [
+                            DialogButton(
+                              child: Text(
+                                "Close",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 17),
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              width: 80,
+                              color: Color(0xff6f6f6f),
                             ),
-                            onPressed: () => Navigator.pop(context),
-                            width: 80,
-                            color: Color(0xff6f6f6f),
-                          ),
-                          DialogButton(
-                            child: Text(
-                              "Daftar Sekarang",
-                              style: TextStyle(color: Colors.white, fontSize: 17),
+                            DialogButton(
+                              child: Text(
+                                "Sign Up Sekarang",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 17),
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              width: 80,
+                              color: Color(0xff3d51ff),
+                            )
+                          ],
+                        ).show();
+                      } else {
+                        // kondisi untuk user yang sudah login
+
+                        Alert(
+                          context: context,
+                          type: AlertType.none,
+                          title: "DAFTARKAN USAHA",
+                          desc: "Apakah Anda ingin mendaftarkan usaha yang Anda miliki?",
+                          buttons: [
+                            DialogButton(
+                              child: Text(
+                                "Close",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 17),
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              width: 80,
+                              color: Color(0xff6f6f6f),
                             ),
-                            onPressed: () => Navigator.pop(context),
-                            width: 80,
-                            color: Color(0xff3d51ff),
-                          )
-                        ],
-                      ).show();
+                            DialogButton(
+                              child: Text(
+                                "Daftar Sekarang",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 17),
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              width: 80,
+                              color: Color(0xff3d51ff),
+                            )
+                          ],
+                        ).show();
+                      }
 
 
                     },
@@ -621,64 +632,70 @@ class MyApp extends StatelessWidget {
                     hoverColor: Color(0xff3e69e3),
 
                     onPressed: () async {
+                      CookieRequest request = Provider.of<CookieRequest>(context);
+                      if (!request.loggedIn) {
+                        // kondisi untuk user yang belum login
 
-                      // kondisi untuk user yang belum login
-
-                      // Alert(
-                      //   context: context,
-                      //   type: AlertType.none,
-                      //   title: "MULAI INVESTASI",
-                      //   desc: "Anda belum masuk ke dalam akun BizzVest. Silahkan sign up atau sign in terlebih dahulu sebelum mulai investasi.",
-                      //   buttons: [
-                      //     DialogButton(
-                      //       child: Text(
-                      //         "Close",
-                      //         style: TextStyle(color: Colors.white, fontSize: 17),
-                      //       ),
-                      //       onPressed: () => Navigator.pop(context),
-                      //       width: 80,
-                      //       color: Color(0xff6f6f6f),
-                      //     ),
-                      //     DialogButton(
-                      //       child: Text(
-                      //         "Sign Up Sekarang",
-                      //         style: TextStyle(color: Colors.white, fontSize: 17),
-                      //       ),
-                      //       onPressed: () => Navigator.pop(context),
-                      //       width: 80,
-                      //       color: Color(0xff3d51ff),
-                      //     )
-                      //   ],
-                      // ).show();
-
-                      // kondisi untuk user yang sudah login
-
-                      Alert(
-                        context: context,
-                        type: AlertType.none,
-                        title: "MULAI INVESTASI",
-                        desc: "Apakah Anda ingin memberikan investasi untuk pemilik UMKM/petani?",
-                        buttons: [
-                          DialogButton(
-                            child: Text(
-                              "Close",
-                              style: TextStyle(color: Colors.white, fontSize: 17),
+                        Alert(
+                          context: context,
+                          type: AlertType.none,
+                          title: "MULAI INVESTASI",
+                          desc: "Anda belum masuk ke dalam akun BizzVest. Silahkan sign up atau sign in terlebih dahulu sebelum mulai investasi.",
+                          buttons: [
+                            DialogButton(
+                              child: Text(
+                                "Close",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 17),
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              width: 80,
+                              color: Color(0xff6f6f6f),
                             ),
-                            onPressed: () => Navigator.pop(context),
-                            width: 80,
-                            color: Color(0xff6f6f6f),
-                          ),
-                          DialogButton(
-                            child: Text(
-                              "Investasi Sekarang",
-                              style: TextStyle(color: Colors.white, fontSize: 17),
+                            DialogButton(
+                              child: Text(
+                                "Sign Up Sekarang",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 17),
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              width: 80,
+                              color: Color(0xff3d51ff),
+                            )
+                          ],
+                        ).show();
+                      } else {
+                        // kondisi untuk user yang sudah login
+
+                        Alert(
+                          context: context,
+                          type: AlertType.none,
+                          title: "MULAI INVESTASI",
+                          desc: "Apakah Anda ingin memberikan investasi untuk pemilik UMKM/petani?",
+                          buttons: [
+                            DialogButton(
+                              child: Text(
+                                "Close",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 17),
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              width: 80,
+                              color: Color(0xff6f6f6f),
                             ),
-                            onPressed: () => Navigator.pop(context),
-                            width: 80,
-                            color: Color(0xff3d51ff),
-                          )
-                        ],
-                      ).show();
+                            DialogButton(
+                              child: Text(
+                                "Investasi Sekarang",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 17),
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              width: 80,
+                              color: Color(0xff3d51ff),
+                            )
+                          ],
+                        ).show();
+                      }
 
 
                     },

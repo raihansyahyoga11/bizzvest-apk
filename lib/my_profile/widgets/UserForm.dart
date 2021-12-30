@@ -1,4 +1,3 @@
-
 class UserForm{
   String csrf_token;
   String nama_lengkap;

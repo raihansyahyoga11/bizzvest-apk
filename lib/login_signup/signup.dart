@@ -1,3 +1,5 @@
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzvest/login_signup/main.dart';
 import 'package:bizzvest/login_signup/cookie.dart';
@@ -21,6 +23,9 @@ class Signup extends State<SignupForm> {
 
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+        () async {
+      await request.init(context);
+    }();
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
@@ -173,21 +178,43 @@ class Signup extends State<SignupForm> {
                       onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final response = await request.post(
-                          "http://http://127.0.0.1:8000/start-web/signup-flutter", {
+                          NETW_CONST.get_server_URL("/start-web/signup-flutter"), {
                             'username': username,
                             'email': email,
                             'password': password,
                           });
-                      if (response['status']) {
+                      if (response['status'] == 'username exist') {
+                        final snackBar = SnackBar(
+                            content: const Text('Username telah terpakai. Masukkan username lain')
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else if (response['status'] == 'invalid format') {
+                        final snackBar = SnackBar(
+                            content: const Text(
+                                'Mauskkan email dengan format yang benar')
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else if (response['status'] == 'email exist') {
+                        final snackBar = SnackBar(
+                            content: const Text(
+                                'Email telah terpakai. Masukkan username lain')
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else if (response['status'] == 'authenticated') {
                         final loggingIn = await request
-                            .login(
-                            "http://http://127.0.0.1:8000/start-web/login-flutter", {
+                            .login(NETW_CONST.get_server_URL("/start-web/login-flutter"), {
                           'username': username,
                           'password': password,
                         });
                         if (loggingIn['status']) {
                           Navigator.pop(context);
                         }
+                      } else {
+                        final snackBar = SnackBar(
+                            content: const Text(
+                                'Ada Kesalahan')
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
                     }
                       },

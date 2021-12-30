@@ -173,7 +173,7 @@ class Signup extends State<SignupForm> {
                       onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final response = await request.post(
-                          "http://localhost:8000/start-web/signup-flutter", {
+                          "http://http://127.0.0.1:8000/start-web/signup-flutter", {
                             'username': username,
                             'email': email,
                             'password': password,
@@ -181,7 +181,7 @@ class Signup extends State<SignupForm> {
                       if (response['status']) {
                         final loggingIn = await request
                             .login(
-                            "http://localhost:8000/start-web/login-flutter", {
+                            "http://http://127.0.0.1:8000/start-web/login-flutter", {
                           'username': username,
                           'password': password,
                         });

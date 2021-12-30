@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/main_drawer.dart';
-import '../models/toko.dart';
-import 'card_toko.dart';
-import '../utility/search_toko.dart';
-import '../utility/list_daftar_toko.dart';
+import 'package:bizzvest/daftar_toko/widgets/main_drawer.dart';
+import 'package:bizzvest/daftar_toko/models/toko.dart';
+import 'package:bizzvest/daftar_toko/utility/search_toko.dart';
+import 'package:bizzvest/daftar_toko/utility/list_daftar_toko.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -12,20 +11,6 @@ import 'dart:convert';
 void main() {
   runApp(DaftarTokoMaterial());
 }
-
-// Future<void> fetchData() async {
-//     const url = 'http://127.0.0.1:8000/daftar-toko/search';
-//     try {
-//       final response = await http.get(Uri.parse(url));
-//       //print(response.body);
-//       Map<String, dynamic> extractedData = jsonDecode(response.body);
-//       extractedData.forEach((key, val) {
-//         print(val);
-//       });
-//     } catch (error) {
-//       print(error);
-//     }
-//   }
 
 class DaftarTokoMaterial extends StatelessWidget {
   const DaftarTokoMaterial({Key? key}) : super(key: key);
@@ -61,26 +46,26 @@ class DaftarToko extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: MainDrawer(), 
-        backgroundColor: const Color.fromRGBO(201, 244, 255, 1),
+      drawer: MainDrawer(), 
+      backgroundColor: const Color.fromRGBO(201, 244, 255, 1),
+      // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
+      appBar: AppBar(
+        // The search area here
+        title: Container(
+          width: double.infinity,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(5)
+          ),
+          child: Center(
         // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
-        appBar: AppBar(
-          // The search area here
-          title: Container(
-            width: double.infinity,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(5)
-            ),
-            child: Center(
-          // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
-              child: MyCustomForm(),
-            ), 
-          )
-        ),
-        body: Column(
-          children: [DaftarTokoListScreen()],
+            child: SearchForm(),
+          ), 
         )
+      ),
+      body: Center(
+        child: DaftarTokoListScreen(),
+      )
     );
   }
 }

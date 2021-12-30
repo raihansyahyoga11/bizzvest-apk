@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:bizzvest/daftar_toko/models/toko.dart';
-import 'package:bizzvest/daftar_toko/screen/card_toko.dart';
-import 'search_toko.dart';
-
 import 'package:bizzvest/daftar_toko/api/api_daftar_toko.dart';
-import 'package:bizzvest/daftar_toko/screen/card_toko.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
-
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 late Future<List<Toko>?> futureToko = fetchDaftarToko() as Future<List<Toko>?>;
 
@@ -27,7 +20,7 @@ class DaftarTokoListScreen extends StatelessWidget {
         } else if (snapshot.hasData) {
           return listDaftarToko(snapshot.data as List<Toko>, context);
         }
-        // loading
+        // loading screen
         return const CircularProgressIndicator();
       },
     );

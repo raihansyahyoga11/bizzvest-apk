@@ -46,7 +46,6 @@ class DaftarToko extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: MainDrawer(), 
       backgroundColor: const Color.fromRGBO(201, 244, 255, 1),
       // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
       appBar: AppBar(
@@ -57,10 +56,15 @@ class DaftarToko extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(5)
           ),
-          child: Center(
-        // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
-            child: SearchForm(),
-          ), 
+          child: Column(
+            children: <Widget>[
+              Text("Daftar Toko"),
+              Center(
+                // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
+                child: SearchForm(),
+              ), 
+          ],
+          ),
         )
       ),
       body: Center(

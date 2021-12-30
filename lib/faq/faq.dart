@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:bizzvest/daftar_toko/daftar_toko.dart';
+import 'package:bizzvest/daftar_toko/screen/daftar_toko.dart';
 import 'package:bizzvest/halaman_toko/add_toko/add_toko.dart';
 import 'package:bizzvest/login_signup/cookie.dart';
 import 'package:bizzvest/login_signup/signup.dart';

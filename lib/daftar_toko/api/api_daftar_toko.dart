@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:bizzvest/daftar_toko/models/Toko.dart';
+import 'package:bizzvest/daftar_toko/models/toko.dart';
 
 Future<List<Toko>?> fetchDaftarToko() async {
   final response = await http.get(Uri.parse('http://127.0.0.1:8000/daftar-toko/search/'));

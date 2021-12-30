@@ -119,7 +119,7 @@ class Login extends State<LoginForm> {
                         );
 
                         if (response['status']) {
-                          set_authentication(request.cookies[COOKIE_CONST.session_id_cookie_name]!);
+                          // set_authentication(request.cookies[COOKIE_CONST.session_id_cookie_name]!);
                           Navigator.pop(context);
                         }
                       },

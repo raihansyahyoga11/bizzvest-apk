@@ -77,9 +77,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.white,
                 itemBuilder: (context) =>
                 [
-                  PopupMenuItem<int>(value: 0, child: Text("Login")),
+                  PopupMenuItem<int>(value: 0, child: Text("Login"), textStyle: TextStyle(color: Colors.black),),
                   PopupMenuDivider(),
-                  PopupMenuItem<int>(value: 1, child: Text("Sign Up")),
+                  PopupMenuItem<int>(value: 1, child: Text("Sign Up"), textStyle: TextStyle(color: Colors.black),),
                 ],
                 onSelected: (item) => SelectedItem(context, item),
               ),
@@ -166,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (item) {
       case 0:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => MyProfile()));
+            .push(MaterialPageRoute(builder: (context) => LoginForm()));
         break;
       case 1:
         Navigator.of(context)

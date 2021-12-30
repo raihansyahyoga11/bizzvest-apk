@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 //https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html
 //https://www.javatpoint.com/flutter-bottom-navigation-bar
 
-void main() => runApp(DaftarTokoMaterial());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //list of widgets to call ontap
   final _widgetOptions = [
-    new home_page.MyHomePage(title: 'Bizzvest',),  // nanti diisi sama daftar toko
+    new DaftarTokoMaterial(),  // nanti diisi sama daftar toko
     new home_page.MyHomePage(title: 'Bizzvest',),
     new FaqUtamaScreen(),
   ];

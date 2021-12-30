@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:basic_utils/basic_utils.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
+import 'package:bizzvest/login_signup/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +12,54 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../manage_photo.dart';
 
 
+bool develop_mode = false;
+final String login_push_name = "/login_page_tito";
+
+Future<void> init_authenticated_user() async {
+  authenticated_user ??= await Authentication.create();
+}
+
 
 Authentication? authenticated_user = null;
-Future<Authentication> get_authentication() async{
+Future<Authentication> get_authentication(BuildContext context) async {
   authenticated_user ??= await Authentication.create();
-  if (!authenticated_user!.is_logged_in){
-    await authenticated_user!.login("hzz", "1122");
+  if (!(authenticated_user!.is_logged_in)){
+    if (develop_mode) {
+      await authenticated_user!.login("hzz", "1122");
+      assert (authenticated_user!.is_logged_in);
+    }else{
+      goto_login_page(context);
+    }
   }
   return authenticated_user!;
+}
+
+bool is_authenticated(){
+  if (authenticated_user != null)
+    return authenticated_user!.is_logged_in;
+  return false;
+}
+
+Future<void> set_authentication(String session_id) async {
+  authenticated_user ??= await Authentication.create();
+  await authenticated_user!.set_session_id(session_id);
+  assert (authenticated_user!.is_logged_in);
+  if (kDebugMode)
+    print("set_authentication() success");
+}
+
+bool login_page_semaphore_unlocked = true;
+void goto_login_page(BuildContext context){
+
+  if (login_page_semaphore_unlocked) {
+    Future.microtask(() async {
+      login_page_semaphore_unlocked = false;
+      await Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return LoginForm();
+      }));
+      login_page_semaphore_unlocked = true;
+    });
+  }
 }
 
 

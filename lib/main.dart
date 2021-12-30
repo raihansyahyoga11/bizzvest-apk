@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:bizzvest/login_signup/login.dart';
 import 'package:bizzvest/login_signup/signup.dart';
 import 'package:bizzvest/login_signup/cookie.dart';
+import 'package:bizzvest/daftar_toko/screen/daftar_toko.dart';
 import 'package:provider/provider.dart';
 
 
@@ -11,7 +12,7 @@ import 'package:provider/provider.dart';
 //https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html
 //https://www.javatpoint.com/flutter-bottom-navigation-bar
 
-void main() => runApp(MyApp());
+void main() => runApp(DaftarTokoMaterial());
 
 class MyApp extends StatelessWidget {
   @override

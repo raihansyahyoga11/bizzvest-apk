@@ -81,31 +81,34 @@ class _AddTokoState extends State<AddToko> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
-        body: RequestLoadingScreenBuilder(
-          request_function: () async {
-            var auth = await get_authentication(context);
-            return auth.get(
-              uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_add_toko_API)
-            );
-          },
+        body: Theme(
+          data: STYLE_CONST.default_theme_of_halamanToko(context),
+          child: RequestLoadingScreenBuilder(
+            request_function: () async {
+              var auth = await get_authentication(context);
+              return auth.get(
+                  uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_add_toko_API)
+              );
+            },
 
-          wrapper: (widget, status) {
-            return widget;
-          },
+            wrapper: (widget, status) {
+              return widget;
+            },
 
-          on_success: (BuildContext context, AsyncSnapshot<dynamic> snapshot,
+            on_success: (BuildContext context, AsyncSnapshot<dynamic> snapshot,
                 ReqResponse response, Function(Function()) refresh) {
-            String raw_content = response.data_string!;
-            print(raw_content);
-            Map<String, dynamic> map = json.decode(raw_content);
+              String raw_content = response.data_string!;
+              print(raw_content);
+              Map<String, dynamic> map = json.decode(raw_content);
 
-            return SingleChildScrollView(
-              padding: EdgeInsets.only(bottom: 10),
-              child: AddTokoBody(
-                initial_csrf: map['csrftoken'],
-              ),
-            );
-          },
+              return SingleChildScrollView(
+                padding: EdgeInsets.only(bottom: 10),
+                child: AddTokoBody(
+                  initial_csrf: map['csrftoken'],
+                ),
+              );
+            },
+          ),
         ),
         backgroundColor: STYLE_CONST.background_color,
 

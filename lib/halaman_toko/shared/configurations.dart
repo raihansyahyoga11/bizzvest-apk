@@ -86,6 +86,16 @@ class COOKIE_CONST{
 
 class STYLE_CONST{
   static final Color? background_color = Colors.lightBlue[200];
+
+  static ThemeData default_theme_of_halamanToko(BuildContext context){
+    return ThemeData(
+      textTheme: Theme.of(context).textTheme.apply(
+          fontSizeFactor: 1.3,
+          fontSizeDelta: 2.0,
+          fontFamily: 'Tisan'
+      ),
+    );
+  }
 }
 
 

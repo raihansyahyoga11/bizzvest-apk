@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:js';
 import 'package:http/http.dart' as http;
 import '../models/UserAccount.dart';
 import '../screens/ProfilePage.dart';
@@ -6,9 +7,8 @@ import '../screens/EditingPage.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 
   Future<String> _loadAUserAsset() async {
-    var auth = await get_authentication();
-    final response = await auth.get(
-      uri: Uri.parse('http://10.0.2.2:8000/my-profile/my-profile-json'),
+    // var auth = await get_authentication(context);
+    final response = await http.get(Uri.parse('https://bizzvest-bizzvest.herokuapp.com/my-profile/my-profile-json'),
     );
     return response.body;
   }

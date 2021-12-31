@@ -226,7 +226,7 @@ class MyProfileState extends State<MyProfile> {
                                       shape: BoxShape.circle,
                                       image: new DecorationImage(
                                         image: new NetworkImage(
-                                            "http://10.0.2.2:8000/${snapshot.data?.photoProfile}"),   
+                                            "https://bizzvest-bizzvest.herokuapp.com/${snapshot.data?.photoProfile}"),   
                                         fit: BoxFit.cover,
                                       ),
                                     )),
@@ -548,12 +548,12 @@ class MyProfileState extends State<MyProfile> {
     return new MaterialApp(
       
       home: new Scaffold(
-          appBar: new AppBar(
+          // appBar: new AppBar(
 
-            title: new Text('My Profile'),
-          ),
+          //   title: new Text('My Profile'),
+          // ),
           body: futureWidget(),
-          drawer: MainDrawer(),
+          // drawer: MainDrawer(),
       )
     );
     

@@ -137,7 +137,7 @@ class EditingScreenState extends State<EditingPage> {
   //     });
   // }
  Future<void> on_tap_add_photo(BuildContext context) async{
-    var auth = await get_authentication();
+    var auth = await get_authentication(context);
     image = await picker.pickImage(source: ImageSource.gallery);
      if (image == null) {
        show_snackbar(context, "user didnt pick any image");
@@ -145,7 +145,7 @@ class EditingScreenState extends State<EditingPage> {
      }
 
      final response = await auth.post(
-      uri: Uri.parse('http://10.0.2.2:8000/my-profile/foto-api'), 
+      uri: Uri.parse('https://bizzvest-bizzvest.herokuapp.com/my-profile/foto-api'), 
     // headers: <String, String> {
     //   'Content-Type':'application/json;charset=UTF-8',
     // },
@@ -166,11 +166,11 @@ Future<void> submit_to_server(BuildContext context) async{
     // if (!enable_submit_button)
     //   return null;
 
-    var auth = await get_authentication();
+    var auth = await get_authentication(context);
     final dict;
     // print({"photo_profile": await MultipartFile.fromFile(image!.path)});
     final response = await auth.post(
-      uri: Uri.parse('http://10.0.2.2:8000/my-profile/my-profile-api'), 
+      uri: Uri.parse('https://bizzvest-bizzvest.herokuapp.com/my-profile/my-profile-json'), 
     // headers: <String, String> {
     //   'Content-Type':'application/json;charset=UTF-8',
     // },
@@ -278,7 +278,7 @@ Future<void> submit_to_server(BuildContext context) async{
                 padding: EdgeInsets.symmetric(horizontal: 32),
                 children: [
                   ProfileWidget(
-                    imagePath:  "http://10.0.2.2:8000/${snapshot.data?.photoProfile}",
+                    imagePath:  "https://bizzvest-bizzvest.herokuapp.com/${snapshot.data?.photoProfile}",
                     // isEdit: true,
                     onClicked: () {
                       setState(() {
@@ -386,7 +386,15 @@ Future<void> submit_to_server(BuildContext context) async{
                           },
                               onSaved: (String? newValue) {  
                                 if  (newValue!=null){
-                              formUser.gender= newValue;
+                                  if (newValue == "Laki-laki") {
+                                      formUser.gender = "laki_laki";
+                                  }
+                                  else if(newValue == "Perempuan") {
+                                    formUser.gender ='perempuan';
+                                  }
+                                  else {
+                                    formUser.gender = "jenis_kelamin";
+                                  }
                                 }
                           },
                             // });
@@ -553,11 +561,11 @@ Future<void> submit_to_server(BuildContext context) async{
   Widget build(BuildContext context) {
     return new MaterialApp(
       home: new Scaffold(
-          appBar: new AppBar(
-            title: new Text('Edit Profile'),
-          ),
+          // appBar: new AppBar(
+          //   title: new Text('Edit Profile'),
+          // ),
           body: futureWidgetEdit(),
-          drawer: MainDrawer(),
+          // drawer: MainDrawer(),
     )
     );
   }

@@ -89,8 +89,7 @@ class MyProfileState extends State<MyProfile> {
       }),
   ),
   onPressed: () { 
-    Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => MyHomePage()));
+    Navigator.pop(context);
   },
   child: Text('Kembali ke Halaman Utama'),
                           )

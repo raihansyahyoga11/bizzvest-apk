@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 // import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 // import 'package:bizzvest/halaman_toko/shared/utility.dart';
 // import 'package:bizzvest/login_signup/cookie.dart';

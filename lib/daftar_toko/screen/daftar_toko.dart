@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:bizzvest/daftar_toko/widgets/main_drawer.dart';
 import 'package:bizzvest/daftar_toko/models/toko.dart';
 import 'package:bizzvest/daftar_toko/utility/search_toko.dart';
 import 'package:bizzvest/daftar_toko/utility/list_daftar_toko.dart';
@@ -48,28 +47,7 @@ class DaftarToko extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(201, 244, 255, 1),
       // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
-      appBar: AppBar(
-        // The search area here
-        title: Container(
-          width: double.infinity,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(5)
-          ),
-          child: Column(
-            children: <Widget>[
-              Text("Daftar Toko"),
-              Center(
-                // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
-                child: SearchForm(),
-              ), 
-          ],
-          ),
-        )
-      ),
-      body: Center(
-        child: DaftarTokoListScreen(),
-      )
+      body,
     );
   }
 }

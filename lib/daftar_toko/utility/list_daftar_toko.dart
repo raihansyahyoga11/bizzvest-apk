@@ -14,9 +14,13 @@ class DaftarTokoListScreen extends StatelessWidget {
       future: futureToko,
       builder: (context, snapshot) {
         if(snapshot.hasError) {
-          return const Center(
-            child: Text('Tidak dapat memuat daftar toko'),
-          );
+          // return const Center(
+          //   child: Text('Tidak dapat memuat daftar toko'),
+          // );
+          print(Future.error(
+                snapshot.error!,
+                snapshot.stackTrace));
+        
         } else if (snapshot.hasData) {
           return listDaftarToko(snapshot.data as List<Toko>, context);
         }

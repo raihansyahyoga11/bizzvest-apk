@@ -3,6 +3,7 @@
 import 'package:bizzvest/faq/faq.dart';
 import 'package:bizzvest/halaman_toko/add_toko/add_toko.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:bizzvest/my_profile/screens/ProfilePage.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzvest/login_signup/login.dart';
@@ -24,11 +25,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Provider(
-        create: (_) {
-      CookieRequest request = CookieRequest();
-
-      return request;
-    },
+        create: (context) {
+          CookieRequest request = CookieRequest();
+          return request;
+        },
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'BizzVest',
@@ -61,7 +61,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var x = 2;
+    BuildContextKeeper.main_dart_MaterialApp_context = context;
     CookieRequest request = Provider.of<CookieRequest>(context);
+
+    () async {
+      await request.init(context);
+      // TODO disini mungkin perlu refresh just in case auto logged in -- Nuel
+    }();
+
     if (!request.loggedIn) {
       return Scaffold(
         appBar: AppBar(

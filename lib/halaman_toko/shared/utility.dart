@@ -48,11 +48,23 @@ Future<void> set_authentication(String session_id) async {
     print("set_authentication() success");
 }
 
+
+Future<void> remove_authentication(String session_id) async {
+  authenticated_user?.cookie_jar.deleteAll();
+  authenticated_user = null;
+  if (kDebugMode)
+    print("remove_authentication() success");
+}
+
 bool login_page_semaphore_unlocked = true;
 Future<dynamic>? goto_login_page(BuildContext context){
+  if (kIsWeb){
+    show_snackbar(context, "Tidak bisa dijalankan pada web. Harus android/emulator");
+    throw Exception("Tidak bisa dijalankan pada web. Harus android/emulator");
+  }
+
 
   if (login_page_semaphore_unlocked) {
-
     return Future<dynamic>.microtask(() async {
       login_page_semaphore_unlocked = false;
       var ret = await Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -64,6 +76,14 @@ Future<dynamic>? goto_login_page(BuildContext context){
 
   }
 }
+
+
+
+class BuildContextKeeper{
+  static BuildContext? main_dart_MaterialApp_context;
+}
+
+
 
 
 bool is_bad_status_code(int status_code){

@@ -1,3 +1,5 @@
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
@@ -27,6 +29,9 @@ class CookieRequest {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Successfully logged in. Welcome back!"),
           ));
+          if (!kIsWeb){
+            await set_authentication(cookies[COOKIE_CONST.session_id_cookie_name]!);
+          }
         }
       }
     }

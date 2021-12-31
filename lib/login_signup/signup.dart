@@ -1,5 +1,6 @@
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzvest/login_signup/main.dart';
 import 'package:bizzvest/login_signup/cookie.dart';
@@ -176,6 +177,9 @@ class Signup extends State<SignupForm> {
                           'password': password,
                         });
                         if (loggingIn['status']) {
+                          if (!kIsWeb){
+                            set_authentication(request.cookies[COOKIE_CONST.session_id_cookie_name]!);
+                          }
                           Navigator.pop(context);
                         }
                       } else {

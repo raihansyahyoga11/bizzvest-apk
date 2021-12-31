@@ -53,7 +53,7 @@ class NETW_CONST{
         (kReleaseMode)? "bizzvest-bizzvest.herokuapp.com" :
             (kIsWeb? "127.0.0.1:8000" : "10.0.2.2:8000");
 
-  static const String login_path = "/start-web/login";
+  static const String login_path = "/start-web/login-flutter";
   static const String acc_info = "/halaman-toko/account-information";
 
   static const String halaman_toko_get_photo_json_path = "/halaman-toko/halaman-toko-photo-json";

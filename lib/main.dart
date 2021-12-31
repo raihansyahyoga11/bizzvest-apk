@@ -142,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   return [
                     PopupMenuItem<int>(value: 0, child: Text("Profil"), textStyle: TextStyle(color: Colors.black),),
                     PopupMenuItem<int>(value: 1, child: Text("Tambah Toko"), textStyle: TextStyle(color: Colors.black)),
-                    PopupMenuItem<int>(value: 2, child: Text("Status Investasi"), textStyle: TextStyle(color: Colors.black)),
+                    // PopupMenuItem<int>(value: 2, child: Text("Status Investasi"), textStyle: TextStyle(color: Colors.black)),
                     PopupMenuDivider(),
                     PopupMenuItem<int>(value: 3, child: Text("Log Out"), textStyle: TextStyle(color: Colors.black)),
                   ];

@@ -24,7 +24,7 @@ class Login extends State<LoginForm> {
       await request.init(context);
     }();
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffdafcff),
       appBar: AppBar(
         title: Text("Login Page"),
       ),
@@ -46,6 +46,8 @@ class Login extends State<LoginForm> {
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
                     decoration: InputDecoration(
+                      fillColor: Colors.white,
+                        filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -55,18 +57,11 @@ class Login extends State<LoginForm> {
                         username = value!;
                       });
                     },
-                    onSaved: (String? value) {
-                      setState(() {
-                        username = value!;
-                      });
-                    },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Username tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                    // onSaved: (String? value) {
+                    //   setState(() {
+                    //     username = value!;
+                    //   });
+                    // },
                   ),
                 ),
                 Padding(
@@ -76,6 +71,8 @@ class Login extends State<LoginForm> {
                   child: TextFormField(
                     obscureText: true,
                     decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -85,18 +82,11 @@ class Login extends State<LoginForm> {
                         password = value!;
                       });
                     },
-                    onSaved: (String? value) {
-                      setState(() {
-                        password = value!;
-                      });
-                    },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Password tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                    // onSaved: (String? value) {
+                    //   setState(() {
+                    //     password = value!;
+                    //   });
+                    // },
                   ),
                 ),
                 Padding(
@@ -111,20 +101,34 @@ class Login extends State<LoginForm> {
                         borderRadius: BorderRadius.circular(20)),
                     child: FlatButton(
                       onPressed: () async {
-                        final response = await request
-                            .login(NETW_CONST.get_server_URL("/start-web/login-flutter"),
-                            {
-                              'username': username,
-                              'password': password,
+                        if (username == "" || password == "") {
+                          final snackBar = SnackBar(
+                              content: const Text(
+                                  'Isi username dan password anda')
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        } else {
+                          final response = await request
+                              .login(NETW_CONST.get_server_URL(
+                              "/start-web/login-flutter"),
+                              {
+                                'username': username,
+                                'password': password,
+                              }
+                          );
+
+                          if (response['status']) {
+                            if (!kIsWeb){
+                              set_authentication(request.cookies[COOKIE_CONST.session_id_cookie_name]!);
                             }
-                        );
-
-                        if (response['status']) {
-                          if (!kIsWeb){
-                            set_authentication(request.cookies[COOKIE_CONST.session_id_cookie_name]!);
+                            Navigator.pop(context);
+                          } else {
+                            final snackBar = SnackBar(
+                                content: const Text(
+                                    'Username atau password anda salah, silahkan coba lagi')
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           }
-
-                          Navigator.pop(context);
                         }
                       },
                       child: Text(
@@ -134,10 +138,6 @@ class Login extends State<LoginForm> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
-                Text('Belum Punya Akun? Daftar Disini')
               ],
             ),
           ),

@@ -33,11 +33,13 @@ class _SearchFormState extends State<SearchForm> {
     return TextFormField(
       controller: search_text,
       decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
           suffixIcon: IconButton(
             tooltip: 'Cari toko!',
             icon: Icon(Icons.search),
             onPressed: () async {
-              final response = await http.post(Uri.parse('http://127.0.0.1:8000/daftar-toko/search/'),
+              final response = await http.post(Uri.parse('http://10.0.2.2:8000/daftar-toko/search/'),
                   headers: <String, String>{
                       'Content-Type': 'application/json; charset=UTF-8'
                   },

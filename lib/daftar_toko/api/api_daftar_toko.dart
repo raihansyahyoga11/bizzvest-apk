@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:bizzvest/daftar_toko/models/toko.dart';
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 
 Future<List<Toko>?> fetchDaftarToko() async {
-  final response = await http.get(Uri.parse('http://127.0.0.1:8000/daftar-toko/search/'));
+  final response = await http.get(Uri.parse(NETW_CONST.protocol + NETW_CONST.host+'/daftar-toko/search/'), headers: {"Accept": "application/json"});
   if (response.statusCode == 200) {
+  print("code 200 success");
   // If the server did return a 200 OK response,
   // then parse the JSON.
     return parseDaftarToko(response.body);
@@ -17,7 +19,9 @@ Future<List<Toko>?> fetchDaftarToko() async {
 
 List<Toko>? parseDaftarToko(String response){
   final List<Toko> listDaftarToko = [];
-  final parsedData = jsonDecode(response) as List<dynamic>;
+  Map<String, dynamic> map = json.decode(response);
+  final List<dynamic> parsedData = map["company_search"];
+  // final parsedData = jsonDecode(response) as List<dynamic>;
   for (var e in parsedData) {
     listDaftarToko.add(Toko?.fromJson(e));
   }

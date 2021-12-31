@@ -42,7 +42,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   //list of widgets to call ontap
   final _widgetOptions = [
@@ -119,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Theme(
               data: Theme.of(context).copyWith(
                   textTheme: TextTheme().apply(bodyColor: Colors.black),
-                  dividerColor: Colors.white,
+                  dividerColor: Colors.black,
                   iconTheme: IconThemeData(color: Colors.white)),
               child: PopupMenuButton<int>(
                 icon: Icon(Icons.account_circle_outlined),
@@ -163,15 +163,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void SelectedItem(BuildContext context, item) {
+  Future<void> SelectedItem(BuildContext context, item) async {
     switch (item) {
       case 0:
-        Navigator.of(context)
+        await Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginForm()));
+        setState(() {});
         break;
       case 1:
-        Navigator.of(context)
+        await Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => SignupForm()));
+        setState(() {});
         break;
     }
   }

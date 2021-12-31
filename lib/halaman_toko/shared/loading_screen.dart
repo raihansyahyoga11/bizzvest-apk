@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'configurations.dart';
 
 class RequestLoadingScreenBuilder extends StatefulWidget{
+
   final Future<ReqResponse> Function() request_function;
   final int TIMEOUT_RETRY_LIMIT;
   Widget Function(Widget widget, RequestStatus status) wrapper = (widget, status){
@@ -17,7 +18,7 @@ class RequestLoadingScreenBuilder extends StatefulWidget{
 
   // Function(context, snapshot, response, refresh)
   final Widget Function(BuildContext context, AsyncSnapshot snapshot,
-      ReqResponse response, Function(Function()) refresh) on_success;
+      ReqResponse response, RequestLoadingScreenBuilderState this_state) on_success;
 
   RequestLoadingScreenBuilder({
     required this.request_function,
@@ -33,7 +34,7 @@ class RequestLoadingScreenBuilder extends StatefulWidget{
 
 
   @override
-  State<RequestLoadingScreenBuilder> createState() => _RequestLoadingScreenBuilderState();
+  State<RequestLoadingScreenBuilder> createState() => RequestLoadingScreenBuilderState();
 
   static T? cast<T>(x) => x is T ? x : null;
 }
@@ -45,18 +46,23 @@ enum RequestStatus{
 }
 
 
-class _RequestLoadingScreenBuilderState extends State<RequestLoadingScreenBuilder> {
+class RequestLoadingScreenBuilderState extends State<RequestLoadingScreenBuilder> {
   int timeout_retry_number = 0;
+  Future<ReqResponse>? _request_override;
 
-
-  void refresh([Function()? func]){
+  void refresh([Function()? func, Future<ReqResponse>? request_override]){
+    if (request_override != null)
+      _request_override = request_override;
     setState(func ?? (){});
   }
 
   @override
   Widget build(BuildContext context) {
+    Future<ReqResponse>? temp_future = _request_override;
+    _request_override = null;
+
     return FutureBuilder(
-        future: widget.request_function(),
+        future: temp_future ?? widget.request_function(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState != ConnectionState.done){
             return widget.wrapper(
@@ -82,8 +88,8 @@ class _RequestLoadingScreenBuilderState extends State<RequestLoadingScreenBuilde
           }
 
           ReqResponse? req_resp = RequestLoadingScreenBuilder.cast<ReqResponse>(snapshot.data);
-          if (snapshot.hasError){
-            if (Session.is_timeout_error(snapshot.error)){
+          if (snapshot.hasError || req_resp is TimeoutResponse){
+            if (Session.is_timeout_error(snapshot.error) || req_resp is TimeoutResponse){
               RequestStatus req_status = RequestStatus.timed_out_final;
 
               if (timeout_retry_number < widget.TIMEOUT_RETRY_LIMIT) {
@@ -148,8 +154,10 @@ class _RequestLoadingScreenBuilderState extends State<RequestLoadingScreenBuilde
             );
           }
 
+          // if success, reset timeout retry number
+          timeout_retry_number = 0;
           return widget.wrapper(
-              widget.on_success.call(context,snapshot,req_resp,setState), RequestStatus.success
+              widget.on_success.call(context,snapshot,req_resp, this), RequestStatus.success
           );
         },
     );

@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:bizzvest/faq/models/question.dart';
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<Question>?> fetchQuestion() async {
-  final response = await http.get(Uri.parse('http://bizzvest.herokuapp.com/faq/json/'));
+  final response = await http.get(NETW_CONST.get_server_URI('/faq/json/'));
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,

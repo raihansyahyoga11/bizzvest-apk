@@ -467,14 +467,14 @@ class HalamanTokoStatusContainer extends StatelessWidget{
     required this.nilai_lembar_saham
   });
 
-  static Widget get_widget_according_to_status(int status,
+  static Widget get_widget_according_to_status(StatusVerifikasi status,
       BuildContext context, {bool show_edit_option: true}){
 
     String extra_space_1 = "  ";
     String extra_space_2 = "      ";
 
     switch (status){
-      case 0:
+      case StatusVerifikasi.BELUM_MENGAJUKAN:
         return RichText(text: TextSpan(
             style: DefaultTextStyle.of(context).style,  // apply default-nya
             children: [
@@ -515,15 +515,12 @@ class HalamanTokoStatusContainer extends StatelessWidget{
 
             ]
         ));
-      case 1:
+      case StatusVerifikasi.SEDANG_MENGAJUKAN:
         return get_widget_for_value("menunggu verifikasi");
-      case 2:
+      case StatusVerifikasi.DITOLAK:
         return get_widget_for_value("verifikasi ditolak");
-      case 3:
+      case StatusVerifikasi.TERVERIFIKASI:
         return get_widget_for_value("terverifikasi");
-      default:
-        assert (false);
-        return get_widget_for_value("unknown error");
     }
   }
 
@@ -545,14 +542,28 @@ class HalamanTokoStatusContainer extends StatelessWidget{
       show_snackbar(context, "uploading...");
 
       var auth = await get_authentication(context);
-      var response = await auth.post(
-          uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_upload_proposal),
-          data: {
-            COOKIE_CONST.csrf_token_formdata: inh_widg.csrf_token,
-            'company_id': prop.id,
-            'proposal': await dio.MultipartFile.fromFile(result.paths[0]!),
-          }
-      );
+      ReqResponse? response; 
+      
+      try{
+        response = await auth.post(
+            uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_upload_proposal),
+            data: {
+              COOKIE_CONST.csrf_token_formdata: inh_widg.csrf_token,
+              'company_id': prop.id,
+              'proposal': await dio.MultipartFile.fromFile(result.paths[0]!),
+            }
+        );
+      } on dio.DioError catch (e){
+        if (Session.is_timeout_error(e)){
+          show_snackbar(context, "Request timed out");
+          return;
+        }
+      }
+      
+      if (response == null){
+        show_snackbar(context, "null response");
+        return;
+      }
 
       if (response.has_problem){
         ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
@@ -564,8 +575,9 @@ class HalamanTokoStatusContainer extends StatelessWidget{
       ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("uploaded successfully to the server")));
+
       inh_widg.setState((){
-        prop.proposal_server_path = response.body;  // update the new URL for the proposal
+        prop.proposal_server_path = response?.body;  // update the new URL for the proposal
       });  // refresh
     };
   }
@@ -581,13 +593,27 @@ class HalamanTokoStatusContainer extends StatelessWidget{
           content: Text("Mengajukan verifikasi")));
 
       var auth = await get_authentication(context);
-      var response = await auth.post(
-        uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_ajukan_verifikasi),
-        data: {
-          'id': prop.id,
-          COOKIE_CONST.csrf_token_formdata: inh_widg.csrf_token,
-        },
-      );
+      ReqResponse? response;
+
+      try{
+        response  = await auth.post(
+          uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_ajukan_verifikasi),
+          data: {
+            'id': prop.id,
+            COOKIE_CONST.csrf_token_formdata: inh_widg.csrf_token,
+          },
+        );
+      } on dio.DioError catch (e){
+        if (Session.is_timeout_error(e)){
+          show_snackbar(context, "Request timed out");
+          return;
+        }
+      }
+
+      if (response == null){
+        show_snackbar(context, "null response");
+        return;
+      }
 
       if (response.has_problem){
         ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);

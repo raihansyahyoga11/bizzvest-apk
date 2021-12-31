@@ -306,3 +306,7 @@ class BorderedContainer extends StatelessWidget{
     );
   }
 }
+
+enum StatusVerifikasi{
+  BELUM_MENGAJUKAN, SEDANG_MENGAJUKAN, DITOLAK, TERVERIFIKASI
+}

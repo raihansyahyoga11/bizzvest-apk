@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:js';
 import 'package:http/http.dart' as http;
 import '../models/UserAccount.dart';
 import '../screens/ProfilePage.dart';

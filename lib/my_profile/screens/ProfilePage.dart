@@ -62,7 +62,6 @@ class MyProfileState extends State<MyProfile> {
 
   Widget futureWidget() {
     return new FutureBuilder<User>(
-      
       future: loadUser(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -543,6 +542,7 @@ class MyProfileState extends State<MyProfile> {
 
   @override
   Widget build(BuildContext context) {
+    BuildContextKeeper.my_profile_context = context;
     return new MaterialApp(
       
       home: new Scaffold(

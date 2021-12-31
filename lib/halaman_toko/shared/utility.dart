@@ -86,6 +86,7 @@ Future<dynamic>? goto_login_page(BuildContext context){
 
 class BuildContextKeeper{
   static BuildContext? main_dart_MaterialApp_context;
+  static BuildContext? my_profile_context;
 }
 
 

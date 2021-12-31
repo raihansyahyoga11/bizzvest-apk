@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:http/http.dart' as http;
 import '../models/UserAccount.dart';
 import '../screens/ProfilePage.dart';
@@ -6,17 +7,17 @@ import '../screens/EditingPage.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 
   Future<String> _loadAUserAsset() async {
-    // var auth = await get_authentication(context);
-    final response = await http.get(Uri.parse('https://bizzvest-bizzvest.herokuapp.com/my-profile/my-profile-json'),
+    var auth = await get_authentication(BuildContextKeeper.my_profile_context!);
+    final response = await auth.get(uri: NETW_CONST.get_server_URI("/my-profile/my-profile-json"),
     );
     return response.body;
   }
 
-  Future<User> loadUser() async {
-  await wait(1);
-  String jsonString = await _loadAUserAsset();
-  final jsonResponse = json.decode(jsonString);
-  return new User.fromJson(jsonResponse);
+  Future<User> loadUser()bizzvest- async {
+    await wait(1);
+    String jsonString = await _loadAUserAsset();
+    final jsonResponse = json.decode(jsonString);
+    return new User.fromJson(jsonResponse);
   }
 
 

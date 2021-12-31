@@ -44,9 +44,12 @@ class DaftarTokoMaterial extends StatelessWidget {
   }
 }
 
+
+
 class DaftarToko extends StatelessWidget {
   final String searchText;
   const DaftarToko({this.searchText='', Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

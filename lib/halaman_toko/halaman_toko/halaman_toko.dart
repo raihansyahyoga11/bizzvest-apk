@@ -8,6 +8,7 @@ import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/loading_screen.dart';
 import 'package:bizzvest/halaman_toko/shared/provider_matrial_app.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
+import 'package:bizzvest/mulai_invest/mulai_invest_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -51,9 +52,12 @@ class _HalamanTokoState extends State<HalamanToko> {
   GlobalKey<ScaffoldState> get scaffold_key{
     return widget.scaffold_key;
   }
+  int user_id_buat_mulaiInvest = -1;
 
   Future<ReqResponse> fetch_halaman_toko_data([bool throw_timeout_exception=true]) async {
     var authentication = await get_authentication(context);
+    user_id_buat_mulaiInvest = authentication.user_account_id;
+
     ReqResponse? ret;
     try {
       ret = await authentication.get(
@@ -117,9 +121,19 @@ class _HalamanTokoState extends State<HalamanToko> {
     print("your acc ${resulting_json['your_acc'] }");
 
     StatusVerifikasi status_verif = StatusVerifikasi.values[resulting_json['status_verifikasi']];
+    UserAccount owner = UserAccount(
+      full_name: resulting_json['owner']['full_name'],
+      username: resulting_json['owner']['username'],
+      photo_profile: Image.network(
+          NETW_CONST.protocol + NETW_CONST.host
+              + resulting_json['owner']['photo_profile']
+      ),
+    );
+
 
     return HalamanTokoWrapper(
       company_id: (status_verif == StatusVerifikasi.TERVERIFIKASI)? widget.id : null,
+      user_acc_id: user_id_buat_mulaiInvest,
       child: StatefulBuilder(builder: (context, setState) {
         return RefreshIndicator(
           onRefresh: () {
@@ -153,14 +167,7 @@ class _HalamanTokoState extends State<HalamanToko> {
                   alamat: resulting_json['alamat'],
                   deskripsi: resulting_json['deskripsi'],
                   proposal_server_path: resulting_json['alamat_proposal'],
-                  owner: UserAccount(
-                    full_name: resulting_json['owner']['full_name'],
-                    username: resulting_json['owner']['username'],
-                    photo_profile: Image.network(
-                        NETW_CONST.protocol + NETW_CONST.host
-                            + resulting_json['owner']['photo_profile']
-                    ),
-                  ),
+                  owner: owner,
 
                   nilai_lembar_saham: resulting_json['nilai_lembar_saham'],
                   jumlah_lembar_saham: resulting_json['jumlah_lembar_saham'],
@@ -180,10 +187,14 @@ class _HalamanTokoState extends State<HalamanToko> {
 class HalamanTokoWrapper extends StatelessWidget{
   final GlobalKey<ScaffoldState>? scaffold_key;
   final int? company_id;
+  final int user_acc_id;
   final Widget child;
+
+
   HalamanTokoWrapper({
     required this.child,
     this.company_id,
+    this.user_acc_id=-1,
     this.scaffold_key,
     Key? key,
   }) : super(key: key);
@@ -198,9 +209,18 @@ class HalamanTokoWrapper extends StatelessWidget{
           backgroundColor: STYLE_CONST.background_color,
 
           floatingActionButton: (company_id == null)?
-            null : const FloatingActionButton(
+            null : FloatingActionButton(
               child: FaIcon(FontAwesomeIcons.dollarSign),
-              onPressed: null,  // pergi ke mulai invest
+              onPressed: () async {
+                await Navigator.pushNamed(
+                    context,
+                    MulaiInvestScreen.routeName,
+                    arguments: {
+                      'companyId': company_id,
+                      'userId': user_acc_id,
+                    }
+                );
+              },  // pergi ke mulai invest
               backgroundColor: Colors.blue,
             ),
 

@@ -171,6 +171,7 @@ class TimeoutResponse<T> extends ReqResponse<T>{
 
 
 class Authentication extends Session{
+  int user_account_id=-1;
   bool _is_logged_in = false;
   bool get is_logged_in{
     return _is_logged_in;
@@ -226,7 +227,7 @@ class Authentication extends Session{
     ReqResponse ret = await post(uri: NETW_CONST.login_uri, data: form);
     print(await cookie_jar);
     if (!ret.has_problem){
-      await refresh_is_logged_in();
+      await refresh_is_logged_in_and_user_id();
     }else if (kDebugMode){
       print("login problem 1: ${ret.statusCode} ${ret.reasonPhrase}}");
       print("");
@@ -235,15 +236,19 @@ class Authentication extends Session{
     return ret;
   }
 
-  Future<ReqResponse> refresh_is_logged_in([int retry_cnt=3, Function()? on_timeout]) async {
+  Future<ReqResponse> refresh_is_logged_in_and_user_id([int retry_cnt=3, Function()? on_timeout]) async {
     ReqResponse? resp;
 
     while (retry_cnt > 0){
       try{
         resp = await get(uri: NETW_CONST.get_server_URI(NETW_CONST.acc_info));
+        Map<String, dynamic> map_resp = json.decode(resp.body);
 
-        if (!resp.has_problem && json.decode(resp.body)['is_logged_in'] == 1) {
+        if (!resp.has_problem && map_resp['is_logged_in'] == 1) {
           _is_logged_in = true;
+          if (map_resp['user_id_buat_mulaiInvest'] is int) {
+            user_account_id = map_resp['user_id_buat_mulaiInvest'];
+          }
         }
         break;
       }on dio.DioError catch (e){
@@ -275,7 +280,7 @@ class Authentication extends Session{
         session_id
     )]);
 
-    return await refresh_is_logged_in();
+    return await refresh_is_logged_in_and_user_id();
   }
 }
 

@@ -163,15 +163,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void SelectedItem(BuildContext context, item) {
+  Future<void> SelectedItem(BuildContext context, item) async {
     switch (item) {
       case 0:
-        Navigator.of(context)
+        await Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginForm()));
+        setState(() {});
         break;
       case 1:
-        Navigator.of(context)
+        await Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => SignupForm()));
+        setState(() {});
         break;
     }
   }

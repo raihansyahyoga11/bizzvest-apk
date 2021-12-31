@@ -155,7 +155,7 @@ class _MulaiInvestScreenState extends State<MulaiInvestScreen> {
     if (ModalRoute.of(context)!.settings.arguments == null){
       companyId = 0;
     } else {
-      final args = ModalRoute.of(context)!.settings.arguments as Map<String, int>;
+      final args = ModalRoute.of(context)!.settings.arguments as Map<String, int?>;
       companyId = args['companyId'];
       userId = args['userId'];
     }

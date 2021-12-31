@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:bizzvest/daftar_toko/models/toko.dart';
 import 'package:bizzvest/daftar_toko/utility/search_toko.dart';
 import 'package:bizzvest/daftar_toko/utility/list_daftar_toko.dart';
+import 'package:bizzvest/faq/helper/helper.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -46,8 +47,52 @@ class DaftarToko extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(201, 244, 255, 1),
-      // https://www.kindacode.com/article/flutter-add-a-search-field-to-the-app-bar/
-      body,
+      body: SafeArea(
+            child: Container(
+              color: Color(0xffdafcff),
+              margin: const EdgeInsets.all(1.0),
+              padding: const EdgeInsets.all(5.0),
+              child:  Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Center(
+                      child: Container(
+                          padding: EdgeInsets.all(5.0),
+                          decoration: BoxDecoration(
+                              color: Color(0xffc3f1fc),
+                              borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                          child: new Center (
+                              child: Text(
+                                "Daftar Toko",
+                                style: TextStyle(
+                                  fontSize: 25.0,
+                                  color: Color(0xff374ABE),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                          )
+                      ),
+                    ),
+
+                    SizedBox(height: 10.0),
+                    SearchForm(),
+                    SizedBox(height: 10.0),
+                    
+                    DaftarTokoListScreen(),
+                    // ListView.builder(
+                    //   shrinkWrap: true,
+                    //   itemBuilder: (BuildContext context, int index) {
+                    //     return new StuffInTiles(listOfTiles[index]);
+                    //   },
+                    //   itemCount: listOfTiles.length,
+                    // ),
+                    ],
+                  ),
+                )
+            )
+    
     );
   }
 }

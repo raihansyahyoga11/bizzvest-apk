@@ -178,518 +178,532 @@ class _MulaiInvestScreenState extends State<MulaiInvestScreen> {
         
         // backgroundColor: Color.fromRGBO(205, 245, 255, 1),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          color: Color.fromRGBO(205, 245, 255, 1),
-          child: Card(
-            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
+      body: RefreshIndicator(
+        child: SingleChildScrollView(
+          child: Container(
             color: Color.fromRGBO(205, 245, 255, 1),
-            child: Column(
-              children: <Widget>[
-                FutureBuilder(
-                  future: getInvestStuff(companyId!),
-                  builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                    if (snapshot.hasData){
-                      dynamic decodedData = (jsonDecode(snapshot.data['company']));
-                      var compNamaMerek = (decodedData[0]['fields']['nama_merek']);
-                      var compName = (decodedData[0]['fields']['nama_perusahaan']);
-                      imgList = [];
-                      for (String item in snapshot.data['company_photos']) {
-                        imgList.add('http://bizzvest-bizzvest.herokuapp.com' + item);
-                      }
-                      return 
-                      Column(children: <Widget>[
-                        Text(
-                          compNamaMerek,
-                          style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width/10,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromRGBO(2, 117, 216, 1)
-                          ),
-                        ),
-                        Text(
-                          compName,
-                          style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width/15,
-                            color: Color.fromRGBO(156, 160, 166, 1)
-                          ),
-                        ),
-                        SizedBox(height: 10,),
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 30.0),
-                          decoration: BoxDecoration(
-                            color: Color.fromRGBO(255, 255, 255, 0.3),
-                            borderRadius: BorderRadius.circular(16.0),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16.0),
-                            child: CarouselSlider(
-                              options: CarouselOptions(
-                                autoPlay: (imgList.length > 1),
-                                autoPlayInterval: Duration(seconds: 3),
-                                viewportFraction: 1,
-                                aspectRatio: 1/1,
-                              ),
-                              items: imgList.map(
-                                (item) => Container(
-                                  child: Center(
-                                    child: Image.network(
-                                      item, 
-                                      fit: BoxFit.cover,
-                                    )
-                                  ),
-                                )
-                              ).toList(),
-                            )
-                          ),
-                        ),
-                      ]
-                    );
-                    } else {
-                      return CircularProgressIndicator();
-                    }
-                  }
-                ),
-                Container(
-                  height: 350,
-                  child: BarChart(),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.0),
-                  height: 300,
-                  child: LineChart(),
-                ),
-                buildSectionTitle(context, 'Informasi Saham'),
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.only(bottom: 20),
-                  
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.0),
-                      color: Color.fromRGBO(93, 223, 255, 1),
-                    ),
-                  child: FutureBuilder(
+            child: Card(
+              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
+              color: Color.fromRGBO(205, 245, 255, 1),
+              child: Column(
+                children: <Widget>[
+                  FutureBuilder(
                     future: getInvestStuff(companyId!),
                     builder: (context, AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData){
                         dynamic decodedData = (jsonDecode(snapshot.data['company']));
-                        sahamTerjual = (snapshot.data['saham_terjual']);
-                        sahamTersisa = (snapshot.data['saham_tersisa']);
-                        var hargaSaham = decodedData[0]['fields']['nilai_lembar_saham'];
-                        return 
-                          Padding(
-                            padding: EdgeInsets.all(25.0),
-                            child: Text(
-                              "Jumlah saham terjual: " + sahamTerjual.toString() + " lembar\n" + 
-                              "Jumlah saham tersisa: " + sahamTersisa.toString() + " lembar\n" +
-                              "Harga saham: " + hargaSaham.toString(),
-                              style: TextStyle(fontSize: 16, fontFamily: 'Tisa Sans Pro')),
-                          );
-                      } else {
-                        return Center(child:CircularProgressIndicator());
-                      }
-                    }
-                  ),
-                ),
-                buildSectionTitle(context, 'Deskripsi Perusahaan'),
-                Container(
-                  width: double.infinity,
-                  // color: Colors.white,
-                  margin: EdgeInsets.only(bottom: 20),
-                  decoration: new BoxDecoration(
-                    borderRadius: new BorderRadius.circular(16.0),
-                    color: Color.fromRGBO(255, 255, 255, 0.6),
-                  ),
-                  child: FutureBuilder(
-                    future: getInvestStuff(companyId!),
-                    builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.hasData){
-                        dynamic decodedData = (jsonDecode(snapshot.data['company']));
-                        var compDesc = decodedData[0]['fields']['deskripsi'];
-                        return 
-                          Padding(
-                            padding: EdgeInsets.all(25.0),
-                            child: Text(compDesc,
-                              style: TextStyle(fontSize: 16, fontFamily: 'Tisa Sans Pro')
-                            ),
-                          );
-                      } else {
-                        return Center(child:CircularProgressIndicator());
-                      }
-                    }
-                  ),
-                ),
-                buildSectionTitle(context, 'Investasi Anda'),
-                // buildContainer(
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.only(bottom: 20),
-                  decoration: new BoxDecoration(
-                    borderRadius: new BorderRadius.circular(16.0),
-                    color: Color.fromRGBO(93, 223, 255, 1),
-                  ),
-                  child: FutureBuilder(
-                    future: getInvestStuff(companyId!),
-                    builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.hasData){
-                        sahamDimiliki = (snapshot.data['lembar_dimiliki']);
-                        return 
-                          Padding(
-                            padding: EdgeInsets.all(25.0),
-                            child: 
-                              Text('Jumlah lembar saham yang telah Anda tanamkan:\n' + sahamDimiliki.toString() + ' lembar',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 20, fontFamily: 'Tisa Sans Pro')
-                              )
-                          );
-                      } else {
-                        return Center(child:CircularProgressIndicator());
-                      }
-                    }
-                  ),
-                  
-                ),
-                buildSectionTitle(context, 'Saldo'),
-                Container(
-                  padding: EdgeInsets.all(25),
-                  decoration: new BoxDecoration(
-                    borderRadius: new BorderRadius.circular(16.0),
-                    color: Color.fromRGBO(255, 255, 255, 0.4),
-                  ),
-                  child: Column (
-                    children: [
-                      FutureBuilder(
-                        future: getSaldo(userId),
-                        builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                          if (snapshot.hasData){
-                            var userSaldo = ('Rp'+converter.format(snapshot.data['saldo']));
-                            return 
-                              Text(
-                                userSaldo,
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Tisa Sans Pro'
-                                ),
-                              );
-                          } else {
-                            return Center(child:CircularProgressIndicator());
-                          }
+                        var compNamaMerek = (decodedData[0]['fields']['nama_merek']);
+                        var compName = (decodedData[0]['fields']['nama_perusahaan']);
+                        imgList = [];
+                        for (String item in snapshot.data['company_photos']) {
+                          imgList.add('http://bizzvest-bizzvest.herokuapp.com' + item);
                         }
-                      ),
-                      Visibility(
-                        visible: _saldoLoadVisible,
-                        child: CircularProgressIndicator()
-                      ),
-                      SizedBox(height: 10,),
-                      Center(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(150, 35),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                        return 
+                        Column(children: <Widget>[
+                          Text(
+                            compNamaMerek,
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width/10,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromRGBO(2, 117, 216, 1)
                             ),
                           ),
-                          child: Text('Tambah Saldo'),
-                          onPressed: () {
-                            showModalBottomSheet(
-                              backgroundColor: Color.fromRGBO(255, 255, 255, 1),
-                              context: context,
-                              builder: (context) {
-                                return Wrap(
-                                  children: [
-                                    Form(  
-                                      key: _formKey2,  
-                                      child: Padding(
-                                        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                        child:Container(
-                                        // width: 350,
-                                          margin: EdgeInsets.only(top: 20, bottom: 20, left: 10, right: 10),
-                                          decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(16.0),
-                                          color: Color.fromRGBO(255, 255, 255, 0.6),
-                                          ),
-                                          child: Column(  
-                                            crossAxisAlignment: CrossAxisAlignment.start,  
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[  
-                                              TextFormField(  
-                                                keyboardType: TextInputType.number,
-                                                controller: myController2,
-                                                decoration: new InputDecoration(
-                                                  hintText: "e.g. 20000",
-                                                  labelText: "Jumlah Saldo yang ingin ditambahkan:",
-                                                  prefixIcon: Icon(Icons.attach_money),
-                                                  border: OutlineInputBorder(
-                                                    borderRadius: new BorderRadius.circular(5.0)
-                                                  ),
-                                                ),
-                                                validator: (value) {
-                                                  Future<void> cekStatus() async{
-                                                    Map<String, dynamic> hasilBeli = await beliSaldo(myController2.text.toString());
-                                                    if(hasilBeli['status'].compareTo('fail') == 0){
-                                                      setState(() {
-                                                        saldoMessage = 'Total saldo Anda tidak boleh melebihi 2 miliar rupiah';
-                                                        _msgVisible = true;
-                                                      });
-                                                    } else{
-                                                      saldoMessage = '';
-                                                      _msgVisible = false;
-                                                    }
-                                                  }
-                                                  if (value!.isEmpty) {
-                                                    return 'Input tidak boleh kosong';
-                                                  } else if (!isInteger(value)){
-                                                    return 'Input harus berupa bilangan bulat';
-                                                  } else if (!isPositive(value)){
-                                                    return 'Input harus berupa bilangan positif';
-                                                  } else{
-                                                      cekStatus();
-                                                  }
-                                                  return null;
-                                                },
-                                                onFieldSubmitted: (value) {
-                                                  if (_formKey2.currentState!.validate()) {
-                                                    _saldoLoadVisible = true;
-                                                    Future<void> updateSaldo() async{
-                                                      // await beliSaldo(myController2.text.toString());
-                                                      setSaldo(userId);
-                                                      myController2.clear();
-                                                    }
-                                                    setState(() {
-                                                      updateSaldo();
-                                                      Navigator.pop(context);
-                                                    });
-                                                  }
-                                                }, 
-                                              ),
-                                              SizedBox(height: 20),
-                                              Text(
-                                                'Max total saldo adalah 2 miliar Rupiah\n\nInput yang menyebabkan jumlah saldo di atas 2 miliar Rupiah akan mengakibatkan saldo Anda tidak bertambah',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                              SizedBox(height: 10),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Center(
-                                                    // padding: const EdgeInsets.all(25.0),
-                                                    child: ElevatedButton(
-                                                      onPressed: () {
-                                                        if (_formKey2.currentState!.validate()) {
-                                                          _saldoLoadVisible = true;
-                                                          Future<void> updateSaldo() async{
-                                                            // await beliSaldo(myController2.text.toString());
-                                                            setSaldo(userId);
-                                                            myController2.clear();
-                                                          }
-                                                          setState(() {
-                                                            updateSaldo();
-                                                            Navigator.pop(context);
-                                                          });
-                                                        }
-                                                      },
-                                                      child: Text('Tambah'),
-                                                      style: ElevatedButton.styleFrom(
-                                                        minimumSize: Size(200, 40),
-                                                        primary: Colors.blue,
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(8), // <-- Radius
-                                                        ),
-                                                      ),
-                                                    )
-                                                  ),
-                                                ]
-                                              ),  
-                                            ]
-                                          )
-                                        )
-                                      ),  
+                          Text(
+                            compName,
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width/15,
+                              color: Color.fromRGBO(156, 160, 166, 1)
+                            ),
+                          ),
+                          SizedBox(height: 10,),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 30.0),
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(255, 255, 255, 0.3),
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16.0),
+                              child: CarouselSlider(
+                                options: CarouselOptions(
+                                  autoPlay: (imgList.length > 1),
+                                  autoPlayInterval: Duration(seconds: 3),
+                                  viewportFraction: 1,
+                                  aspectRatio: 1/1,
+                                ),
+                                items: imgList.map(
+                                  (item) => Container(
+                                    child: Center(
+                                      child: Image.network(
+                                        item, 
+                                        fit: BoxFit.cover,
+                                      )
                                     ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                      Visibility(
-                        visible: _msgVisible,
-                        child: SizedBox(
-                          height: 20
-                        ),
-                      ),
-                      Visibility(
-                        visible: _msgVisible,
-                        child: Text(saldoMessage)
-                      )
-                    ]
+                                  )
+                                ).toList(),
+                              )
+                            ),
+                          ),
+                        ]
+                      );
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    }
                   ),
-                ),
-                SizedBox(height: 20,),
-                buildSectionTitle(context, 'Ayo Investasi!'),
-                Form(  
-                  key: _formKey,  
-                  child: Container(
-                    // width: 350,
+                  Container(
+                    height: 350,
+                    child: BarChart(),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 16.0),
+                    height: 300,
+                    child: LineChart(),
+                  ),
+                  buildSectionTitle(context, 'Informasi Saham'),
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(bottom: 20),
+                    
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.0),
+                        color: Color.fromRGBO(93, 223, 255, 1),
+                      ),
+                    child: FutureBuilder(
+                      future: getInvestStuff(companyId!),
+                      builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                        if (snapshot.hasData){
+                          dynamic decodedData = (jsonDecode(snapshot.data['company']));
+                          sahamTerjual = (snapshot.data['saham_terjual']);
+                          sahamTersisa = (snapshot.data['saham_tersisa']);
+                          var hargaSaham = decodedData[0]['fields']['nilai_lembar_saham'];
+                          return 
+                            Padding(
+                              padding: EdgeInsets.all(25.0),
+                              child: Text(
+                                "Jumlah saham terjual: " + sahamTerjual.toString() + " lembar\n" + 
+                                "Jumlah saham tersisa: " + sahamTersisa.toString() + " lembar\n" +
+                                "Harga saham: " + hargaSaham.toString(),
+                                style: TextStyle(fontSize: 16, fontFamily: 'Tisa Sans Pro')),
+                            );
+                        } else {
+                          return Center(child:CircularProgressIndicator());
+                        }
+                      }
+                    ),
+                  ),
+                  buildSectionTitle(context, 'Deskripsi Perusahaan'),
+                  Container(
+                    width: double.infinity,
+                    // color: Colors.white,
                     margin: EdgeInsets.only(bottom: 20),
                     decoration: new BoxDecoration(
-                    borderRadius: new BorderRadius.circular(16.0),
-                    color: Color.fromRGBO(255, 255, 255, 0.6),
+                      borderRadius: new BorderRadius.circular(16.0),
+                      color: Color.fromRGBO(255, 255, 255, 0.6),
                     ),
-                    child: Column(  
-                      crossAxisAlignment: CrossAxisAlignment.start,  
-                      children: <Widget>[  
-                        SizedBox(height: 5,),
-                        Container(
-                          margin: EdgeInsets.only(right: 5, left: 5),
-                          child: TextFormField(
-                            keyboardType: TextInputType.number,
-                            controller: myController,
-                            decoration: InputDecoration(
-                              hintText: "e.g. 20",
-                              labelText: "Jumlah lembar saham yang ingin ditanamkan:",
-                              prefixIcon: Icon(Icons.payments),
-                              border: OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(8.0)
+                    child: FutureBuilder(
+                      future: getInvestStuff(companyId!),
+                      builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                        if (snapshot.hasData){
+                          dynamic decodedData = (jsonDecode(snapshot.data['company']));
+                          var compDesc = decodedData[0]['fields']['deskripsi'];
+                          return 
+                            Padding(
+                              padding: EdgeInsets.all(25.0),
+                              child: Text(compDesc,
+                                style: TextStyle(fontSize: 16, fontFamily: 'Tisa Sans Pro')
                               ),
-                            ),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Input tidak boleh kosong';
-                              } else if (!isInteger(value)){
-                                return 'Input harus berupa bilangan bulat';
-                              } else if (!isPositive(value)){
-                                return 'Input harus berupa bilangan positif';
-                              } 
-                              return null;
-                            },
-                            onFieldSubmitted: (value) {
-                              if (_formKey.currentState!.validate()) {
-                                _sahamLoadVisible = true;
-                                Future<void> updateSaldo1(String total) async{
-                                  Map<String, dynamic> beli_saham = await beliSaham(companyId!.toString(), total);
-                                  if (beli_saham['status'].compareTo('fail') == 0){
-                                    setState(() {
-                                      result = beli_saham['message'];
-                                      warnaSaham = Colors.red;
-                                      _sahamLoadVisible = false;
-                                      _sahamMsgVisible = true;
-                                    });
-                                    return;
-                                  }
-                                  await setSaldo(userId);
-                                  await setSahamStuff(await getInvestStuff(companyId!));
-                                  setState(() {
-                                    _sahamMsgVisible = true;
-                                    result='Anda berhasil membeli '+ total + ' lembar saham';
-                                    warnaSaham = Colors.black;
-                                    _sahamLoadVisible = false;
-                                  });
-                                }
-                                setState(() {
-                                  updateSaldo1(myController.text.toString());
-                                  myController.clear();
-                                });
-                              } else{
-                                setState(() {
-                                  _sahamMsgVisible = false;
-                                  result='';
-                                });
-                              }
-                            },  
-                          ),
+                            );
+                        } else {
+                          return Center(child:CircularProgressIndicator());
+                        }
+                      }
+                    ),
+                  ),
+                  buildSectionTitle(context, 'Investasi Anda'),
+                  // buildContainer(
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(bottom: 20),
+                    decoration: new BoxDecoration(
+                      borderRadius: new BorderRadius.circular(16.0),
+                      color: Color.fromRGBO(93, 223, 255, 1),
+                    ),
+                    child: FutureBuilder(
+                      future: getInvestStuff(companyId!),
+                      builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                        if (snapshot.hasData){
+                          sahamDimiliki = (snapshot.data['lembar_dimiliki']);
+                          return 
+                            Padding(
+                              padding: EdgeInsets.all(25.0),
+                              child: 
+                                Text('Jumlah lembar saham yang telah Anda tanamkan:\n' + sahamDimiliki.toString() + ' lembar',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 20, fontFamily: 'Tisa Sans Pro')
+                                )
+                            );
+                        } else {
+                          return Center(child:CircularProgressIndicator());
+                        }
+                      }
+                    ),
+                    
+                  ),
+                  buildSectionTitle(context, 'Saldo'),
+                  Container(
+                    padding: EdgeInsets.all(25),
+                    decoration: new BoxDecoration(
+                      borderRadius: new BorderRadius.circular(16.0),
+                      color: Color.fromRGBO(255, 255, 255, 0.4),
+                    ),
+                    child: Column (
+                      children: [
+                        FutureBuilder(
+                          future: getSaldo(userId),
+                          builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasData){
+                              var userSaldo = ('Rp'+converter.format(snapshot.data['saldo']));
+                              return 
+                                Text(
+                                  userSaldo,
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Tisa Sans Pro'
+                                  ),
+                                );
+                            } else {
+                              return Center(child:CircularProgressIndicator());
+                            }
+                          }
+                        ),
+                        Visibility(
+                          visible: _saldoLoadVisible,
+                          child: CircularProgressIndicator()
                         ),
                         SizedBox(height: 10,),
-                        Visibility(
-                          visible: _sahamMsgVisible,
-                          child: Padding(
-                            padding: EdgeInsets.all(5.0),
-                            child : Text(result, style: TextStyle(fontSize: 14, color: warnaSaham,))
-                          )
-                        ),
                         Center(
-                        child: Visibility(
-                            visible: _sahamLoadVisible,
-                            child: CircularProgressIndicator()
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(150, 35),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text('Tambah Saldo'),
+                            onPressed: () {
+                              showModalBottomSheet(
+                                backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                                context: context,
+                                builder: (context) {
+                                  return Wrap(
+                                    children: [
+                                      Form(  
+                                        key: _formKey2,  
+                                        child: Padding(
+                                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                          child:Container(
+                                          // width: 350,
+                                            margin: EdgeInsets.only(top: 20, bottom: 20, left: 10, right: 10),
+                                            decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(16.0),
+                                            color: Color.fromRGBO(255, 255, 255, 0.6),
+                                            ),
+                                            child: Column(  
+                                              crossAxisAlignment: CrossAxisAlignment.start,  
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[  
+                                                TextFormField(  
+                                                  keyboardType: TextInputType.number,
+                                                  controller: myController2,
+                                                  decoration: new InputDecoration(
+                                                    hintText: "e.g. 20000",
+                                                    labelText: "Jumlah Saldo yang ingin ditambahkan:",
+                                                    prefixIcon: Icon(Icons.attach_money),
+                                                    border: OutlineInputBorder(
+                                                      borderRadius: new BorderRadius.circular(5.0)
+                                                    ),
+                                                  ),
+                                                  validator: (value) {
+                                                    Future<void> cekStatus() async{
+                                                      Map<String, dynamic> hasilBeli = await beliSaldo(myController2.text.toString());
+                                                      if(hasilBeli['status'].compareTo('fail') == 0){
+                                                        setState(() {
+                                                          saldoMessage = 'Total saldo Anda tidak boleh melebihi 2 miliar rupiah';
+                                                          _msgVisible = true;
+                                                        });
+                                                      } else{
+                                                        saldoMessage = '';
+                                                        _msgVisible = false;
+                                                      }
+                                                    }
+                                                    if (value!.isEmpty) {
+                                                      return 'Input tidak boleh kosong';
+                                                    } else if (!isInteger(value)){
+                                                      return 'Input harus berupa bilangan bulat';
+                                                    } else if (!isPositive(value)){
+                                                      return 'Input harus berupa bilangan positif';
+                                                    } else{
+                                                        cekStatus();
+                                                    }
+                                                    return null;
+                                                  },
+                                                  onFieldSubmitted: (value) {
+                                                    if (_formKey2.currentState!.validate()) {
+                                                      _saldoLoadVisible = true;
+                                                      Future<void> updateSaldo() async{
+                                                        // await beliSaldo(myController2.text.toString());
+                                                        setSaldo(userId);
+                                                        myController2.clear();
+                                                      }
+                                                      setState(() {
+                                                        updateSaldo();
+                                                        Navigator.pop(context);
+                                                      });
+                                                    }
+                                                  }, 
+                                                ),
+                                                SizedBox(height: 20),
+                                                Text(
+                                                  'Max total saldo adalah 2 miliar Rupiah\n\nInput yang menyebabkan jumlah saldo di atas 2 miliar Rupiah akan mengakibatkan saldo Anda tidak bertambah',
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                                ),
+                                                SizedBox(height: 10),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Center(
+                                                      // padding: const EdgeInsets.all(25.0),
+                                                      child: ElevatedButton(
+                                                        onPressed: () {
+                                                          if (_formKey2.currentState!.validate()) {
+                                                            _saldoLoadVisible = true;
+                                                            Future<void> updateSaldo() async{
+                                                              // await beliSaldo(myController2.text.toString());
+                                                              setSaldo(userId);
+                                                              myController2.clear();
+                                                            }
+                                                            setState(() {
+                                                              updateSaldo();
+                                                              Navigator.pop(context);
+                                                            });
+                                                          }
+                                                        },
+                                                        child: Text('Tambah'),
+                                                        style: ElevatedButton.styleFrom(
+                                                          minimumSize: Size(200, 40),
+                                                          primary: Colors.blue,
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(8), // <-- Radius
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ),
+                                                  ]
+                                                ),  
+                                              ]
+                                            )
+                                          )
+                                        ),  
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
                           ),
                         ),
-                        Row( 
-                          children: <Widget>[
-                            SizedBox(width: 5,),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    _sahamLoadVisible = true;
-                                    Future<void> updateSaldo1(String total) async{
-                                      Map<String, dynamic> beli_saham = await beliSaham(companyId!.toString(), total);
-                                      if (beli_saham['status'].compareTo('fail') == 0){
-                                        setState(() {
-                                          result = beli_saham['message'];
-                                          warnaSaham = Colors.red;
-                                          _sahamLoadVisible = false;
-                                          _sahamMsgVisible = true;
-                                        });
-                                        return;
-                                      }
-                                      await setSaldo(userId);
-                                      await setSahamStuff(await getInvestStuff(companyId!));
+                        Visibility(
+                          visible: _msgVisible,
+                          child: SizedBox(
+                            height: 20
+                          ),
+                        ),
+                        Visibility(
+                          visible: _msgVisible,
+                          child: Text(saldoMessage)
+                        )
+                      ]
+                    ),
+                  ),
+                  SizedBox(height: 20,),
+                  buildSectionTitle(context, 'Ayo Investasi!'),
+                  Form(  
+                    key: _formKey,  
+                    child: Container(
+                      // width: 350,
+                      margin: EdgeInsets.only(bottom: 20),
+                      decoration: new BoxDecoration(
+                      borderRadius: new BorderRadius.circular(16.0),
+                      color: Color.fromRGBO(255, 255, 255, 0.6),
+                      ),
+                      child: Column(  
+                        crossAxisAlignment: CrossAxisAlignment.start,  
+                        children: <Widget>[  
+                          SizedBox(height: 5,),
+                          Container(
+                            margin: EdgeInsets.only(right: 5, left: 5),
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              controller: myController,
+                              decoration: InputDecoration(
+                                hintText: "e.g. 20",
+                                labelText: "Jumlah lembar saham yang ingin ditanamkan:",
+                                prefixIcon: Icon(Icons.payments),
+                                border: OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(8.0)
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Input tidak boleh kosong';
+                                } else if (!isInteger(value)){
+                                  return 'Input harus berupa bilangan bulat';
+                                } else if (!isPositive(value)){
+                                  return 'Input harus berupa bilangan positif';
+                                } 
+                                return null;
+                              },
+                              onFieldSubmitted: (value) {
+                                if (_formKey.currentState!.validate()) {
+                                  _sahamLoadVisible = true;
+                                  Future<void> updateSaldo1(String total) async{
+                                    Map<String, dynamic> beli_saham = await beliSaham(companyId!.toString(), total);
+                                    if (beli_saham['status'].compareTo('fail') == 0){
                                       setState(() {
-                                        _sahamMsgVisible = true;
-                                        result='Anda berhasil membeli '+ total + ' lembar saham';
-                                        warnaSaham = Colors.black;
+                                        result = beli_saham['message'];
+                                        warnaSaham = Colors.red;
                                         _sahamLoadVisible = false;
+                                        _sahamMsgVisible = true;
                                       });
+                                      return;
                                     }
+                                    await setSaldo(userId);
+                                    await setSahamStuff(await getInvestStuff(companyId!));
                                     setState(() {
-                                      updateSaldo1(myController.text.toString());
-                                      myController.clear();
-                                    });
-                                  } else{
-                                    setState(() {
-                                      _sahamMsgVisible = false;
-                                      result='';
+                                      _sahamMsgVisible = true;
+                                      result='Anda berhasil membeli '+ total + ' lembar saham';
+                                      warnaSaham = Colors.black;
+                                      _sahamLoadVisible = false;
                                     });
                                   }
-                                },
-                                child: Text('Beli'),
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8), // <-- Radius
-                                  ),
-                                ),
-                              )
+                                  setState(() {
+                                    updateSaldo1(myController.text.toString());
+                                    myController.clear();
+                                  });
+                                } else{
+                                  setState(() {
+                                    _sahamMsgVisible = false;
+                                    result='';
+                                  });
+                                }
+                              },  
                             ),
-                            SizedBox(width: 20,),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text('Batal'),
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.grey,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              )
+                          ),
+                          SizedBox(height: 10,),
+                          Visibility(
+                            visible: _sahamMsgVisible,
+                            child: Padding(
+                              padding: EdgeInsets.all(5.0),
+                              child : Text(result, style: TextStyle(fontSize: 14, color: warnaSaham,))
+                            )
+                          ),
+                          Center(
+                          child: Visibility(
+                              visible: _sahamLoadVisible,
+                              child: CircularProgressIndicator()
                             ),
-                            SizedBox(width: 5,),
-                          ]
-                        ), 
-                        SizedBox(height: 5,) 
-                      ]
+                          ),
+                          Row( 
+                            children: <Widget>[
+                              SizedBox(width: 5,),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      _sahamLoadVisible = true;
+                                      Future<void> updateSaldo1(String total) async{
+                                        Map<String, dynamic> beli_saham = await beliSaham(companyId!.toString(), total);
+                                        if (beli_saham['status'].compareTo('fail') == 0){
+                                          setState(() {
+                                            result = beli_saham['message'];
+                                            warnaSaham = Colors.red;
+                                            _sahamLoadVisible = false;
+                                            _sahamMsgVisible = true;
+                                          });
+                                          return;
+                                        }
+                                        await setSaldo(userId);
+                                        await setSahamStuff(await getInvestStuff(companyId!));
+                                        setState(() {
+                                          _sahamMsgVisible = true;
+                                          result='Anda berhasil membeli '+ total + ' lembar saham';
+                                          warnaSaham = Colors.black;
+                                          _sahamLoadVisible = false;
+                                        });
+                                      }
+                                      setState(() {
+                                        updateSaldo1(myController.text.toString());
+                                        myController.clear();
+                                      });
+                                    } else{
+                                      setState(() {
+                                        _sahamMsgVisible = false;
+                                        result='';
+                                      });
+                                    }
+                                  },
+                                  child: Text('Beli'),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.blue,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8), // <-- Radius
+                                    ),
+                                  ),
+                                )
+                              ),
+                              SizedBox(width: 20,),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Batal'),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.grey,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                )
+                              ),
+                              SizedBox(width: 5,),
+                            ]
+                          ), 
+                          SizedBox(height: 5,) 
+                        ]
+                      )
                     )
-                  )
-                ),  
-              ],
+                  ),  
+                ],
+              ),
             ),
           ),
         ),
+        onRefresh: refreshData,
       ),
+    );
+  }
+
+  Future refreshData() async {
+    Navigator.pushReplacementNamed(
+      context, 
+      MulaiInvestScreen.routeName, 
+      arguments: {
+        'userId': userId, 
+        'companyId': companyId
+      }
     );
   }
 

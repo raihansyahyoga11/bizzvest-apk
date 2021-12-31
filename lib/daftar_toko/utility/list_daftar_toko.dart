@@ -81,7 +81,7 @@ class DaftarTokoListScreen extends StatelessWidget {
                 ],
               ),                      
               onTap: () {                     
-                Navigator.push(context, MaterialPageRoute(builder: (context) => HalamanTokoMaterialApp(id: toko.id)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => HalamanToko(id: toko.id)));
               },                      
             ),
           );

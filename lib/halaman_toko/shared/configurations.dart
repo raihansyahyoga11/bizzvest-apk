@@ -237,6 +237,7 @@ class Authentication extends Session{
 
   Future<ReqResponse> set_session_id(String session_id, [Uri? uri]) async {
     uri ??= NETW_CONST.server_uri;
+    cookie_jar.delete(uri);
     cookie_jar.saveFromResponse(uri, [Cookie(
         COOKIE_CONST.session_id_cookie_name,
         session_id
@@ -455,7 +456,7 @@ class SessionOld{
 
 
        header['cookie'] = cookie_string;
-        int index_end = cookie_string.indexOf(';');
+       int index_end = cookie_string.indexOf(';');
        index_end = (index_end == -1)? cookie_string.length:index_end;
        header['cookie'] = cookie_string.substring(0, index_end);
      }

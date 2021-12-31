@@ -34,7 +34,7 @@ List<Widget> getListToko(List<Toko> listDaftarToko, BuildContext context)  {
           ],
         ),                      
         onTap: () {                     
-          Navigator.push(context, MaterialPageRoute(builder: (context) => HalamanTokoMaterialApp(id: toko.id)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => HalamanToko(id: toko.id)));
         },                      
       ),
     )

@@ -2,6 +2,7 @@
 
 import 'package:bizzvest/faq/faq.dart';
 import 'package:bizzvest/halaman_toko/add_toko/add_toko.dart';
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/my_profile/screens/ProfilePage.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzvest/login_signup/login.dart';
@@ -194,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
             .push(MaterialPageRoute(builder: (context) => SignupForm()));
         break;
       case 3:
-        final isLogged = await request.logoutAccount("http://localhost:8000/start-web/logout-flutter");
+        final isLogged = await request.logoutAccount(NETW_CONST.get_server_URL("/start-web/logout-flutter"));
         if(isLogged["status"]) {
           setState((){
             request.loggedIn = false;

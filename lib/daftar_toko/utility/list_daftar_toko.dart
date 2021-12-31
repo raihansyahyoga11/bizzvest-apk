@@ -5,10 +5,14 @@ import 'package:bizzvest/daftar_toko/api/api_daftar_toko.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 
-late Future<List<Toko>?> futureToko = fetchDaftarToko() as Future<List<Toko>?>;
+
 
 class DaftarTokoListScreen extends StatelessWidget {
 
+  final String searchText;
+  DaftarTokoListScreen({this.searchText='', Key? key}) : super(key: key);
+  late Future<List<Toko>?> futureToko = fetchDaftarToko(searchText) as Future<List<Toko>?>;
+  
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -36,6 +40,8 @@ class DaftarTokoListScreen extends StatelessWidget {
       constraints: const BoxConstraints(
               minHeight: 100, minWidth: 50, maxHeight: 400, maxWidth: double.infinity
       ),
+      margin: const EdgeInsets.all(1.0),
+      padding: const EdgeInsets.all(1.0),
       child: ListView.builder(
         itemCount: listDaftarToko.length,
         shrinkWrap: true,
@@ -55,6 +61,7 @@ class DaftarTokoListScreen extends StatelessWidget {
                           child: Text(
                             toko.namaToko, 
                             style: TextStyle(
+                              color: Color(0xff374ABE),
                               fontSize: 25.0,
                               fontFamily: 'Trisan',
                               fontWeight: FontWeight.w700,

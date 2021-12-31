@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
+
+// Referensi: https://gist.github.com/Meta502/1605fdba3b141fbf67dba689e9e55498
 class CookieRequest {
   Map<String, String> headers = {};
   Map<String, String> cookies = {};

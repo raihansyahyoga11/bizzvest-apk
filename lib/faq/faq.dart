@@ -15,9 +15,20 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 late Future<List<Question>?> futureQuestion = fetchQuestion();
+Function(Function())? refresh;
 
+class FaqUtamaScreen extends StatefulWidget {
+  @override
+  State<FaqUtamaScreen> createState() => _FaqUtamaScreenState();
+}
 
-class FaqUtamaScreen extends StatelessWidget {
+class _FaqUtamaScreenState extends State<FaqUtamaScreen> {
+  @override
+  void initState() {
+    super.initState();
+    refresh = this.setState;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,16 +63,6 @@ class FaqUtamaScreen extends StatelessWidget {
 
                     SizedBox(height: 20.0),
                     MyApp(),
-                    
-                    
-                    // ListView.builder(
-                    //   shrinkWrap: true,
-                    //   itemBuilder: (BuildContext context, int index) {
-                    //     return new StuffInTiles(listOfTiles[index]);
-                    //   },
-                    //   itemCount: listOfTiles.length,
-                    // ),
-
                     Helper.verticalSpaceLarge(),
                     SizedBox(height: 20.0),
                     Center(
@@ -906,7 +907,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class FaqListScreen extends StatelessWidget {
 
   @override
@@ -958,11 +958,11 @@ class FaqListScreen extends StatelessWidget {
 
 }
 
-
-
 class FormScreen extends StatelessWidget {
   String nama = '';
   String pertanyaan = '';
+  TextEditingController hapus_nama = TextEditingController();
+  TextEditingController hapus_pertanyaan = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -1015,6 +1015,7 @@ class FormScreen extends StatelessWidget {
                       onChanged: (String value) {
                         nama = value;
                       },
+                      controller: hapus_nama,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -1056,6 +1057,7 @@ class FormScreen extends StatelessWidget {
                         pertanyaan = value;
                       },
                       maxLines: 7,
+                      controller: hapus_pertanyaan,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -1090,12 +1092,13 @@ class FormScreen extends StatelessWidget {
                         'nama': nama,
                         'pertanyaan': pertanyaan,
                       }));
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => FaqUtamaScreen()),
-                  );
+
+                  if (refresh != null){
+                    refresh!(() {});
+                    hapus_nama.text = '';
+                    hapus_pertanyaan.text = '';
+                  }
+
                   futureQuestion = fetchQuestion();
                 },
                 child: Text(" Kirimkan pertanyaan ", style: TextStyle(

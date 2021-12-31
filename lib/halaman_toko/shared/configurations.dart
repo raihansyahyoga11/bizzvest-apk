@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -234,14 +235,36 @@ class Authentication extends Session{
     return ret;
   }
 
-  Future<ReqResponse> refresh_is_logged_in() async {
-    ReqResponse resp = await get(
-        uri: NETW_CONST.get_server_URI(NETW_CONST.acc_info));
+  Future<ReqResponse> refresh_is_logged_in([int retry_cnt=3, Function()? on_timeout]) async {
+    ReqResponse? resp;
 
-    if (!resp.has_problem && json.decode(resp.body)['is_logged_in'] == 1){
-      _is_logged_in = true;
+    while (retry_cnt > 0){
+      try{
+        resp = await get(uri: NETW_CONST.get_server_URI(NETW_CONST.acc_info));
+
+        if (!resp.has_problem && json.decode(resp.body)['is_logged_in'] == 1) {
+          _is_logged_in = true;
+        }
+        break;
+      }on dio.DioError catch (e){
+        if (Session.is_timeout_error(e)){
+          if (on_timeout != null) {
+            on_timeout();
+            if (kDebugMode)
+              print("request timed out");
+            else if (kReleaseMode)
+              _is_logged_in = true;  // asumsikan saja login berhasil
+          }
+
+          retry_cnt -= 1;
+          if (retry_cnt <= 0)
+            throw e;
+          continue;
+        }
+        throw e;
+      }
     }
-    return resp;
+    return resp!;
   }
 
   Future<ReqResponse> set_session_id(String session_id, [Uri? uri]) async {

@@ -51,6 +51,7 @@ dependencies:
   expansion_tile_card: ^1.1.0
   flutter_markdown: ^0.5.2
   rflutter_alert: ^1.0.2
+  dropdown_search: ^0.6.1
 
 
 
@@ -101,7 +102,8 @@ flutter:
   assets:
     - src/img/
     - src/img/yoga.jpg
-    
+    # - src/img/default_user_photoprofile.jpg
+
   fonts:
     - family: Quicksand
       fonts:

@@ -1,4 +1,5 @@
 import 'dart:ffi';
+
 import 'dart:ui';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
@@ -10,6 +11,8 @@ import 'EditingPage.dart';
 import '../models/UserAccount.dart';
 import '../api/api_my_profile.dart';
 import '../widgets/main_drawer.dart';
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -28,7 +31,7 @@ class MyProfile extends StatefulWidget {
 }
 
 class MyProfileState extends State<MyProfile> {
-    Widget _getEditIcon() {
+    Widget _getEditIcon(AsyncSnapshot<dynamic> snapshot) {
     return new GestureDetector(
       child: new CircleAvatar(
         backgroundColor: Colors.blue,
@@ -42,7 +45,7 @@ class MyProfileState extends State<MyProfile> {
       onTap: () {
         Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => EditingPage(),
+              MaterialPageRoute(builder: (context) => EditingPage(initial_csrf: "${snapshot.data?.csrfToken}"),
             ));
         // setState(() {
         //   _status = false;
@@ -61,6 +64,7 @@ class MyProfileState extends State<MyProfile> {
 
   Widget futureWidget() {
     return new FutureBuilder<User>(
+      
       future: loadUser(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -71,30 +75,143 @@ class MyProfileState extends State<MyProfile> {
               Column(
                 children: <Widget>[
                   new Container(
-                    height: 250.0,
+                    height:  270,
                     color: Colors.white,
                     child: new Column(
                       children: <Widget>[
                         Padding(
-                          padding: EdgeInsets.only(top:30, left:230.0, right:25, bottom:20),
-                          child: Container(
-                            width: 80.0,
-                            height: 20.0,
-                            child: Container(
-                              child: Center(
-                                child: Text("Investor",
-                                style: TextStyle(fontSize: 15, color: Colors.white))),
-                            decoration: new BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.circular(10)
-                              )),
+                          padding: EdgeInsets.only(top:30, left:220, right:25, bottom:20),
+                            // child: Container(
+                            //   child: Center(
+                                child:  Builder(
+                                  builder: (context){
+                                    if (snapshot.data?.investor == true && snapshot.data?.enterpreneur == true) {
+                                                   return new Column(children: <Widget> [
+                                          Container(
+                                            width: 100,
+                                            height: 30,
+                                            decoration: new BoxDecoration(
+                                              color: Colors.green[600],
+                                              shape: BoxShape.rectangle,
+                                              borderRadius: BorderRadius.circular(10),
+                                              
+                                              ),
+                                              child:Align(
+                                                alignment: Alignment.center,
+                                                  child: Text(
+                                                    'Enterpreneur',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold
+                                                      ),
+                                                    ) ,
+                                                  )
+                                          ),   
+                                          
+                                          Container(
+                                            margin: EdgeInsets.only(top: 5),
+                                            width: 75,
+                                            height: 30,
+                                            decoration: new BoxDecoration(
+                                              color: Colors.blue[800],
+                                              shape: BoxShape.rectangle,
+                                              borderRadius: BorderRadius.circular(10),
+                                              
+                                              ),
+                                              child:Align(
+                                                alignment: Alignment.center,
+                                                  child: Text(
+                                                    'Investor',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold
+                                                      ),
+                                                    ) ,
+                                                  )
+                                        ),   
+
+                                          // ],)
+                                      ],);
+                                  
+                                      
+                                    }
+                                    else if (snapshot.data?.investor==true) {
+                                      return Container(
+                                          width: 90,
+                                          height: 30,
+                                          decoration: new BoxDecoration(
+                                            color: Colors.blue[800],
+                                            shape: BoxShape.rectangle,
+                                            borderRadius: BorderRadius.circular(10),
+                                            
+                                            ),
+                                            child:Align(
+                                              alignment: Alignment.center,
+                                                child: Text(
+                                                  'Investor',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold
+                                                    ),
+                                                    
+                                                  ) ,
+                                                )
+                                      );
+                                    }
+                                    else if (snapshot.data?.enterpreneur==true) {
+                                      return Container(
+                                            width: 90,
+                                            height: 30,
+                                            decoration: new BoxDecoration(
+                                              color: Colors.green[600],
+                                              shape: BoxShape.rectangle,
+                                              borderRadius: BorderRadius.circular(10),
+                                              
+                                              ),
+                                              child:Align(
+                                                alignment: Alignment.center,
+                                                  child: Text(
+                                                    'Enterpreneur',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold
+                                                      ),
+                                                    ) ,
+                                                  )
+                                          );   
+        
+                                         
+                                    }
+                                    else {
+                                        return Container(
+                                          width: 90,
+                                          height: 30,
+                                          decoration: new BoxDecoration(
+                                            color: Colors.yellow[800],
+                                            shape: BoxShape.rectangle,
+                                            borderRadius: BorderRadius.circular(10),
+                                            
+                                            ),
+                                            child:Align(
+                                              alignment: Alignment.center,
+                                                child: Text(
+                                                  'Not Verified',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold
+                                                    ),
+                                                    
+                                                  ) ,
+                                                )
+                                      );
+                        
+                                    }
+                                  })
                               
+                            ,
+            
                             ),
-                          
-                        ),
-
-
+                        
                         Padding(
                           padding: EdgeInsets.only(top: 5.0),
                           child: new Stack(fit: StackFit.loose, children: <Widget>[
@@ -108,8 +225,8 @@ class MyProfileState extends State<MyProfile> {
                                     decoration: new BoxDecoration(
                                       shape: BoxShape.circle,
                                       image: new DecorationImage(
-                                        image: new AssetImage(
-                                            "${snapshot.data?.photoProfile}"),   
+                                        image: new NetworkImage(
+                                            "http://10.0.2.2:8000/${snapshot.data?.photoProfile}"),   
                                         fit: BoxFit.cover,
                                       ),
                                     )),
@@ -124,14 +241,7 @@ class MyProfileState extends State<MyProfile> {
                                     new CircleAvatar(
                                       backgroundColor: Colors.blue,
                                       radius: 25.0,
-                                      child: 
-                                      // new Icon(
-                                      //   Icons.edit,
-                                      //   color: Colors.white,
-                                    
-                                      //   // onPtr
-                                      // ),
-                                      _status ? _getEditIcon() : new Container()
+                                      child: _getEditIcon(snapshot)
                                     )
                                   ],
                                 )),
@@ -140,6 +250,21 @@ class MyProfileState extends State<MyProfile> {
                       ],
                     ),
                   ),
+
+                  new Container(
+                    // padding: EdgeInsets.only(top: -50),
+                    child: Text('${snapshot.data?.namaLengkap}',
+                            style: 
+                            TextStyle(fontSize: 20),),
+                  ),
+
+                  new Container(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 10,bottom: 30),
+                      child:Text('@${snapshot.data?.username}'),
+                    )
+                  ),
+
                   new Container(
                     color: Color(0xffFFFFFF),
                     child: Padding(
@@ -152,68 +277,22 @@ class MyProfileState extends State<MyProfile> {
 
                           Padding(
                               padding: EdgeInsets.only(
-                                  left: 30.0, right: 25.0, top: 0.0, bottom:45.0),
-                              child: 
-                              new Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-
-                                  new Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      new Text(
-                                        "${snapshot.data?.namaLengkap}",
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blue),
-                                        // mainAxisAlignment: MainAxisAlignment.center,
-                                      ),
-                                      new Text(
-                                        "${snapshot.data?.username}",
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.normal,
-                                            color: Colors.blue),
-                                        // mainAxisAlignment: MainAxisAlignment.center,
-                                      ),
-                                    ],
-                                  ),
-                                
-                                ])),
-
-                          Padding(
-                              padding: EdgeInsets.only(
                                   left: 25.0, right: 25.0, top: 25.0),
                               child: new Row(
                                 mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
-                                  Expanded(
-                                    child: Container(
-                                      child: new Text(
-                                        'Nama Lengkap',
+                                  new Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      new Text(
+                                        'Nama lengkap',
                                         style: TextStyle(
                                             fontSize: 16.0,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.blue)
+                                  color: Colors.blue)
                                       ),
-                                    ),
-                                    flex: 2,
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      child: new Text(
-                                        'Username',
-                                        style: TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                          color: Colors.blue)
-                                      ),
-                                    ),
-                                    flex: 2,
+                                    ],
                                   ),
                                 ],
                               )),
@@ -233,11 +312,41 @@ class MyProfileState extends State<MyProfile> {
                                     ),
                                     flex: 2,
                                   ),
-                                  Flexible(
+                                ]
+                              ),
+                          ),
+                          Padding(
+                              padding: EdgeInsets.only(
+                                  left: 25.0, right: 25.0, top: 25.0),
+                              child: new Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Container(
+                                      child: new Text(
+                                        'Username',
+                                        style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blue)
+                                      ),
+                                    ),
+                                    flex: 2,
+                                  ),
+                                ],
+                              )),
+                          
+                              Padding(
+                              padding: EdgeInsets.only(
+                                  left: 25.0, right: 25.0, top: 2.0),
+                              child: new Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  new Flexible(
                                     child: new Text(
                                      "${snapshot.data?.username}",
                                     ),
-                                    flex: 2,
                                   ),
                                 ],
                               )),
@@ -389,6 +498,7 @@ class MyProfileState extends State<MyProfile> {
                                     children: <Widget>[
                                       new Text(
                                         'Deskripsi',
+                                        maxLines: 5,
                                         style: TextStyle(
                                             fontSize: 16.0,
                                             fontWeight: FontWeight.bold,

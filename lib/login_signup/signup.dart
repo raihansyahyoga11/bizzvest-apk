@@ -178,7 +178,7 @@ class Signup extends State<SignupForm> {
                         });
                         if (loggingIn['status']) {
                           if (!kIsWeb){
-                            set_authentication(request.cookies[COOKIE_CONST.session_id_cookie_name]!);
+                            await set_authentication(request.cookies[COOKIE_CONST.session_id_cookie_name]!);
                           }
                           Navigator.pop(context);
                         }

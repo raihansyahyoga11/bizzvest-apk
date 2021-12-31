@@ -196,6 +196,12 @@ class Authentication extends Session{
   static Future<Authentication> create() async {
     assert (kIsWeb == false, "Authentication() tidak bisa digunakan di website");
 
+
+    /*
+    // Model lama. Awalnya ngira butuh persistent cookie, tapi ternyata udah
+    // dihandle sama class Cookie sebelah. Sekarang persistent cookie malah bisa
+    // bikin error
+
     Authentication comp;
     Directory temp = await getApplicationDocumentsDirectory();
     Directory dir =
@@ -204,6 +210,9 @@ class Authentication extends Session{
     comp = Authentication(
         cookie_jar:
             PersistCookieJar(storage: FileStorage(dir.path + "/.cache")));
+            */
+
+    Authentication comp = Authentication(cookie_jar: CookieJar());
     return comp;
   }
 

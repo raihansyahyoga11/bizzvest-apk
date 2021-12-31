@@ -28,7 +28,11 @@ Future<Authentication> get_authentication(BuildContext context) async {
       await authenticated_user!.login("hzz", "1122");
       assert (authenticated_user!.is_logged_in);
     }else{
-      goto_login_page(context);
+      goto_login_page(context)?.then((value){
+        if (!authenticated_user!.is_logged_in){
+          Navigator.pop(context);
+        }
+      });
     }
   }
   return authenticated_user!;
@@ -42,6 +46,7 @@ bool is_authenticated(){
 
 Future<void> set_authentication(String session_id) async {
   authenticated_user ??= await Authentication.create();
+  authenticated_user?.cookie_jar.deleteAll();
   await authenticated_user!.set_session_id(session_id);
   assert (authenticated_user!.is_logged_in);
   if (kDebugMode)
@@ -49,7 +54,7 @@ Future<void> set_authentication(String session_id) async {
 }
 
 
-Future<void> remove_authentication(String session_id) async {
+Future<void> remove_authentication() async {
   authenticated_user?.cookie_jar.deleteAll();
   authenticated_user = null;
   if (kDebugMode)

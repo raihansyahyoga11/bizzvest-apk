@@ -55,6 +55,7 @@ class CookieRequest {
 
     if (response.statusCode == 200) {
       loggedIn = true;
+
     } else {
       loggedIn = false;
     }
@@ -143,6 +144,7 @@ class CookieRequest {
     }
 
     cookies = {};
+    await remove_authentication();
 
     return json.decode(response.body);
   }

@@ -11,6 +11,7 @@ import 'package:bizzvest/login_signup/signup.dart';
 import 'package:bizzvest/home_page/main.dart' as home_page;
 import 'package:bizzvest/login_signup/cookie.dart';
 import 'package:bizzvest/daftar_toko/screen/daftar_toko.dart';
+import 'package:bizzvest/mulai_invest/mulai_invest_screen.dart';
 import 'package:provider/provider.dart';
 
 
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'BizzVest',
       home: MyHomePage(),
+      routes: {
+        MulaiInvestScreen.routeName: (ctx) => MulaiInvestScreen(),
+      }
     ));
   }
 }

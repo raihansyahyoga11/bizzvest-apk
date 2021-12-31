@@ -144,6 +144,7 @@ class CookieRequest {
     }
 
     cookies = {};
+    local.remove("cookies");
     await remove_authentication();
 
     return json.decode(response.body);

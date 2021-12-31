@@ -13,7 +13,7 @@ import 'package:bizzvest/halaman_toko/shared/utility.dart';
     return response.body;
   }
 
-  Future<User> loadUser()bizzvest- async {
+  Future<User> loadUser() async {
     await wait(1);
     String jsonString = await _loadAUserAsset();
     final jsonResponse = json.decode(jsonString);

@@ -4,6 +4,7 @@ import 'package:bizzvest/daftar_toko/models/toko.dart';
 import 'package:bizzvest/daftar_toko/utility/search_toko.dart';
 import 'package:bizzvest/daftar_toko/utility/list_daftar_toko.dart';
 import 'package:bizzvest/faq/helper/helper.dart';
+import 'package:bizzvest/daftar_toko/api/api_daftar_toko.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -13,11 +14,12 @@ void main() {
 }
 
 class DaftarTokoMaterial extends StatelessWidget {
-  const DaftarTokoMaterial({Key? key}) : super(key: key);
+  final String searchText;
+  const DaftarTokoMaterial({this.searchText='', Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: DaftarToko(),
+      home: DaftarToko(searchText: searchText),
       debugShowCheckedModeBanner: false,
       theme: ThemeData( 
         scaffoldBackgroundColor: const Color.fromRGBO(242, 255, 253, 1),
@@ -43,11 +45,14 @@ class DaftarTokoMaterial extends StatelessWidget {
 }
 
 class DaftarToko extends StatelessWidget {
+  final String searchText;
+  const DaftarToko({this.searchText='', Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color.fromRGBO(201, 244, 255, 1),
-      body: SafeArea(
+      body: SingleChildScrollView(
             child: Container(
               color: Color(0xffdafcff),
               margin: const EdgeInsets.all(1.0),
@@ -58,7 +63,7 @@ class DaftarToko extends StatelessWidget {
                   children: <Widget>[
                     Center(
                       child: Container(
-                          padding: EdgeInsets.all(5.0),
+                          padding: EdgeInsets.all(10.0),
                           decoration: BoxDecoration(
                               color: Color(0xffc3f1fc),
                               borderRadius: BorderRadius.all(Radius.circular(5.0))),
@@ -79,8 +84,7 @@ class DaftarToko extends StatelessWidget {
                     SizedBox(height: 10.0),
                     SearchForm(),
                     SizedBox(height: 10.0),
-                    
-                    DaftarTokoListScreen(),
+                    DaftarTokoListScreen(searchText: searchText),
                     // ListView.builder(
                     //   shrinkWrap: true,
                     //   itemBuilder: (BuildContext context, int index) {

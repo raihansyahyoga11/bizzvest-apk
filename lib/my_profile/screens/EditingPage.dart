@@ -78,7 +78,7 @@ class EditingScreenState extends State<EditingPage> {
   late String initial_csrf;
   String csrf_token = "";
   var _locations= ['Laki-laki','Perempuan','Pilih jenis kelamin'];
-  String _selectedLocation= 'Perempuan';
+  String _selectedLocation= 'Pilih jenis kelamin';
   XFile? image;
   AutovalidateMode autovalidate = AutovalidateMode.disabled;
   

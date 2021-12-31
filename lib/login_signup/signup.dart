@@ -27,7 +27,7 @@ class Signup extends State<SignupForm> {
       await request.init(context);
     }();
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffdafcff),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Signup Page"),
@@ -48,6 +48,8 @@ class Signup extends State<SignupForm> {
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
                     decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -77,6 +79,8 @@ class Signup extends State<SignupForm> {
                   // padding: EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
                     decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -107,6 +111,8 @@ class Signup extends State<SignupForm> {
                   child: TextFormField(
                     obscureText: true,
                     decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -138,6 +144,8 @@ class Signup extends State<SignupForm> {
                   child: TextFormField(
                     obscureText: true,
                     decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -225,10 +233,6 @@ class Signup extends State<SignupForm> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
-                Text('Sudah Punya Akun? Masuk Disini')
               ],
             ),
           ),

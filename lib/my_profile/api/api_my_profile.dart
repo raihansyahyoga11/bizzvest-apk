@@ -6,11 +6,12 @@ import '../models/UserAccount.dart';
 import '../screens/ProfilePage.dart';
 import '../screens/EditingPage.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 
   Future<String> _loadAUserAsset(BuildContext context) async {
     var auth = await get_authentication(context);
     final response = await auth.get(
-      uri :Uri.parse('http://10.0.2.2:8000/my-profile/my-profile-json'),
+      uri :NETW_CONST.get_server_URI("/my-profile/my-profile-json"),
     );
     return response.body;
   }

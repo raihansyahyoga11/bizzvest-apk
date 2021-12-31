@@ -243,7 +243,7 @@ class MyProfileState extends State<MyProfile> {
                                       shape: BoxShape.circle,
                                       image: new DecorationImage(
                                         image: new NetworkImage(
-                                            "http://10.0.2.2:8000/${snapshot.data?.photoProfile}"),   
+                                            "${NETW_CONST.protocol}${NETW_CONST.host}/${snapshot.data?.photoProfile}"),   
                                         fit: BoxFit.cover,
                                       ),
                                     )),

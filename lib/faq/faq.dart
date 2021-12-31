@@ -329,7 +329,7 @@ class MyApp extends StatelessWidget {
                     hoverColor: Color(0xff3e69e3),
 
                     onPressed: () async {
-                      CookieRequest request = Provider.of<CookieRequest>(context);
+                      CookieRequest request = Provider.of<CookieRequest>(context, listen: false);
                       if (!request.loggedIn) {
                         // kondisi untuk user yang belum login
 
@@ -355,7 +355,8 @@ class MyApp extends StatelessWidget {
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 17),
                               ),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {_navigateToSignupScreen(context);},
+
                               width: 80,
                               color: Color(0xff3d51ff),
                             )
@@ -376,7 +377,7 @@ class MyApp extends StatelessWidget {
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 17),
                               ),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () => Navigator.pop(context) ,
                               width: 80,
                               color: Color(0xff6f6f6f),
                             ),
@@ -386,7 +387,7 @@ class MyApp extends StatelessWidget {
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 17),
                               ),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {_navigateToAddTokoScreen(context);},
                               width: 80,
                               color: Color(0xff3d51ff),
                             )
@@ -632,7 +633,7 @@ class MyApp extends StatelessWidget {
                     hoverColor: Color(0xff3e69e3),
 
                     onPressed: () async {
-                      CookieRequest request = Provider.of<CookieRequest>(context);
+                      CookieRequest request = Provider.of<CookieRequest>(context, listen: false);
                       if (!request.loggedIn) {
                         // kondisi untuk user yang belum login
 
@@ -658,7 +659,7 @@ class MyApp extends StatelessWidget {
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 17),
                               ),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {_navigateToSignupScreen(context);},
                               width: 80,
                               color: Color(0xff3d51ff),
                             )
@@ -689,7 +690,7 @@ class MyApp extends StatelessWidget {
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 17),
                               ),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {_navigateToDaftarTokoScreen(context);},
                               width: 80,
                               color: Color(0xff3d51ff),
                             )
@@ -890,8 +891,8 @@ class MyApp extends StatelessWidget {
 
   }
 
-  // function to login
-  void _navigateToLoginScreen(BuildContext context) {
+  // function to sign-up
+  void _navigateToSignupScreen(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) => SignupForm()));
   }
 

@@ -88,8 +88,8 @@ class RequestLoadingScreenBuilderState extends State<RequestLoadingScreenBuilder
           }
 
           ReqResponse? req_resp = RequestLoadingScreenBuilder.cast<ReqResponse>(snapshot.data);
-          if (snapshot.hasError){
-            if (Session.is_timeout_error(snapshot.error)){
+          if (snapshot.hasError || req_resp is TimeoutResponse){
+            if (Session.is_timeout_error(snapshot.error) || req_resp is TimeoutResponse){
               RequestStatus req_status = RequestStatus.timed_out_final;
 
               if (timeout_retry_number < widget.TIMEOUT_RETRY_LIMIT) {
@@ -154,6 +154,8 @@ class RequestLoadingScreenBuilderState extends State<RequestLoadingScreenBuilder
             );
           }
 
+          // if success, reset timeout retry number
+          timeout_retry_number = 0;
           return widget.wrapper(
               widget.on_success.call(context,snapshot,req_resp, this), RequestStatus.success
           );

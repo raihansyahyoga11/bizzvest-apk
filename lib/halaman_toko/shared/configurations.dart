@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart' as dio;
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -161,6 +162,10 @@ class ReqResponse<T>{
       return dio_resp.toString();
     return http_resp.toString();
   }
+}
+
+class TimeoutResponse<T> extends ReqResponse<T>{
+  TimeoutResponse() : super(http: http.Response("", 408));
 }
 
 

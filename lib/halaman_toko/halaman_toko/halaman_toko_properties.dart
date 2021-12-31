@@ -1,5 +1,6 @@
 
 import 'package:bizzvest/halaman_toko/shared/user_account.dart';
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:flutter/widgets.dart';
 
 class HalamanTokoProperties{
@@ -9,7 +10,7 @@ class HalamanTokoProperties{
   final String nama_perusahaan;
   final List<Image> images;
 
-  final int status_verifikasi;
+  final StatusVerifikasi status_verifikasi;
   final String tanggal_berakhir;
   final String kode_saham;
   final String sisa_waktu;

@@ -1,5 +1,3 @@
-
- 
 class User {
 
   final String csrfToken;

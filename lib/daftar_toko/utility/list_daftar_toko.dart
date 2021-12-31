@@ -8,7 +8,6 @@ import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 
 
 class DaftarTokoListScreen extends StatelessWidget {
-
   final String searchText;
   DaftarTokoListScreen({this.searchText='', Key? key}) : super(key: key);
   late Future<List<Toko>?> futureToko = fetchDaftarToko(searchText) as Future<List<Toko>?>;
@@ -27,12 +26,63 @@ class DaftarTokoListScreen extends StatelessWidget {
                 snapshot.stackTrace));
           //return const Text("Daftar toko tidak dapat dimuat. Silakan refresh atau restart perangkat Anda.");
         } else if (snapshot.hasData) {
-          return listDaftarToko(snapshot.data as List<Toko>, context);
+          List<Toko> data = snapshot.data as List<Toko>;
+          int n = data.length;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [searchedText(searchText, n), listDaftarToko(data, context)],
+          );
         }
         // loading screen
-        return const CircularProgressIndicator();
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
       },
     );
+  }
+
+  Widget searchedText(String searchText, int n){
+    if(searchText!=''){
+      if(n==0){
+        return Container( 
+        padding: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+            color: Color(0xffc3f1fc),
+            borderRadius: BorderRadius.all(Radius.circular(5.0))),
+            child: new Center (
+                child: Text(
+                  'Tidak ditemukan hasil pencarian untuk '+'"'+searchText+'"',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Color(0xff374ABE),
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                )
+            )
+        );
+      }else{
+        return Container(
+        padding: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+            color: Color(0xffc3f1fc),
+            borderRadius: BorderRadius.all(Radius.circular(5.0))),
+            child: new Center (
+                child: Text(
+                  'Ditemukan $n hasil pencarian untuk '+'"'+searchText+'"',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Color(0xff374ABE),
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                )
+            )
+        );
+      }
+    }
+    return Container();
   }
 
   Widget listDaftarToko(List<Toko> listDaftarToko, BuildContext context)  {

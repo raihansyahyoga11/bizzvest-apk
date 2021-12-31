@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -53,7 +54,7 @@ class NETW_CONST{
         (kReleaseMode)? "bizzvest-bizzvest.herokuapp.com" :
             (kIsWeb? "127.0.0.1:8000" : "10.0.2.2:8000");
 
-  static const String login_path = "/start-web/login";
+  static const String login_path = "/start-web/login-flutter";
   static const String acc_info = "/halaman-toko/account-information";
 
   static const String halaman_toko_get_photo_json_path = "/halaman-toko/halaman-toko-photo-json";
@@ -196,6 +197,12 @@ class Authentication extends Session{
   static Future<Authentication> create() async {
     assert (kIsWeb == false, "Authentication() tidak bisa digunakan di website");
 
+
+    /*
+    // Model lama. Awalnya ngira butuh persistent cookie, tapi ternyata udah
+    // dihandle sama class Cookie sebelah. Sekarang persistent cookie malah bisa
+    // bikin error
+
     Authentication comp;
     Directory temp = await getApplicationDocumentsDirectory();
     Directory dir =
@@ -204,6 +211,9 @@ class Authentication extends Session{
     comp = Authentication(
         cookie_jar:
             PersistCookieJar(storage: FileStorage(dir.path + "/.cache")));
+            */
+
+    Authentication comp = Authentication(cookie_jar: CookieJar());
     return comp;
   }
 
@@ -225,14 +235,36 @@ class Authentication extends Session{
     return ret;
   }
 
-  Future<ReqResponse> refresh_is_logged_in() async {
-    ReqResponse resp = await get(
-        uri: NETW_CONST.get_server_URI(NETW_CONST.acc_info));
+  Future<ReqResponse> refresh_is_logged_in([int retry_cnt=3, Function()? on_timeout]) async {
+    ReqResponse? resp;
 
-    if (!resp.has_problem && json.decode(resp.body)['is_logged_in'] == 1){
-      _is_logged_in = true;
+    while (retry_cnt > 0){
+      try{
+        resp = await get(uri: NETW_CONST.get_server_URI(NETW_CONST.acc_info));
+
+        if (!resp.has_problem && json.decode(resp.body)['is_logged_in'] == 1) {
+          _is_logged_in = true;
+        }
+        break;
+      }on dio.DioError catch (e){
+        if (Session.is_timeout_error(e)){
+          if (on_timeout != null) {
+            on_timeout();
+            if (kDebugMode)
+              print("request timed out");
+            else if (kReleaseMode)
+              _is_logged_in = true;  // asumsikan saja login berhasil
+          }
+
+          retry_cnt -= 1;
+          if (retry_cnt <= 0)
+            throw e;
+          continue;
+        }
+        throw e;
+      }
     }
-    return resp;
+    return resp!;
   }
 
   Future<ReqResponse> set_session_id(String session_id, [Uri? uri]) async {

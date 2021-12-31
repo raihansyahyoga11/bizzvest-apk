@@ -1,3 +1,4 @@
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bizzvest/daftar_toko/models/toko.dart';
@@ -131,7 +132,8 @@ class DaftarTokoListScreen extends StatelessWidget {
                 ],
               ),                      
               onTap: () {                     
-                Navigator.push(context, MaterialPageRoute(builder: (context) => HalamanToko(id: toko.id)));
+                Navigator.push(BuildContextKeeper.main_dart_MaterialApp_context ?? context,
+                    MaterialPageRoute(builder: (context) => HalamanToko(id: toko.id)));
               },                      
             ),
           );

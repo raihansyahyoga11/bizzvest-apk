@@ -9,6 +9,7 @@ import 'EditingPage.dart';
 import '../models/UserAccount.dart';
 import '../api/api_my_profile.dart';
 import '../widgets/main_drawer.dart';
+import 'package:bizzvest/main.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 
@@ -72,12 +73,30 @@ class MyProfileState extends State<MyProfile> {
               Column(
                 children: <Widget>[
                   new Container(
-                    height:  270,
+                    height: 330,
                     color: Colors.white,
                     child: new Column(
                       children: <Widget>[
+                        Padding (
+                          padding: EdgeInsets.only(top:30, left:25, right:220, bottom:0),
+                          child: new ElevatedButton(
+                            style: ButtonStyle(
+    elevation: MaterialStateProperty.resolveWith<double?>(
+      (Set<MaterialState> states) {
+        if (states.contains(MaterialState.pressed))
+          return 16;
+        return null;
+      }),
+  ),
+  onPressed: () { 
+    Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => MyHomePage()));
+  },
+  child: Text('Kembali ke Halaman Utama'),
+                          )
+                        ),
                         Padding(
-                          padding: EdgeInsets.only(top:30, left:220, right:25, bottom:20),
+                          padding: EdgeInsets.only(top:0, left:220, right:25, bottom:20),
                             // child: Container(
                             //   child: Center(
                                 child:  Builder(
@@ -223,7 +242,7 @@ class MyProfileState extends State<MyProfile> {
                                       shape: BoxShape.circle,
                                       image: new DecorationImage(
                                         image: new NetworkImage(
-                                            "https://bizzvest-bizzvest.herokuapp.com/${snapshot.data?.photoProfile}"),   
+                                            "${NETW_CONST.protocol}${NETW_CONST.host}/${snapshot.data?.photoProfile}"),   
                                         fit: BoxFit.cover,
                                       ),
                                     )),

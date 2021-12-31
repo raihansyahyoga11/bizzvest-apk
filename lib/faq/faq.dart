@@ -21,7 +21,6 @@ class FaqUtamaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Frequently Ask Question')),
         body: SafeArea(
             child: Container(
               color: Color(0xffdafcff),

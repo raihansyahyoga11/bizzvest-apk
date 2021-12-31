@@ -98,7 +98,7 @@ class _AddTokoState extends State<AddToko> {
             on_success: (BuildContext context, AsyncSnapshot<dynamic> snapshot,
                 ReqResponse response, this_widget) {
               String raw_content = response.data_string!;
-              print(raw_content);
+              print("-- ${raw_content} --");
               Map<String, dynamic> map = json.decode(raw_content);
 
               return SingleChildScrollView(

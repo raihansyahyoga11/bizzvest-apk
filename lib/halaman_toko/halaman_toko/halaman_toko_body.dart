@@ -52,7 +52,7 @@ class _HalamanTokoBodyState extends State<HalamanTokoBody> {
 
 
   Widget build_photo_carousel(BuildContext context){
-    bool show_edit_option = (properties.is_curr_client_the_owner && properties.status_verifikasi == 0);
+    bool show_edit_option = (properties.is_curr_client_the_owner && properties.status_verifikasi == StatusVerifikasi.BELUM_MENGAJUKAN);
     return BorderedContainer(
       Column(
         children:[
@@ -934,7 +934,7 @@ class HalamanTokoAlamatDeskripsi extends StatelessWidget{
 
                 // kalau belum mengajukan verifikasi dan pengunjung saat ini merupakan
                 // pemilik dari toko itu sendiri
-                if (prop.is_curr_client_the_owner && prop.status_verifikasi == 0)
+                if (prop.is_curr_client_the_owner && prop.status_verifikasi == StatusVerifikasi.BELUM_MENGAJUKAN)
                     WidgetSpan(
                       alignment: PlaceholderAlignment.middle,
                       child: GestureDetector(

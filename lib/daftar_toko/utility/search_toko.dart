@@ -20,13 +20,19 @@ class SearchForm extends StatefulWidget {
 class _SearchFormState extends State<SearchForm> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
-  final search_text = TextEditingController();
+  final onSearchText = TextEditingController();
+  String searchText = '';
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    search_text.dispose();
+    onSearchText.dispose();
     super.dispose();
+  }
+
+  void onPressedSearch() {
+    searchText = onSearchText.text;
+    Navigator.push(context, MaterialPageRoute(builder: (context) => DaftarTokoMaterial(searchText: searchText,)));
   }
 
   @override
@@ -34,39 +40,28 @@ class _SearchFormState extends State<SearchForm> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1.0),
       child: TextFormField(
-      controller: search_text,
+      controller: onSearchText,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-          suffixIcon: IconButton(
-            tooltip: 'Cari toko!',
-            icon: Icon(Icons.search),
-            onPressed: () =>
-                  (Navigator.push(context, MaterialPageRoute(builder: (context) => DaftarTokoMaterial(searchText: search_text.text,)))
-            )
-            ),
-            prefixIcon: IconButton(
-            tooltip: 'Hapus pencarian!',
-            icon: Icon(Icons.clear),
-            onPressed: () {
-              /* Clear the search field */
-              search_text.text = '';
-            },
+        suffixIcon: IconButton(
+          tooltip: 'Cari toko!',
+          icon: Icon(Icons.search),
+          onPressed: onPressedSearch
           ),
-          hintText: 'Search...',
-          border: InputBorder.none
-          ),
-        )
-      );
-  }
-
-  Widget setAlertDialogColumn() {
-    return Container(
-      height: 300.0, // Change as per your requirement
-      width: 300.0,
-      child: ListView(
-        // children: getTokoWidgetText(DAFTAR_TOKO, search_text.text),
-    ),
+          prefixIcon: IconButton(
+          tooltip: 'Hapus pencarian!',
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            /* Clear the search field */
+            searchText = '';
+            onSearchText.text = '';
+          },
+        ),
+        hintText: 'Search...',
+        border: InputBorder.none
+        ),
+      )
     );
   }
 }

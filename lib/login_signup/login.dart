@@ -31,18 +31,12 @@ class Login extends State<LoginForm> {
       body: Form(
         key: _formKey,
         child: Center(
-          //   child: Container(
-          // padding: const EdgeInsets.all(0.0),
-          // height: 250,
-          // alignment: Alignment.center,
           child: Container(
-            margin: EdgeInsets.fromLTRB(0, 200, 0, 0),
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: 200,
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
-              // crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Padding(
-                  //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
                     decoration: InputDecoration(
@@ -57,17 +51,11 @@ class Login extends State<LoginForm> {
                         username = value!;
                       });
                     },
-                    // onSaved: (String? value) {
-                    //   setState(() {
-                    //     username = value!;
-                    //   });
-                    // },
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 15, bottom: 0),
-                  //padding: EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
                     obscureText: true,
                     decoration: InputDecoration(
@@ -82,17 +70,11 @@ class Login extends State<LoginForm> {
                         password = value!;
                       });
                     },
-                    // onSaved: (String? value) {
-                    //   setState(() {
-                    //     password = value!;
-                    //   });
-                    // },
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 15, bottom: 0),
-                  //padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
                     height: 50,
                     width: 250,

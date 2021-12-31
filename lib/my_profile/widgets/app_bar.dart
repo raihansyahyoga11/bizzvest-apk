@@ -2,6 +2,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../theme.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:ui';
 // import 'package:user_profile_ii_example/utils/user_preferences.dart';
 
 AppBar buildAppBar(BuildContext context) {

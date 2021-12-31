@@ -1,51 +1,66 @@
-import 'dart:ffi';
-
+import 'dart:ui';
 import 'package:flutter/material.dart';
-
-import '../widgets/main_drawer.dart';
 import 'EditingPage.dart';
+import '../models/UserAccount.dart';
+import '../api/api_my_profile.dart';
+import '../widgets/main_drawer.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
+ 
 
 
-
-class ProfilePage extends StatefulWidget {
-  @override
-  MapScreenState createState() => MapScreenState();
+void main() {
+  runApp(MyProfile());
 }
 
-class MapScreenState extends State<ProfilePage>
+class MyProfile extends StatefulWidget {
+  MyProfile();
+  @override
+  MyProfileState createState() => MyProfileState();
+}
 
-    with SingleTickerProviderStateMixin {
-      final namaLengkap = TextEditingController();
-      final username = TextEditingController();
-      final jenisKelamin = TextEditingController();
-      final email= TextEditingController();
-      final NoHandphone= TextEditingController();
-      final alamat= TextEditingController();
-      final deskripsi = TextEditingController();
+class MyProfileState extends State<MyProfile> {
+    Widget _getEditIcon() {
+    return new GestureDetector(
+      child: new CircleAvatar(
+        backgroundColor: Colors.blue,
+        radius: 14.0,
+        child: new Icon(
+          Icons.edit,
+          color: Colors.white,
+          size: 25,
+        ),
+      ),
+      onTap: () {
+        Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EditingPage(),
+            ));
+        // setState(() {
+        //   _status = false;
+        // });
+      },
+    );
+  }
       
-  bool _status = true;
+  final bool _status = true;
   final FocusNode myFocusNode = FocusNode();
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
+  // void getReq() async {
+  //     final response = await http.get(Uri.parse("http://10.0.2.2:8000/my-profile/my-profile-json"),headers: <String, String>{'Content-Type':'application/json'});
+  //     print(response.body);
+  //   }
 
-  @override
-  Widget build(BuildContext context) {
-    
-    return new Scaffold(
-      appBar: AppBar(
-        title: Text("My Profile"),
-      ),
-        body: new Container(
-          color: Colors.white,
-          child: new ListView(
+  Widget futureWidget() {
+    return new FutureBuilder<User>(
+      future: loadUser(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return new Container(
+            color: Colors.white,
+            child: new ListView(
             children: <Widget>[
               Column(
                 children: <Widget>[
@@ -54,19 +69,23 @@ class MapScreenState extends State<ProfilePage>
                     color: Colors.white,
                     child: new Column(
                       children: <Widget>[
-
-
                         Padding(
                           padding: EdgeInsets.only(top:30, left:230.0, right:25, bottom:20),
                           child: Container(
                             width: 80.0,
                             height: 20.0,
                             child: Container(
+                              child: Center(
+                                child: Text("Investor",
+                                style: TextStyle(fontSize: 15, color: Colors.white))),
                             decoration: new BoxDecoration(
                               color: Colors.red,
-                                  shape: BoxShape.rectangle,
-                                    )),
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10)
+                              )),
+                              
                             ),
+                          
                         ),
 
 
@@ -84,7 +103,7 @@ class MapScreenState extends State<ProfilePage>
                                       shape: BoxShape.circle,
                                       image: new DecorationImage(
                                         image: new AssetImage(
-                                            'src/img/yoga.jpg'),   
+                                            "${snapshot.data?.photoProfile}"),   
                                         fit: BoxFit.cover,
                                       ),
                                     )),
@@ -139,7 +158,7 @@ class MapScreenState extends State<ProfilePage>
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       new Text(
-                                        'Raihansyah Yoga Adhitama',
+                                        "${snapshot.data?.namaLengkap}",
                                         style: TextStyle(
                                             fontSize: 18.0,
                                             fontWeight: FontWeight.bold,
@@ -147,7 +166,7 @@ class MapScreenState extends State<ProfilePage>
                                         // mainAxisAlignment: MainAxisAlignment.center,
                                       ),
                                       new Text(
-                                        '@raihansyahyoga',
+                                        "${snapshot.data?.username}",
                                         style: TextStyle(
                                             fontSize: 18.0,
                                             fontWeight: FontWeight.normal,
@@ -202,21 +221,15 @@ class MapScreenState extends State<ProfilePage>
                                   Flexible(
                                     child: Padding(
                                       padding: EdgeInsets.only(right: 10.0),
-                                      child: new TextFormField(
-                                        controller: namaLengkap,
-                                        decoration: const InputDecoration(
-                                            hintText: "Tambahkan nama lengkap"),
-                                        enabled: !_status,
+                                      child: new Text(
+                                        "${snapshot.data?.namaLengkap}",
                                       ),
                                     ),
                                     flex: 2,
                                   ),
                                   Flexible(
-                                    child: new TextFormField(
-                                      controller: username,
-                                      decoration: const InputDecoration(
-                                          hintText: "Masukkan username"),
-                                      enabled: !_status,
+                                    child: new Text(
+                                     "${snapshot.data?.username}",
                                     ),
                                     flex: 2,
                                   ),
@@ -250,11 +263,8 @@ class MapScreenState extends State<ProfilePage>
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   new Flexible(
-                                    child: new TextField(
-                                      controller: jenisKelamin,
-                                      decoration: const InputDecoration(
-                                          hintText: "Masukkan jenis kelamin"),
-                                      enabled: !_status,
+                                    child: new Text(
+                                     "${snapshot.data?.jenisKelamin}",
                                     ),
                                   ),
                                 ],
@@ -287,11 +297,8 @@ class MapScreenState extends State<ProfilePage>
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   new Flexible(
-                                    child: new TextField(
-                                      controller: email,
-                                      decoration: const InputDecoration(
-                                          hintText: "Masukkan email"),
-                                      enabled: !_status,
+                                    child: new Text(
+                                      "${snapshot.data?.email}"
                                     ),
                                   ),
                                 ],
@@ -324,11 +331,8 @@ class MapScreenState extends State<ProfilePage>
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   new Flexible(
-                                    child: new TextField(
-                                      controller: NoHandphone,
-                                      decoration: const InputDecoration(
-                                          hintText: "Masukkan nomor handphone"),
-                                      enabled: !_status,
+                                    child: new Text(
+                                   "${snapshot.data?.nomorTelepon}"
                                     ),
                                   ),
                                 ],
@@ -361,11 +365,8 @@ class MapScreenState extends State<ProfilePage>
                             mainAxisSize: MainAxisSize.max,
                             children: <Widget>[
                               new Flexible(
-                                child: new TextField(
-                                  controller: alamat,
-                                  decoration: const InputDecoration(
-                                      hintText: "Masukkan alamat"),
-                                  enabled: !_status,
+                                child: new Text(
+                               "${snapshot.data?.alamat}"
                                 ),
                               ),
                             ],
@@ -398,11 +399,8 @@ class MapScreenState extends State<ProfilePage>
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   new Flexible(
-                                    child: new TextField(
-                                      controller: deskripsi,
-                                      decoration: const InputDecoration(
-                                          hintText: "Masukkan deskripsi"),
-                                      enabled: !_status,
+                                    child: new Text(
+                                      "${snapshot.data?.deskripsi}"
                                     ),
                                   ),
                                 ],
@@ -415,113 +413,33 @@ class MapScreenState extends State<ProfilePage>
                 ],
               ),
             ],
-          ),
-        ),
-         drawer: MainDrawer(),
-        );
-  }
-
-  // @override
-  // void dispose() {
-  //   // Clean up the controller when the Widget is disposed
-  //   myFocusNode.dispose();
-  //   super.dispose();
-  // }
-
-  // Widget _getActionButtons() {
-  //   return Padding(
-  //     padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 45.0),
-  //     child: new Row(
-  //       mainAxisSize: MainAxisSize.max,
-  //       mainAxisAlignment: MainAxisAlignment.start,
-  //       children: <Widget>[
-  //         Expanded(
-  //           child: Padding(
-  //             padding: EdgeInsets.only(right: 10.0),
-  //             child: Container(
-  //                 child: new RaisedButton(
-  //                   child: new Text("Simpan perubahan"),
-  //                   textColor: Colors.white,
-  //                   color: Colors.green,
-  //                   onPressed: () => setState(() {
-  //                       _status = true;
-  //                       FocusScope.of(context).requestFocus(new FocusNode());
-  //                       showDialog <Void> (context: context, 
-  //                             builder: (BuildContext context) {
-  //                               return AlertDialog(
-  //                   title: const Text('Selamat!'),
-  //                   content: const Text('Profil telah tersimpan'),
-  //                   actions: <Widget>[
-  //                     TextButton(
-  //                       onPressed: () {
-  //                         Navigator.pop(context);
-  //                         //  .push(new MaterialPageRoute(builder: (context) => ProfilePage()));
-  //                       },
-  //                       child: const Text('OK'),
-  //                     ),
-  //                   ],
-  //                 );
-  //                             });
-  //                        }),
-                         
-                    
-  //                   shape: new RoundedRectangleBorder(
-  //                       borderRadius: new BorderRadius.circular(20.0)),
-  //                 )),
-  //           ),
-  //           flex: 2,
-  //         ),
-  //         Expanded(
-  //           child: Padding(
-  //             padding: EdgeInsets.only(left: 10.0),
-  //             child: Container(
-  //                 child: new RaisedButton(
-  //                   child: new Text("Reset profil"),
-  //                   textColor: Colors.white,
-  //                   color: Colors.red,
-  //                   onPressed: () => setState(() {
-  //                     _status = true;
-  //                     FocusScope.of(context).requestFocus(new FocusNode());
-  //                     namaLengkap.clear();
-  //                     username.clear();
-  //                     jenisKelamin.clear();
-  //                     email.clear();
-  //                     NoHandphone.clear();
-  //                     alamat.clear();
-  //                     deskripsi.clear();
-  //                   }),
-                      
-  //                   shape: new RoundedRectangleBorder(
-  //                       borderRadius: new BorderRadius.circular(20.0)),
-  //                 )),
-  //           ),
-  //           flex: 2,
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  Widget _getEditIcon() {
-    return new GestureDetector(
-      child: new CircleAvatar(
-        backgroundColor: Colors.blue,
-        radius: 14.0,
-        child: new Icon(
-          Icons.edit,
-          color: Colors.white,
-          size: 25,
-        ),
-      ),
-      onTap: () {
-        Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => EditingPage()),
-            );
-        // setState(() {
-        //   _status = false;
-        // });
+          
+           
+            
+            
+        ),);
+        } 
+        else if (snapshot.hasError) {
+          return new Text("${snapshot.error}");
+        }
+        return new CircularProgressIndicator();
       },
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      
+      home: new Scaffold(
+          appBar: new AppBar(
+
+            title: new Text('My Profile'),
+          ),
+          body: futureWidget(),
+          drawer: MainDrawer(),
+      )
+    );
+    
   }
 }

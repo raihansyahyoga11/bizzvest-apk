@@ -1,4 +1,14 @@
-import 'dart:ffi';
+
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
+import 'package:bizzvest/my_profile/widgets/UserForm.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'dart:ui';
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:flutter/gestures.dart';
+import 'dart:async' show Future;
 
 import 'package:bizzvest/my_profile/screens/ProfilePage.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +17,9 @@ import '../widgets/main_drawer.dart';
 import '../widgets/profile.dart';
 import '../widgets/text_field.dart';
 import '../widgets/app_bar.dart';
+import '../models/UserAccount.dart';
+import 'ProfilePage.dart';
+import '../api/api_my_profile.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -15,102 +28,60 @@ import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 
 class EditingPage extends StatefulWidget {
+  int maxLines;
+  String label;
+  String text;
+  GlobalKey<FormState> form_key = GlobalKey<FormState>();
+
+  // final ValueChanged<dynamic> onChanged;
+  String dropdownvalue = 'Pilih jenis kelamin';
+  var items =  ['Laki-laki','Perempuan'];
+
+  EditingPage({
+    Key? key,
+    this.maxLines = 1,
+    this.label="",
+    this.text="",
+    // required this.onChanged,
+  }) : super(key: key);
+
   @override
-  MapScreenState createState() => MapScreenState();
+  EditingScreenState createState() => EditingScreenState();
 }
 
-class MapScreenState extends State<EditingPage>
 
-    with SingleTickerProviderStateMixin {
-      final namaLengkap = TextEditingController();
-      final username = TextEditingController();
-      final jenisKelamin = TextEditingController();
-      final email= TextEditingController();
-      final NoHandphone= TextEditingController();
-      final alamat= TextEditingController();
-      final deskripsi = TextEditingController();
-      
+
+
+class EditingScreenState extends State<EditingPage> {
+
+  late final controlNamaLengkap = TextEditingController();
+  UserForm formUser = UserForm();
   bool _status = false;
   final FocusNode myFocusNode = FocusNode();
+  GlobalKey<FormState> get form_key{
+    return widget.form_key;
+  }
 
   @override
   void initState() {
     super.initState();
+  // controlNamaLengkap.addListener(UserForm().nama_lengkap = '${controlNamaLengkap.text}')
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-            appBar: buildAppBar(context),
-            body: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 32),
-              physics: BouncingScrollPhysics(),
-              children: [
-                ProfileWidget(
-                  imagePath:  'https://images.unsplash.com/photo-1554151228-14d9def656e4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=333&q=80',
-                  isEdit: true,
-                  onClicked: () async {},
-                ),
-                const SizedBox(height: 24),
-                TextFieldWidget(
-                  label: 'Nama Lengkap',
-                  text: 'aselole',
-                  onChanged: (nama_lengkap) {},
-                ),
-
-                const SizedBox(height: 24),
-                TextFieldWidget(
-                  label: 'Username',
-                  text: 'uyogie',
-                  onChanged: (username) {},
-                ),
-
-                const SizedBox(height: 24),
-                TextFieldWidget(
-                  label: 'Jenis Kelamin',
-                  text: 'Laki-laki',
-                  onChanged: (jenis_kelamin) {},
-                ),
-
-                const SizedBox(height: 24),
-                TextFieldWidget(
-                  label: 'Email',
-                  text: 'raihansyahyoga@gmail.com',
-                  onChanged: (email) {},
-                ),
-
-                const SizedBox(height: 24),
-                TextFieldWidget(
-                  label: 'Nomor Handphone',
-                  text: '08947432978',
-                  onChanged: (phone_number) {},
-                ),
-
-                  const SizedBox(height: 24),
-                TextFieldWidget(
-                  label: 'alamat',
-                  text: 'Jalan radikus makan kakus',
-                  onChanged: (alamat) {},
-                ),
-
-                const SizedBox(height: 24),
-                TextFieldWidget(
-                  label: 'Deskripsi diri',
-                  text: 'aku adalah para pemenang idola cilik paling ceria serta mulia',
-                  maxLines: 5,
-                  onChanged: (deskripsi_diri) {},
-                ),
-              !_status ? _getActionButtons() : new Container()],
-            ),
-          );
-        
-    
-
-  @override
-  void dispose() {
-    // Clean up the controller when the Widget is disposed
-    myFocusNode.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      home: new Scaffold(
+          appBar: new AppBar(
+            title: new Text('Edit Profile'),
+          ),
+          body: futureWidgetEdit(),
+          drawer: MainDrawer(),
+    )
+    );
   }
+
+
 
   Widget _getActionButtons() {
     return Padding(
@@ -127,26 +98,30 @@ class MapScreenState extends State<EditingPage>
                     child: new Text("Simpan"),
                     textColor: Colors.white,
                     color: Colors.green,
-                    onPressed: () => setState(() {
+                    onPressed: () async{
                         _status = true;
                         FocusScope.of(context).requestFocus(new FocusNode());
-                        showDialog <Void> (context: context, 
+                        submit_to_server(context);
+                        
+
+
+                        showDialog (context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                    title: const Text('Selamat!'),
-                    content: const Text('Profil telah tersimpan'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          // Navigator.pop(context);
-                           Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  );
+                                  title: const Text('Selamat!'),
+                                  content: const Text('Profil telah tersimpan'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        // Navigator.pop(context);
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => MyProfile()));
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
                               });
-                         }),
+                         },
                          
                     
                     shape: new RoundedRectangleBorder(
@@ -195,4 +170,254 @@ class MapScreenState extends State<EditingPage>
       },
     );
   }
+
+Future<void> submit_to_server(BuildContext context) async{
+    // if (!enable_submit_button)
+    //   return null;
+
+    var auth = await get_authentication(context);
+    final dict;
+    final response = await auth.post(
+      uri: Uri.parse('http://10.0.2.2:8000/my-profile/my-profile-api'),
+    // headers: <String, String> {
+    //   'Content-Type':'application/json;charset=UTF-8',
+    // },
+    data: UserForm().to_map()
+    );
+    // print(response);
+  
+}
+
+
+Widget futureWidgetEdit() {
+   return FutureBuilder<User>(
+      future: loadUser(),
+      builder: (context,snapshot) {
+        if(snapshot.hasData) {
+          child: return Form(
+            key: form_key,
+            child: 
+           new ListView(
+              padding: EdgeInsets.symmetric(horizontal: 32),
+              physics: BouncingScrollPhysics(),
+              children: [
+                ProfileWidget(
+                  imagePath:  'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dmlld3xlbnwwfHwwfHw%3D&w=1000&q=80',
+                  isEdit: true,
+                  onClicked: () async {},
+                ),
+                const SizedBox(height: 24),
+                new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.label ='Nama Lengkap',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue[600]),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField( 
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    
+                    // initialValue: "${snapshot.data?.namaLengkap}",
+                    maxLines: widget.maxLines,
+                    controller: controlNamaLengkap,
+                    // validator: (value) {
+                    // }          
+                    onChanged: (String value) async {
+                      UserForm().nama_lengkap= value;
+                    }
+                    
+              
+                      
+
+                      
+                ),
+                 
+                  ],
+                ),
+               
+
+                const SizedBox(height: 24),
+            new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.label ='Username',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue[600]),
+                      
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField( 
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    initialValue: "${snapshot.data?.username}",
+                    maxLines: widget.maxLines,
+                    validator: (value) {
+                      if(value != null) {
+                      onSaved: UserForm().user_name= value;
+                      }
+                    }
+                ),
+                 
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+               new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.label ='Jenis Kelamin',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue[600]),
+                      
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField( 
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    initialValue: "${snapshot.data?.jenisKelamin}",
+                    maxLines: widget.maxLines,
+                    validator: (value) {
+                      if(value != null) {
+                      onSaved: UserForm().jenis_kelamin = value;
+                      }
+                    }
+                ),
+                 
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+                new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.label ='Email',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue[600]),
+                      
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField( 
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    initialValue: "${snapshot.data?.email}",
+                    maxLines: widget.maxLines,
+                    validator: (value) {
+                      if(value != null) {
+                      onSaved: UserForm().e_mail = value;
+                      }
+                    }
+                ),
+                 
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+               new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.label ='Nomor Telepon',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue[600]),
+                      
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField( 
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    initialValue: "${snapshot.data?.nomorTelepon}",
+                    maxLines: widget.maxLines,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if(value != null) {
+                      onSaved: UserForm().nomor_telepon= int.parse(value);
+                      }
+                    }
+                ),
+                 
+                  ],
+                ),
+
+                  const SizedBox(height: 24),
+                new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.label ='Alamat',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue[600]),
+                      
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField( 
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    initialValue: "${snapshot.data?.alamat}",
+                    maxLines: widget.maxLines,
+                    validator: (value) {
+                      if(value != null) {
+                      onSaved: UserForm().alamat_saya = value;
+                      }
+                    }
+                ),
+                 
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+                new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.label ='Deskripsi diri',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue[600]),
+                      
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField( 
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    initialValue: "${snapshot.data?.deskripsi}",
+                    maxLines: widget.maxLines,
+                    validator: (value) {
+                      if(value != null) {
+                      onSaved: UserForm().deskripsi_saya = value;
+                      }
+                    }
+                ),
+                 
+                  ],
+                ),
+              !_status ? _getActionButtons() : new Container()],
+            )
+          );
+        }
+         else if (snapshot.hasError) {
+          return new Text("${snapshot.error}");
+        }
+        return new CircularProgressIndicator();
+      }
+   );
+}
 }

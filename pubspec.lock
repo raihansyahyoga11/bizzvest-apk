@@ -7,7 +7,7 @@ packages:
       name: args
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.0"
+    version: "2.3.0"
   async:
     dependency: transitive
     description:
@@ -126,7 +126,7 @@ packages:
       name: expansion_tile_card
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "2.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -158,9 +158,9 @@ packages:
   flowder:
     dependency: "direct main"
     description:
-      name: flowder
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "additional_dependency/flowder-0.2.0"
+      relative: true
+    source: path
     version: "0.2.0"
   flutter:
     dependency: "direct main"
@@ -192,7 +192,7 @@ packages:
       name: flutter_markdown
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.2"
+    version: "0.6.9"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -300,7 +300,7 @@ packages:
       name: markdown
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0"
+    version: "4.0.1"
   matcher:
     dependency: transitive
     description:
@@ -426,7 +426,7 @@ packages:
       name: pointycastle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.0"
+    version: "3.5.0"
   process:
     dependency: transitive
     description:
@@ -440,7 +440,7 @@ packages:
       name: provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.1"
+    version: "6.0.2"
   quiver:
     dependency: transitive
     description:
@@ -454,7 +454,7 @@ packages:
       name: rflutter_alert
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "2.0.4"
   shared_preferences:
     dependency: transitive
     description:

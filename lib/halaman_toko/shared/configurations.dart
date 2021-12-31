@@ -1,14 +1,17 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart' as dio;
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
@@ -45,12 +48,13 @@ void main() async {
 
 
 class NETW_CONST{
-  // static final String server = "bizzvest.herokuapp.com";
-  static const String host = (kReleaseMode)? "bizzvest.herokuapp.com" : "10.0.2.2:8000";
-  // static final String server = (kReleaseMode)? "bizzvest.herokuapp.com" : "192.168.43.117:8000";
-  static const String protocol = "http://";
+  static const String protocol = (kReleaseMode)? "https://" : "http://";
+  static const String host =
+        (kReleaseMode)? "bizzvest-bizzvest.herokuapp.com" :
+            (kIsWeb? "127.0.0.1:8000" : "10.0.2.2:8000");
 
   static const String login_path = "/start-web/login";
+  static const String acc_info = "/halaman-toko/account-information";
 
   static const String halaman_toko_get_photo_json_path = "/halaman-toko/halaman-toko-photo-json";
   static const String halaman_toko_get_toko_json_path = "/halaman-toko/halaman-toko-json";
@@ -66,18 +70,33 @@ class NETW_CONST{
   static final Uri server_uri = Uri.http(host, '/');
   static final Uri login_uri = Uri.http(host, login_path);
 
-  static get_server_URI(String path, [Map<String, dynamic> query=const {}]){
+  static Uri get_server_URI(String path, [Map<String, dynamic> query=const {}]){
     return Uri.http(host, path, query);
+  }
+
+  static String get_server_URL(String path, [Map<String, dynamic>? query]){
+    return Uri.http(host, path, query).toString();
   }
 }
 
 class COOKIE_CONST{
   static const String csrf_token_formdata = "csrfmiddlewaretoken";
   static const String csrf_token_cookie_name = "csrftoken";
+  static const String session_id_cookie_name = "sessionid";
 }
 
 class STYLE_CONST{
   static final Color? background_color = Colors.lightBlue[200];
+
+  static ThemeData default_theme_of_halamanToko(BuildContext context){
+    return ThemeData(
+      textTheme: Theme.of(context).textTheme.apply(
+          fontSizeFactor: 1.3,
+          fontSizeDelta: 2.0,
+          fontFamily: 'Tisan'
+      ),
+    );
+  }
 }
 
 
@@ -145,9 +164,16 @@ class ReqResponse<T>{
   }
 }
 
+class TimeoutResponse<T> extends ReqResponse<T>{
+  TimeoutResponse() : super(http: http.Response("", 408));
+}
+
 
 class Authentication extends Session{
-  bool is_logged_in = false;
+  bool _is_logged_in = false;
+  bool get is_logged_in{
+    return _is_logged_in;
+  }
 
   Authentication({required cookie_jar}) : super(cookie_jar: cookie_jar);
 
@@ -160,7 +186,7 @@ class Authentication extends Session{
   
   Future<Cookie?> get_cookie({Uri? uri=null, required String name}) async {
     uri ??= NETW_CONST.get_server_URI("/");
-    List<Cookie> cookies = await cookie_jar.loadForRequest(uri!);
+    List<Cookie> cookies = await cookie_jar.loadForRequest(uri);
     for (var i=0; i < cookies.length; i++){
       if (cookies[i].name == name)
         return cookies[i];
@@ -168,12 +194,16 @@ class Authentication extends Session{
   }
 
   static Future<Authentication> create() async {
-    Directory temp = await getApplicationDocumentsDirectory();
-    Directory dir = await (Directory(temp.path + '/' + '.cache').create(recursive: true));
+    assert (kIsWeb == false, "Authentication() tidak bisa digunakan di website");
 
-    var comp = Authentication(cookie_jar: PersistCookieJar(
-        storage: FileStorage(dir.path + "/.cache")
-    ));
+    Authentication comp;
+    Directory temp = await getApplicationDocumentsDirectory();
+    Directory dir =
+        await (Directory(temp.path + '/' + '.cache').create(recursive: true));
+
+    comp = Authentication(
+        cookie_jar:
+            PersistCookieJar(storage: FileStorage(dir.path + "/.cache")));
     return comp;
   }
 
@@ -184,14 +214,35 @@ class Authentication extends Session{
     };
 
     ReqResponse ret = await post(uri: NETW_CONST.login_uri, data: form);
-
+    print(await cookie_jar);
     if (!ret.has_problem){
-      is_logged_in = true;
-      if (kDebugMode) {
-        print("logged in " + ret.statusCode.toString() + " " + (ret.reasonPhrase ?? "null"));
-      }
+      await refresh_is_logged_in();
+    }else if (kDebugMode){
+      print("login problem 1: ${ret.statusCode} ${ret.reasonPhrase}}");
+      print("");
+      print(ret.data);
     }
     return ret;
+  }
+
+  Future<ReqResponse> refresh_is_logged_in() async {
+    ReqResponse resp = await get(
+        uri: NETW_CONST.get_server_URI(NETW_CONST.acc_info));
+
+    if (!resp.has_problem && json.decode(resp.body)['is_logged_in'] == 1){
+      _is_logged_in = true;
+    }
+    return resp;
+  }
+
+  Future<ReqResponse> set_session_id(String session_id, [Uri? uri]) async {
+    uri ??= NETW_CONST.server_uri;
+    cookie_jar.saveFromResponse(uri, [Cookie(
+        COOKIE_CONST.session_id_cookie_name,
+        session_id
+    )]);
+
+    return await refresh_is_logged_in();
   }
 }
 
@@ -199,12 +250,12 @@ class Authentication extends Session{
 
 class Session{
   static const bool DEBUG = kDebugMode;
-  static const default_timeout = 10000;
+  static const _default_timeout = 10000;
 
   var dio =  Dio(BaseOptions(
-      connectTimeout: default_timeout,
-      receiveTimeout: default_timeout,
-      sendTimeout: default_timeout,
+      connectTimeout: _default_timeout,
+      receiveTimeout: _default_timeout,
+      sendTimeout: _default_timeout,
       responseType: ResponseType.plain,
 
       followRedirects: false,
@@ -244,7 +295,7 @@ class Session{
     return false;
   }
 
-  Map<String, String> header = {};
+
   Future<ReqResponse<dynamic>> get({
           Uri? uri, String? url, Map<String, String>? data
         }) async{
@@ -298,7 +349,7 @@ class Session{
 
 
 
-
+@deprecated  // ga working
 class AuthenticationOld extends SessionOld{
   bool is_logged_in = false;
 
@@ -321,8 +372,10 @@ class AuthenticationOld extends SessionOld{
 
 }
 
+@deprecated
 class SessionOld{
-  static const bool DEBUG = kDebugMode;
+  // static const bool DEBUG = kDebugMode;
+  static const bool DEBUG = false;
 
   Map<String, String> header = {};
   Future<http.Response> get({
@@ -402,10 +455,9 @@ class SessionOld{
 
 
        header['cookie'] = cookie_string;
-int index_end = cookie_string.indexOf(';');
+        int index_end = cookie_string.indexOf(';');
        index_end = (index_end == -1)? cookie_string.length:index_end;
        header['cookie'] = cookie_string.substring(0, index_end);
-
      }
   }
 

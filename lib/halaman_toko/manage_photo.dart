@@ -1,9 +1,9 @@
 // ignore_for_file: unused_local_variable, non_constant_identifier_names
 
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 import 'package:bizzvest/halaman_toko/shared/loading_screen.dart';
+import 'package:bizzvest/halaman_toko/shared/provider_matrial_app.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -27,17 +27,7 @@ class ManagePhotoMaterial extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        textTheme: Theme.of(context).textTheme.apply(
-            fontSizeFactor: 1.3,
-            fontSizeDelta: 2.0,
-            fontFamily: 'Tisan'
-        ),
-      ),
-
-      home: ManagePhoto(company_id: company_id,),
-    );
+    return ProviderMaterialApp(ManagePhoto(company_id: company_id,));
   }
 }
 
@@ -49,37 +39,40 @@ class ManagePhoto extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return RequestLoadingScreenBuilder(
-        request_function: () async {
-          var auth = await get_authentication();
-          var response = await auth.get(
-            uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_manage_photos_init_api),
-            data: {
-              'id': this.company_id.toString(),
-            }
-          );
-          return response;
-        },
+    return Theme(
+      data: STYLE_CONST.default_theme_of_halamanToko(context),
+      child: RequestLoadingScreenBuilder(
+          request_function: () async {
+            var auth = await get_authentication(context);
+            var response = await auth.get(
+              uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_manage_photos_init_api),
+              data: {
+                'id': this.company_id.toString(),
+              }
+            );
+            return response;
+          },
 
-        wrapper: (Widget widget, RequestStatus req_stat){
-          return Scaffold(
-            body: widget,
-            backgroundColor: STYLE_CONST.background_color,
-          );
-        },
+          wrapper: (Widget widget, RequestStatus req_stat){
+            return Scaffold(
+              body: widget,
+              backgroundColor: STYLE_CONST.background_color,
+            );
+          },
 
-        on_success: (context, snapshot, req_resp, refresh){
-          Map<String, dynamic> map = json.decode(req_resp.data);
+          on_success: (context, snapshot, req_resp, this_widget){
+            Map<String, dynamic> map = json.decode(req_resp.data);
 
-          List<Tuple2<int, String>> initial_photo_items =
-              fetched_photo_list__to__list_of_tuple(map['photos']);
+            List<Tuple2<int, String>> initial_photo_items =
+                fetched_photo_list__to__list_of_tuple(map['photos']);
 
-          return ManagePhotoBody(
-            company_id: company_id,
-            initial_csrf: map['csrftoken'],
-            initial_photo_items: initial_photo_items,
-          );
-        }
+            return ManagePhotoBody(
+              company_id: company_id,
+              initial_csrf: map['csrftoken'],
+              initial_photo_items: initial_photo_items,
+            );
+          }
+      ),
     );
   }
 
@@ -198,7 +191,7 @@ class _ManagePhotoBodyState extends State<ManagePhotoBody>{
 
       ReqResponse? response = null;
       try{
-        var auth = await get_authentication();
+        var auth = await get_authentication(context);
         response = await auth.post(
           uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_delete_photo),
           data: data,
@@ -243,7 +236,7 @@ class _ManagePhotoBodyState extends State<ManagePhotoBody>{
 
     ReqResponse? response = null;
     try{
-      var auth = await get_authentication();
+      var auth = await get_authentication(context);
       response = await auth.post(
         uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_set_photos_order),
         data: data,
@@ -295,7 +288,7 @@ class _ManagePhotoBodyState extends State<ManagePhotoBody>{
         );
       }
 
-      var auth = await get_authentication();
+      var auth = await get_authentication(context);
       ReqResponse? resp = null;
       try{
         resp = await auth.post(

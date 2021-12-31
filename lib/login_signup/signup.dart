@@ -1,3 +1,5 @@
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
+import 'package:bizzvest/halaman_toko/shared/utility.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzvest/login_signup/main.dart';
 import 'package:bizzvest/login_signup/cookie.dart';
@@ -21,8 +23,11 @@ class Signup extends State<SignupForm> {
 
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+        () async {
+      await request.init(context);
+    }();
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffdafcff),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Signup Page"),
@@ -31,18 +36,16 @@ class Signup extends State<SignupForm> {
         key: _formKey,
         child: Center(
           child: Container(
-            margin: EdgeInsets.fromLTRB(0, 125, 0, 0),
-            // height: 250,
-            // alignment: Alignment.center,
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: 400,
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
-              // crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Padding(
-                  //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
                     decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -52,26 +55,15 @@ class Signup extends State<SignupForm> {
                         username = value!;
                       });
                     },
-                    onSaved: (String? value) {
-                      setState(() {
-                        username = value!;
-                      });
-                    },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Username tidak boleh kosong';
-                      }
-                      return null;
-                    },
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 15, bottom: 0),
-                  // padding: EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
                     decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -81,38 +73,22 @@ class Signup extends State<SignupForm> {
                         email = value!;
                       });
                     },
-                    onSaved: (String? value) {
-                      setState(() {
-                        email = value!;
-                      });
-                    },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Alamat Email tidak boleh kosong';
-                      }
-                      return null;
-                    },
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 15, bottom: 0),
-                  //padding: EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
                     obscureText: true,
                     decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         labelText: 'Password'),
                     controller: _pass,
                     onChanged: (String? value) {
-                      setState(() {
-                        password = value!;
-                      });
-                    },
-                    onSaved: (String? value) {
                       setState(() {
                         password = value!;
                       });
@@ -129,10 +105,11 @@ class Signup extends State<SignupForm> {
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 15, bottom: 0),
-                  //padding: EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
                     obscureText: true,
                     decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -142,16 +119,8 @@ class Signup extends State<SignupForm> {
                         confirmPassword = value!;
                       });
                     },
-                    onSaved: (String? value) {
-                      setState(() {
-                        confirmPassword = value!;
-                      });
-                    },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Konfirmasi password tidak boleh kosong';
-                      }
                       if (value != _pass.text) {
                         return "Password tidak sama";
                       }
@@ -162,7 +131,6 @@ class Signup extends State<SignupForm> {
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 0.0, right: 0.0, top: 15, bottom: 0),
-                  //padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
                     height: 50,
                     width: 250,
@@ -171,23 +139,51 @@ class Signup extends State<SignupForm> {
                         borderRadius: BorderRadius.circular(20)),
                     child: FlatButton(
                       onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
+                        if (username == "" || email == "" ||  password == "" || confirmPassword == "") {
+                          final snackBar = SnackBar(
+                              content: const Text(
+                                  'Isi username dan password anda')
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        } else if (_formKey.currentState!.validate()) {
                       final response = await request.post(
-                          "http://localhost:8000/start-web/signup-flutter", {
+                          NETW_CONST.get_server_URL("/start-web/signup-flutter"), {
                             'username': username,
                             'email': email,
                             'password': password,
                           });
-                      if (response['status']) {
+                      if (response['status'] == 'username exist') {
+                        final snackBar = SnackBar(
+                            content: const Text('Username telah terpakai. Masukkan username lain')
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else if (response['status'] == 'invalid format') {
+                        final snackBar = SnackBar(
+                            content: const Text(
+                                'Mauskkan email dengan format yang benar')
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else if (response['status'] == 'email exist') {
+                        final snackBar = SnackBar(
+                            content: const Text(
+                                'Email telah terpakai. Masukkan username lain')
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else if (response['status'] == 'authenticated') {
                         final loggingIn = await request
-                            .login(
-                            "http://localhost:8000/start-web/login-flutter", {
+                            .login(NETW_CONST.get_server_URL("/start-web/login-flutter"), {
                           'username': username,
                           'password': password,
                         });
                         if (loggingIn['status']) {
                           Navigator.pop(context);
                         }
+                      } else {
+                        final snackBar = SnackBar(
+                            content: const Text(
+                                'Ada Kesalahan')
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
                     }
                       },
@@ -198,10 +194,6 @@ class Signup extends State<SignupForm> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
-                Text('Sudah Punya Akun? Masuk Disini')
               ],
             ),
           ),

@@ -1,6 +1,5 @@
 name: bizzvest
 description: A new Flutter project.
-
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -30,7 +29,8 @@ dependencies:
   # persistent_bottom_nav_bar: any
   flutter:
     sdk: flutter
-  flowder: ^0.2.0
+  flowder:
+    path: ./additional_dependency/flowder-0.2.0/
   path_provider: ^2.0.8
   open_file: ^3.2.1
   permission_handler: ^8.3.0
@@ -48,10 +48,11 @@ dependencies:
   persistent_bottom_nav_bar: ^4.0.2
   device_preview: ^1.0.0
   flutter_layout_grid: ^1.0.0
-  expansion_tile_card: ^1.1.0
-  flutter_markdown: ^0.5.2
-  rflutter_alert: ^1.0.2
+  expansion_tile_card: ^2.0.0
+  flutter_markdown: ^0.6.0
+  rflutter_alert: ^2.0.0
   dropdown_search: ^0.6.1
+
 
 
 
@@ -102,8 +103,8 @@ flutter:
   assets:
     - src/img/
     - src/img/yoga.jpg
-    # - src/img/default_user_photoprofile.jpg
-
+    - src/img/front-image-small.png
+    
   fonts:
     - family: Quicksand
       fonts:

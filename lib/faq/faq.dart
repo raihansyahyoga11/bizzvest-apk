@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:bizzvest/daftar_toko/screen/daftar_toko.dart';
 import 'package:bizzvest/halaman_toko/add_toko/add_toko.dart';
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/login_signup/cookie.dart';
 import 'package:bizzvest/login_signup/signup.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:bizzvest/faq/api/api_faq.dart';
 import 'package:bizzvest/faq/helper/helper.dart';
 import 'package:flutter/material.dart';
@@ -1082,7 +1082,7 @@ class FormScreen extends StatelessWidget {
                 hoverColor: Color(0xff9decf6),
 
                 onPressed: () async {
-                  final response = await http.post(Uri.parse('http://127.0.0.1:8000/faq/json/'),
+                  final response = await http.post(NETW_CONST.get_server_URI('/faq/json/'),
                       headers: <String, String>{
                         'Content-Type': 'application/json; charset=UTF-8'
                       },

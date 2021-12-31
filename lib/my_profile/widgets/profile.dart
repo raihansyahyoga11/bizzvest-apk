@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ProfileWidget extends StatelessWidget {
-  final String imagePath;
+  late String imagePath;
   final bool isEdit;
   final VoidCallback onClicked;
 
@@ -27,24 +30,24 @@ class ProfileWidget extends StatelessWidget {
             bottom: 0,
             right: 4,
             child: buildEditIcon(color),
-          
           ),
         ],
       ),
     );
   }
-  Widget changePhoto(BuildContext context) {
-      return RaisedButton(
-      child: Text('UPLOAD FILE'),
-      onPressed: () async {
-        var picked = await FilePicker.platform.pickFiles();
 
-        if (picked != null) {
-          print(picked.files.first.name);
-        }
-      },
-    );
-  }
+  // Widget changePhoto(BuildContext context) {
+  //     return RaisedButton(
+  //     child: Text('UPLOAD FILE'),
+  //     onPressed: () async {
+  //       var picked = await FilePicker.platform.pickFiles();
+
+  //       if (picked != null) {
+  //         print(picked.files.first.name);
+  //       }
+  //     },
+  //   );
+  // }
   
   Widget buildImage() {
     final image = NetworkImage(imagePath);
@@ -57,7 +60,17 @@ class ProfileWidget extends StatelessWidget {
           fit: BoxFit.cover,
           width: 128,
           height: 128,
-          child: InkWell(onTap: onClicked),
+          child: InkWell(onTap: onClicked
+                    // getImage().then((String value) {
+                    //   // setState(() {
+                    //     print(value);
+                    //       //  });
+                    //   onSaved: (value);
+                    //       if (value != null) {
+                    //       formUser.photo_profile = value;
+                    //       }
+                    //   });),
+        )
         ),
       ),
     );
@@ -90,3 +103,26 @@ class ProfileWidget extends StatelessWidget {
         ),
       );
 }
+  Future<String> getImage() async {
+    final picked = await FilePicker.platform.pickFiles();
+    if (picked != null) {
+          print(picked.files.first.name);
+          return picked.files.first.name;
+    }
+    else {
+      return ("ahhahaa");
+    }
+  }
+
+  // Future getImage() async {
+  //   File _image;
+  //   final picker = ImagePicker();
+  //   final pickedFile = await picker.getImage(source:ImageSource.gallery);
+  //   setState((){
+  //     if (pickedFile != null) {
+  //       _image = File(PickedFile.path);
+  //     }
+  //   })
+  // }
+
+ 

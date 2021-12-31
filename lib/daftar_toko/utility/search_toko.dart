@@ -1,10 +1,11 @@
-import 'package:bizzvest/daftar_toko/api/api_daftar_toko.dart';
-import 'package:bizzvest/daftar_toko/utility/list_daftar_toko.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:bizzvest/daftar_toko/screen/daftar_toko.dart';
+import 'package:bizzvest/daftar_toko/api/api_daftar_toko.dart';
+import 'package:bizzvest/daftar_toko/utility/list_daftar_toko.dart';
+import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 
 // Diolah dari https://docs.flutter.dev/cookbook/forms/retrieve-input
 class SearchForm extends StatefulWidget {
@@ -30,7 +31,9 @@ class _SearchFormState extends State<SearchForm> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 1.0),
+      child: TextFormField(
       controller: search_text,
       decoration: InputDecoration(
         filled: true,
@@ -38,37 +41,9 @@ class _SearchFormState extends State<SearchForm> {
           suffixIcon: IconButton(
             tooltip: 'Cari toko!',
             icon: Icon(Icons.search),
-            onPressed: () async {
-              final response = await http.post(Uri.parse('http://10.0.2.2:8000/daftar-toko/search/'),
-                  headers: <String, String>{
-                      'Content-Type': 'application/json; charset=UTF-8'
-                  },
-                  body: jsonEncode(<String, String>{
-                    'search_text' : search_text.text,
-                  }
-                )
-              );
-
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => DaftarTokoMaterial()));
-
-            }
-            // {
-            //     showDialog(
-            //       context: context,
-            //       builder: (context) {
-            //         return AlertDialog(
-            //           title: Text(
-            //             'Hasil pencarian untuk '+search_text.text+':\n(Fungsi pencarian masih belum benar, hanya untuk testing form saja)',
-            //             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
-            //           ),
-            //           // Retrieve the text the user has entered by using the
-            //           // TextEditingController.
-            //           content: setAlertDialogColumn(),
-            //         ); 
-            //       },
-            //     );
-            //   },
+            onPressed: () =>
+                  (Navigator.push(context, MaterialPageRoute(builder: (context) => DaftarTokoMaterial(searchText: search_text.text,)))
+            )
             ),
             prefixIcon: IconButton(
             tooltip: 'Hapus pencarian!',
@@ -81,7 +56,8 @@ class _SearchFormState extends State<SearchForm> {
           hintText: 'Search...',
           border: InputBorder.none
           ),
-        );
+        )
+      );
   }
 
   Widget setAlertDialogColumn() {

@@ -212,6 +212,8 @@ class HalamanTokoWrapper extends StatelessWidget{
             null : FloatingActionButton(
               child: FaIcon(FontAwesomeIcons.dollarSign),
               onPressed: () async {
+
+                print("user_acc_id ${user_acc_id}");
                 await Navigator.pushNamed(
                     context,
                     MulaiInvestScreen.routeName,

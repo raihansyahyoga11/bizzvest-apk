@@ -28,12 +28,14 @@ class CookieRequest {
         if (cookies['sessionid'] != null) {
           loggedIn = true;
           headers['cookie'] = _generateCookieHeader();
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Successfully logged in. Welcome back!"),
-          ));
+
           if (!kIsWeb){
             await set_authentication(cookies[COOKIE_CONST.session_id_cookie_name]!);
           }
+
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Successfully logged in. Welcome back!"),
+          ));
         }
       }
     }

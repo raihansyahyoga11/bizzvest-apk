@@ -46,12 +46,15 @@ void main() async {
   print("res2 finished");
 }
 
-const bool FORCE_RELEASE_MODE = false;
+const bool FORCE_RELEASE_MODE = true;
 
 class NETW_CONST{
-  static const String protocol = (kReleaseMode || FORCE_RELEASE_MODE)? "https://" : "http://";
+  static const IS_RELEASE = kReleaseMode || FORCE_RELEASE_MODE;
+  static const bool USE_HTTPS = IS_RELEASE;
+
+  static const String protocol = (USE_HTTPS)? "https://" : "http://";
   static const String host =
-        (kReleaseMode || FORCE_RELEASE_MODE)? "bizzvest-bizzvest.herokuapp.com" :
+        (IS_RELEASE)? "bizzvest-bizzvest.herokuapp.com" :
             (kIsWeb? "127.0.0.1:8000" : "10.0.2.2:8000");
 
   static const String login_path = "/start-web/login-flutter";
@@ -71,11 +74,17 @@ class NETW_CONST{
   static final Uri server_uri = Uri.http(host, '/');
   static final Uri login_uri = Uri.http(host, login_path);
 
-  static Uri get_server_URI(String path, [Map<String, dynamic> query=const {}]){
+  static Uri get_server_URI(String path, [Map<String, dynamic>? query]){
+    if (USE_HTTPS) {
+      return Uri.https(host, path, query);
+    }
     return Uri.http(host, path, query);
   }
 
   static String get_server_URL(String path, [Map<String, dynamic>? query]){
+    if (USE_HTTPS) {
+      return Uri.https(host, path, query).toString();
+    }
     return Uri.http(host, path, query).toString();
   }
 }
@@ -241,7 +250,12 @@ class Authentication extends Session{
 
     while (retry_cnt > 0){
       try{
-        resp = await get(uri: NETW_CONST.get_server_URI(NETW_CONST.acc_info));
+        Uri uri = NETW_CONST.get_server_URI(NETW_CONST.acc_info);
+        resp = await get(uri: uri);
+        print("is logged in url: ${uri.toString()}");
+        print("is logged in reasonphrase ${resp.reasonPhrase}");
+        print("is logged in data: -- ${resp.body} --");
+
         Map<String, dynamic> map_resp = json.decode(resp.body);
 
         if (!resp.has_problem && map_resp['is_logged_in'] == 1) {

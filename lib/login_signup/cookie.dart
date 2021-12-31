@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
+
+// Referensi: https://gist.github.com/Meta502/1605fdba3b141fbf67dba689e9e55498
 class CookieRequest {
   Map<String, String> headers = {};
   Map<String, String> cookies = {};
@@ -26,12 +28,14 @@ class CookieRequest {
         if (cookies['sessionid'] != null) {
           loggedIn = true;
           headers['cookie'] = _generateCookieHeader();
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Successfully logged in. Welcome back!"),
-          ));
+
           if (!kIsWeb){
             await set_authentication(cookies[COOKIE_CONST.session_id_cookie_name]!);
           }
+
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Successfully logged in. Welcome back!"),
+          ));
         }
       }
     }

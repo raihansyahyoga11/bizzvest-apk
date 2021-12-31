@@ -48,6 +48,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 1;
+  bool loggedIn = false;
 
   //list of widgets to call ontap
   final _widgetOptions = [
@@ -64,16 +65,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var x = 2;
     BuildContextKeeper.main_dart_MaterialApp_context = context;
     CookieRequest request = Provider.of<CookieRequest>(context);
 
     () async {
       await request.init(context);
-      // TODO disini mungkin perlu refresh just in case auto logged in -- Nuel
+      setState(() {
+        loggedIn = request.loggedIn;
+      });
     }();
 
-    if (!request.loggedIn) {
+    if (!loggedIn) {
       return Scaffold(
         appBar: AppBar(
           centerTitle: true,

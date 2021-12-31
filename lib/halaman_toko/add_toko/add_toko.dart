@@ -432,13 +432,14 @@ class _AddTokoBody extends State<AddTokoBody>{
         'my_data': json.encode([1, 2, 3]),
       });
 
-    try {
 
+    try {
       print(dict);
       response = await auth.post(
         uri: NETW_CONST.get_server_URI(NETW_CONST.halaman_toko_add_toko_API),
         data: dict,
       );
+
     } on DioError catch(e){
       if (Session.is_timeout_error(e)){
         show_snackbar(context, "Request timed out");
@@ -450,6 +451,10 @@ class _AddTokoBody extends State<AddTokoBody>{
         enable_submit_button = true;
       });
     }
+
+    print("validate status code ${response.statusCode}");
+    print("validate reasonphrase ${response.reasonPhrase}");
+    print("validate body ${response.body}");
 
 
     Map<String, dynamic> map;

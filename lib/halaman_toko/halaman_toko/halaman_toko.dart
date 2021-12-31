@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:bizzvest/faq/faq.dart';
 import 'package:bizzvest/halaman_toko/halaman_toko/halaman_toko_body.dart';
 import 'package:bizzvest/halaman_toko/shared/configurations.dart';
 import 'package:bizzvest/halaman_toko/shared/loading_screen.dart';
@@ -222,6 +223,8 @@ class HalamanTokoWrapper extends StatelessWidget{
                       'userId': user_acc_id,
                     }
                 );
+                if (refresh != null)
+                  refresh!((){});
               },  // pergi ke mulai invest
               backgroundColor: Colors.blue,
             ),

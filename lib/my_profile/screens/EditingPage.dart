@@ -30,7 +30,6 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'dart:core';
-// import 'package:dropdown_search/dropdown_search.dart';
 
 
 
@@ -125,17 +124,6 @@ class EditingScreenState extends State<EditingPage> {
   }
  
 
-  //   Future getImage() async {
-  //     final pickedFile = await picker.getImage(source:ImageSource.gallery);
-  //     setState((){
-  //       if (pickedFile != null) {
-  //         _image = File(pickedFile.path);
-  //       }
-  //       else{
-  //         print('No Image Selected');
-  //       }
-  //     });
-  // }
  Future<void> on_tap_add_photo(BuildContext context) async{
     var auth = await get_authentication(context);
     image = await picker.pickImage(source: ImageSource.gallery);
@@ -145,7 +133,7 @@ class EditingScreenState extends State<EditingPage> {
      }
 
      final response = await auth.post(
-      uri: Uri.parse('https://bizzvest-bizzvest.herokuapp.com/my-profile/foto-api'), 
+      uri: NETW_CONST.get_server_URI("/my-profile/foto-api"), 
     // headers: <String, String> {
     //   'Content-Type':'application/json;charset=UTF-8',
     // },
@@ -154,8 +142,8 @@ class EditingScreenState extends State<EditingPage> {
       },
     
     );
-    print(response.reasonPhrase);
-    print(response.body);
+    // print(response.reasonPhrase);
+    // print(response.body);
 
       
       // formData.files.add(MapEntry('photo_profile', await MultipartFile.fromFile(image!.path)));
@@ -170,7 +158,7 @@ Future<void> submit_to_server(BuildContext context) async{
     final dict;
     // print({"photo_profile": await MultipartFile.fromFile(image!.path)});
     final response = await auth.post(
-      uri: Uri.parse('https://bizzvest-bizzvest.herokuapp.com/my-profile/my-profile-json'), 
+      uri: NETW_CONST.get_server_URI("/my-profile/my-profile-api"), 
     // headers: <String, String> {
     //   'Content-Type':'application/json;charset=UTF-8',
     // },
@@ -181,9 +169,9 @@ Future<void> submit_to_server(BuildContext context) async{
     
     );
     print(formUser.to_map());
-    print(response.statusCode);
-    print(response.reasonPhrase);
-    print(response.body);
+    // print(response.statusCode);
+    // print(response.reasonPhrase);
+    // print(response.body);
   
 }
 
@@ -278,7 +266,7 @@ Future<void> submit_to_server(BuildContext context) async{
                 padding: EdgeInsets.symmetric(horizontal: 32),
                 children: [
                   ProfileWidget(
-                    imagePath:  "https://bizzvest-bizzvest.herokuapp.com/${snapshot.data?.photoProfile}",
+                    imagePath:  "${NETW_CONST.protocol}${NETW_CONST.host}/${snapshot.data?.photoProfile}",
                     // isEdit: true,
                     onClicked: () {
                       setState(() {

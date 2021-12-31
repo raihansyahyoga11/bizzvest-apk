@@ -1,22 +1,27 @@
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/UserAccount.dart';
 import '../screens/ProfilePage.dart';
 import '../screens/EditingPage.dart';
 import 'package:bizzvest/halaman_toko/shared/utility.dart';
 
-  Future<String> _loadAUserAsset() async {
-    // var auth = await get_authentication(context);
-    final response = await http.get(Uri.parse('https://bizzvest-bizzvest.herokuapp.com/my-profile/my-profile-json'),
+  Future<String> _loadAUserAsset(BuildContext context) async {
+    var auth = await get_authentication(context);
+    final response = await auth.get(
+      uri :Uri.parse('http://10.0.2.2:8000/my-profile/my-profile-json'),
     );
     return response.body;
   }
 
-  Future<User> loadUser() async {
+  Future<User> loadUser(BuildContext context) async {
   await wait(1);
-  String jsonString = await _loadAUserAsset();
+  String jsonString = await _loadAUserAsset(context);
   final jsonResponse = json.decode(jsonString);
+  print(jsonResponse);
   return new User.fromJson(jsonResponse);
+
   }
 
 

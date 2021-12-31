@@ -46,12 +46,12 @@ void main() async {
   print("res2 finished");
 }
 
-
+const bool FORCE_RELEASE_MODE = false;
 
 class NETW_CONST{
-  static const String protocol = (kReleaseMode)? "https://" : "http://";
+  static const String protocol = (kReleaseMode || FORCE_RELEASE_MODE)? "https://" : "http://";
   static const String host =
-        (kReleaseMode)? "bizzvest-bizzvest.herokuapp.com" :
+        (kReleaseMode || FORCE_RELEASE_MODE)? "bizzvest-bizzvest.herokuapp.com" :
             (kIsWeb? "127.0.0.1:8000" : "10.0.2.2:8000");
 
   static const String login_path = "/start-web/login-flutter";

@@ -82,6 +82,7 @@ class CookieRequest {
     http.Response response =
     await _client.post(Uri.parse(url), body: data, headers: headers);
     _updateCookie(response);
+    print(response.body);
     return json.decode(response.body); // Expects and returns JSON request body
   }
 

@@ -147,6 +147,7 @@ class Signup extends State<SignupForm> {
                           );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         } else if (_formKey.currentState!.validate()) {
+                          print(NETW_CONST.get_server_URL("/start-web/signup-flutter"));
                       final response = await request.post(
                           NETW_CONST.get_server_URL("/start-web/signup-flutter"), {
                             'username': username,

@@ -88,9 +88,10 @@ class MyProfileState extends State<MyProfile> {
         return null;
       }),
   ),
-  onPressed: () { 
-    Navigator.pop(context);
-  },
+  onPressed: () {
+              // Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+      },
   child: Text('Kembali ke Halaman Utama'),
                           )
                         ),

@@ -53,22 +53,18 @@ build:
 
 
 deploy_release:
-  image: python:3.5.2
+  image: python:3.7.9
   stage: deploy
   only:
     - main
     - develop
     - merge_requests
   script:
-  - pip install requests
   - git clone https://gitlab.com/immanuel01/bizzvest-apk-deploy-helper.git
+  - pip install -r bizzvest-apk-deploy-helper/requirements.txt
   - python bizzvest-apk-deploy-helper/deploy.py
     --release.dir=build/app/outputs/flutter-apk/
     --app.name=BizzVest
     --dropbox.token=$DROPBOX_TOKEN
     --dropbox.folder=bizzvest_apk
-#    --changelog.file=CHANGELOG
-#    --template.file=TEMPLATE
-#    --zapier.hook=$ZAPIER_EMAIL_HOOK
-#    --email.to=$EMAIL_TARGET
   cache: {}
